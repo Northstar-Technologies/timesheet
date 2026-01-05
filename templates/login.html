@@ -1,15 +1,22 @@
 {% extends "base.html" %}
 
-{% block title %}Login - Time Timesheet{% endblock %}
+{% block title %}Northstar Time Timesheet - Login{% endblock %}
 
 {% block content %}
 <div class="login-container">
-    <div class="login-card">
-        <h2>Welcome to Time Timesheet</h2>
-        <p>Sign in with your Microsoft 365 account to continue.</p>
-        <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg">
-            Sign in with Microsoft
-        </a>
-    </div>
+  <div class="login-card animate-slide-up">
+    <div class="login-icon">★</div>
+    <h2>Welcome to Northstar</h2>
+    <p>Sign in with your Microsoft 365 account to access your timesheets and manage your hours.</p>
+    <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg">
+      <svg width="20" height="20" viewBox="0 0 21 21" fill="currentColor" style="margin-right: 8px;">
+        <rect x="1" y="1" width="9" height="9" fill="#F25022"/>
+        <rect x="11" y="1" width="9" height="9" fill="#7FBA00"/>
+        <rect x="1" y="11" width="9" height="9" fill="#00A4EF"/>
+        <rect x="11" y="11" width="9" height="9" fill="#FFB900"/>
+      </svg>
+      Sign in with Microsoft
+    </a>
+  </div>
 </div>
 {% endblock %}
