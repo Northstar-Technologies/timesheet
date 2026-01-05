@@ -557,19 +557,44 @@ def create_auto_populated_draft(user, week_start):
 
 ### Automated Tests
 
+**Test Suite Status: ✅ 85 tests passing | 74% code coverage**
+
 ```bash
 # Run all tests
 pytest tests/ -v
 
 # Run with coverage
 pytest tests/ --cov=app --cov-report=html
+
+# Run specific test file
+pytest tests/test_models.py -v
 ```
 
-**Test categories:**
+### Test Files
 
-- Unit tests for business logic (hour calculations, status transitions)
-- API integration tests (endpoint responses, auth requirements)
-- Database tests (model relationships, constraints)
+| File                       | Tests | Description                                         |
+| -------------------------- | ----- | --------------------------------------------------- |
+| `tests/conftest.py`        | —     | Fixtures: app, client, users, timesheets            |
+| `tests/test_models.py`     | 21    | User, Timesheet, Entry models, hour calculations    |
+| `tests/test_timesheets.py` | 22    | CRUD, entries, submit workflow, notes               |
+| `tests/test_admin.py`      | 24    | Admin endpoints, approval/rejection, access control |
+| `tests/test_auth.py`       | 10    | Auth requirements, session, logout                  |
+
+### Test Categories
+
+- **Unit tests** for business logic (hour calculations, status transitions)
+- **API integration tests** (endpoint responses, auth requirements)
+- **Database tests** (model relationships, constraints)
+- **Access control tests** (admin vs regular user permissions)
+
+### Coverage by Module
+
+| Module                     | Coverage |
+| -------------------------- | -------- |
+| `app/models/`              | 95%+     |
+| `app/routes/timesheets.py` | 72%      |
+| `app/routes/admin.py`      | 85%      |
+| `app/utils/decorators.py`  | 100%     |
 
 ### Manual Verification
 

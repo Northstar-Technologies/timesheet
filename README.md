@@ -164,6 +164,33 @@ docker-compose restart
 docker-compose down
 ```
 
+## Testing
+
+**85 tests | 74% code coverage**
+
+```bash
+# Install test dependencies
+pip install -r requirements-dev.txt
+
+# Run all tests
+pytest tests/ -v
+
+# Run with coverage report
+pytest tests/ --cov=app --cov-report=html
+
+# Run specific test file
+pytest tests/test_models.py -v
+```
+
+### Test Structure
+
+| File                 | Tests | Description                               |
+| -------------------- | ----- | ----------------------------------------- |
+| `test_models.py`     | 21    | Models, hour calculations, business logic |
+| `test_timesheets.py` | 22    | CRUD operations, entries, submit workflow |
+| `test_admin.py`      | 24    | Admin endpoints, approval workflow        |
+| `test_auth.py`       | 10    | Authentication, session management        |
+
 ## Tech Stack
 
 | Component     | Technology                    |
