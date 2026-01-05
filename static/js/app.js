@@ -289,7 +289,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (view === 'timesheets') {
                 showTimesheetsView();
-            } else if (view === 'new') {
+            } else if (view === 'editor') {
                 showNewTimesheetView();
             } else if (view === 'admin') {
                 showView('admin');
@@ -299,21 +299,55 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
+    // Primary action buttons
+    const createBtn = document.getElementById('create-timesheet-btn');
+    if (createBtn) {
+        createBtn.addEventListener('click', showNewTimesheetView);
+    }
+
+    const backBtn = document.getElementById('back-to-list-btn');
+    if (backBtn) {
+        backBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            showTimesheetsView();
+        });
+    }
+
+    const saveDraftBtn = document.getElementById('save-draft-btn');
+    if (saveDraftBtn) {
+        saveDraftBtn.addEventListener('click', saveDraft);
+    }
+
+    const submitBtn = document.getElementById('submit-btn');
+    if (submitBtn) {
+        submitBtn.addEventListener('click', submitTimesheet);
+    }
+
+    const deleteBtn = document.getElementById('delete-btn');
+    if (deleteBtn) {
+        deleteBtn.addEventListener('click', deleteTimesheet);
+    }
     
     // Setup file upload
     const fileInput = document.getElementById('file-upload');
     if (fileInput) {
-        fileInput.addEventListener('change', (e) => {
-            if (e.target.files.length > 0) {
-                handleFileUpload(e.target.files[0]);
-                e.target.value = '';
+        fileInput.addEventListener('change', async (e) => {
+            const files = Array.from(e.target.files || []);
+            for (const file of files) {
+                await handleFileUpload(file);
             }
+            e.target.value = '';
         });
     }
     
     // Setup drag and drop
     const uploadZone = document.getElementById('upload-zone');
     if (uploadZone) {
+        uploadZone.addEventListener('click', () => {
+            if (fileInput) fileInput.click();
+        });
+
         uploadZone.addEventListener('dragover', (e) => {
             e.preventDefault();
             uploadZone.classList.add('dragover');
@@ -323,12 +357,13 @@ document.addEventListener('DOMContentLoaded', () => {
             uploadZone.classList.remove('dragover');
         });
         
-        uploadZone.addEventListener('drop', (e) => {
+        uploadZone.addEventListener('drop', async (e) => {
             e.preventDefault();
             uploadZone.classList.remove('dragover');
             
-            if (e.dataTransfer.files.length > 0) {
-                handleFileUpload(e.dataTransfer.files[0]);
+            const files = Array.from(e.dataTransfer.files || []);
+            for (const file of files) {
+                await handleFileUpload(file);
             }
         });
     }

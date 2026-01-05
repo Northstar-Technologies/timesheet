@@ -223,9 +223,8 @@ const TimesheetModule = {
         });
         
         // Hide action buttons
-        const saveBtn = form.querySelector('[onclick="saveDraft()"]');
-        const submitBtn = form.querySelector('[onclick="submitTimesheet()"]');
-        
+        const saveBtn = document.getElementById('save-draft-btn');
+        const submitBtn = document.getElementById('submit-btn');
         if (saveBtn) saveBtn.style.display = readOnly ? 'none' : 'block';
         if (submitBtn) submitBtn.style.display = readOnly ? 'none' : 'block';
         
@@ -247,10 +246,11 @@ const TimesheetModule = {
         document.getElementById('reimbursement-type').value = 'Car';
         document.getElementById('reimbursement-amount').value = '';
         document.getElementById('stipend-date').value = '';
-        document.getElementById('notes').value = '';
+        document.getElementById('new-note').value = '';
         
         document.getElementById('reimbursement-section').classList.add('hidden');
         document.getElementById('attachments-list').innerHTML = '';
+        document.getElementById('notes-list').innerHTML = '';
         document.getElementById('delete-btn').style.display = 'none';
         
         // Initialize grid for current week

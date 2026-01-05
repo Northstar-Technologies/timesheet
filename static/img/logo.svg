@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <!-- Forest Green Star -->
+  <path d="M50 5 L61 35 H95 L67 55 L78 85 L50 65 L22 85 L33 55 L5 35 H39 Z" fill="#006400"/>
+  
+  <!-- Motion Lines (trailing to the left) -->
+  <rect x="10" y="40" width="20" height="4" rx="2" fill="#006400"/>
+  <rect x="0" y="50" width="30" height="4" rx="2" fill="#006400"/>
+  <rect x="15" y="60" width="15" height="4" rx="2" fill="#006400"/>
+</svg>
