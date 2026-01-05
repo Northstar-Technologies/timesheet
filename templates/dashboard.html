@@ -12,7 +12,7 @@
     }
     
     .dashboard-header {
-        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        background: linear-gradient(135deg, #006400 0%, #004d00 100%);
         color: white;
         padding: 2rem 2.5rem;
         border-radius: 12px;
@@ -43,7 +43,7 @@
     
     .dashboard-card {
         background: white;
-        border: 2px solid var(--border);
+        border: 2px solid #006400;
         border-radius: 12px;
         padding: 2rem;
         text-align: center;
@@ -54,7 +54,7 @@
     }
     
     .dashboard-card:hover {
-        border-color: var(--primary);
+        border-color: #004d00;
         box-shadow: 0 8px 30px rgba(0, 100, 0, 0.15);
         transform: translateY(-4px);
     }
@@ -63,10 +63,11 @@
         opacity: 0.5;
         cursor: not-allowed;
         pointer-events: none;
+        border-color: #ccc;
     }
     
     .dashboard-card.disabled:hover {
-        border-color: var(--border);
+        border-color: #ccc;
         box-shadow: none;
         transform: none;
     }
@@ -86,7 +87,7 @@
     }
     
     .card-icon.clock svg {
-        stroke: var(--primary);
+        stroke: #006400;
         fill: none;
         stroke-width: 4;
     }
@@ -98,7 +99,7 @@
     }
     
     .dashboard-card:not(.disabled) .card-icon.admin svg {
-        stroke: var(--primary);
+        stroke: #006400;
     }
     
     .card-button {
