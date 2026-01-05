@@ -390,10 +390,116 @@ python -m compileall app
 
 ---
 
+## Tasks
+
+### Phase 2: Testing & Refinement
+
+- [ ] **MSAL Authentication Integration**
+
+  - [ ] Test Azure AD login flow end-to-end
+  - [ ] Verify token refresh handling
+  - [ ] Test logout and session cleanup
+  - [ ] Confirm user creation/update on first login
+  - [ ] See [AZURE.md](AZURE.md) for setup guide
+
+- [ ] **Twilio SMS Notifications**
+
+  - [ ] Implement `send_sms()` utility function
+  - [ ] Test approval notification delivery
+  - [ ] Test "needs attention" notification delivery
+  - [ ] Add error handling and logging for failed SMS
+  - [ ] See [TWILIO.md](TWILIO.md) for setup guide
+
+- [ ] **Database Migrations**
+
+  - [ ] Initialize Alembic: `flask db init`
+  - [ ] Generate initial migration: `flask db migrate -m "Initial schema"`
+  - [ ] Apply migration: `flask db upgrade`
+  - [ ] Test migration rollback: `flask db downgrade`
+
+- [ ] **Complete Workflow Testing**
+  - [ ] Create new timesheet as regular user
+  - [ ] Add time entries for full week
+  - [ ] Upload attachment for field hours
+  - [ ] Submit timesheet
+  - [ ] Approve timesheet as admin
+  - [ ] Verify SMS notification sent
+  - [ ] Test "needs attachment" flow
+
+### Phase 3: Integration Setup
+
+- [ ] **Azure AD Configuration**
+
+  - [ ] Create App Registration in Azure Portal
+  - [ ] Configure redirect URIs for all environments
+  - [ ] Create client secret
+  - [ ] Grant admin consent for `User.Read` permission
+  - [ ] Add credentials to `.env` file
+
+- [ ] **Twilio Configuration**
+
+  - [ ] Create Twilio account (or use existing)
+  - [ ] Purchase SMS-capable phone number
+  - [ ] Verify test phone numbers (if trial account)
+  - [ ] Add credentials to `.env` file
+
+- [ ] **User Onboarding**
+  - [ ] Prepare list of ~60 users with emails
+  - [ ] Identify admin users
+  - [ ] Collect phone numbers for SMS opt-in (optional)
+
+### Phase 4: Deployment
+
+- [ ] **Pre-Deployment Checklist**
+
+  - [ ] Set `SECRET_KEY` to a strong random value
+  - [ ] Configure `DATABASE_URL` for production PostgreSQL
+  - [ ] Set `AZURE_REDIRECT_URI` to production domain
+  - [ ] Enable HTTPS (required for production OAuth)
+  - [ ] Configure backup strategy for database
+
+- [ ] **Docker Deployment**
+
+  - [ ] Build production images: `docker-compose build`
+  - [ ] Start services: `docker-compose up -d`
+  - [ ] Run migrations: `docker-compose exec web flask db upgrade`
+  - [ ] Verify application loads at production URL
+  - [ ] Test authentication flow
+
+- [ ] **Post-Deployment Verification**
+  - [ ] Admin can log in and view submitted timesheets
+  - [ ] Regular user can create and submit timesheet
+  - [ ] File uploads work correctly
+  - [ ] SMS notifications are delivered
+  - [ ] SSE real-time updates function
+
+### Phase 5: Production Hardening (Optional)
+
+- [ ] **Monitoring & Logging**
+
+  - [ ] Configure centralized logging (e.g., ELK, CloudWatch)
+  - [ ] Set up uptime monitoring
+  - [ ] Configure error alerting (e.g., Sentry)
+
+- [ ] **Performance**
+
+  - [ ] Enable Redis caching for sessions
+  - [ ] Configure CDN for static assets
+  - [ ] Load test with expected user count
+
+- [ ] **Security Audit**
+  - [ ] Review OWASP Top 10 checklist
+  - [ ] Scan for dependency vulnerabilities
+  - [ ] Verify CORS and CSP headers
+
+---
+
 ## Open Questions
 
-1. **File Storage**: Local vs. cloud - currently using local filesystem
+1. **File Storage**: Local vs. cloud - currently using local filesystem. Consider S3/Azure Blob for production?
 2. **Field Hours Document**: What specific document is uploaded? Client sign-off sheet?
 3. **Reporting**: Any export requirements (CSV, PDF reports)?
 4. **Historical Data**: Need to migrate existing PowerApps data?
-5. **Backup Strategy**: How frequently should database be backed up?
+5. **Backup Strategy**: How frequently should database be backed up? Daily recommended.
+6. **Domain**: What will be the production URL for the application?
+7. **SSL Certificate**: Self-managed or automated (Let's Encrypt)?
