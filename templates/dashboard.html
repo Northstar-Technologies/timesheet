@@ -12,7 +12,7 @@
     }
     
     .dashboard-header {
-        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        background: linear-gradient(135deg, #006400 0%, #004d00 100%);
         color: white;
         padding: 2rem 2.5rem;
         border-radius: 12px;
@@ -43,7 +43,7 @@
     
     .dashboard-card {
         background: white;
-        border: 2px solid var(--border);
+        border: 2px solid #006400;
         border-radius: 12px;
         padding: 2rem;
         text-align: center;
@@ -51,11 +51,12 @@
         max-width: 300px;
         transition: all 0.3s ease;
         cursor: pointer;
+        box-shadow: 0 4px 20px rgba(0, 100, 0, 0.15);
     }
     
     .dashboard-card:hover {
-        border-color: var(--primary);
-        box-shadow: 0 8px 30px rgba(0, 100, 0, 0.15);
+        border-color: #004d00;
+        box-shadow: 0 8px 30px rgba(0, 100, 0, 0.25);
         transform: translateY(-4px);
     }
     
@@ -63,11 +64,13 @@
         opacity: 0.5;
         cursor: not-allowed;
         pointer-events: none;
+        border-color: #ccc;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     }
     
     .dashboard-card.disabled:hover {
-        border-color: var(--border);
-        box-shadow: none;
+        border-color: #ccc;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         transform: none;
     }
     
@@ -86,7 +89,7 @@
     }
     
     .card-icon.clock svg {
-        stroke: var(--primary);
+        stroke: #006400;
         fill: none;
         stroke-width: 4;
     }
@@ -98,7 +101,7 @@
     }
     
     .dashboard-card:not(.disabled) .card-icon.admin svg {
-        stroke: var(--primary);
+        stroke: #006400;
     }
     
     .card-button {
