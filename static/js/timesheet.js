@@ -246,6 +246,23 @@ const TimesheetModule = {
     },
     
     /**
+     * Check if any field hours have been entered
+     */
+    hasFieldHours() {
+        const entries = this.collectEntries();
+        return entries.some(entry => entry.hour_type === 'Field' && entry.hours > 0);
+    },
+    
+    /**
+     * Check if any attachments have been uploaded
+     */
+    hasAttachments() {
+        const attachmentsList = document.getElementById('attachments-list');
+        if (!attachmentsList) return false;
+        return attachmentsList.querySelectorAll('.attachment-item').length > 0;
+    },
+    
+    /**
      * Populate rows with existing entry data
      */
     populateEntries(entries) {

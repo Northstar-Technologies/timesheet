@@ -158,6 +158,28 @@ async function submitTimesheet() {
         if (!newId) return;
     }
     
+    // Check if field hours are entered but no attachments
+    if (TimesheetModule.hasFieldHours() && !TimesheetModule.hasAttachments()) {
+        const proceed = confirm(
+            '⚠️ Field Hours Require Approval Document\n\n' +
+            'You have entered Field Hours but haven\'t uploaded an approval document.\n\n' +
+            'Click "Cancel" to go back and add an attachment.\n' +
+            'Click "OK" to submit anyway (you\'ll need to upload later).'
+        );
+        
+        if (!proceed) {
+            // Scroll to attachments section
+            const attachmentsSection = document.getElementById('upload-zone');
+            if (attachmentsSection) {
+                attachmentsSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                attachmentsSection.classList.add('highlight-warning');
+                setTimeout(() => attachmentsSection.classList.remove('highlight-warning'), 3000);
+            }
+            showToast('Please upload an approval document for Field Hours', 'warning');
+            return;
+        }
+    }
+    
     try {
         const currentId = timesheetId || document.getElementById('timesheet-id').value;
         
