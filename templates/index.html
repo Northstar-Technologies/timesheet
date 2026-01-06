@@ -3,7 +3,7 @@
 {% block title %}Northstar Time Timesheet - Dashboard{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}?v=20260106" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}?v=20260106p1" />
 {% endblock %}
 
 {% block content %}
@@ -101,6 +101,33 @@
           <div class="form-section-header">
             <div class="form-section-icon">⏱️</div>
             <h3>Time Entries</h3>
+            <button type="button" class="help-icon" id="time-code-help-btn" title="Time Code Definitions">
+              ?
+            </button>
+          </div>
+          
+          <!-- Time Code Help Popup -->
+          <div id="time-code-help-popup" class="help-popup hidden">
+            <div class="help-popup-header">
+              <h4>Time Code Definitions</h4>
+              <button type="button" class="help-popup-close" id="time-code-help-close">&times;</button>
+            </div>
+            <div class="help-popup-content">
+              <dl class="help-definitions">
+                <dt>Field Hours</dt>
+                <dd>Hours worked for client - billable time on-site or remote for customer projects.</dd>
+                <dt>Internal Hours</dt>
+                <dd>Hours worked for NST (Northstar internal) - non-billable company work.</dd>
+                <dt>Training</dt>
+                <dd>Hours spent in training - tracking purposes, not billable.</dd>
+                <dt>PTO</dt>
+                <dd>Paid Time-Off approved by NST - vacation, personal days.</dd>
+                <dt>Unpaid Leave</dt>
+                <dd>Unpaid time off, or hours not worked - no pay or billing.</dd>
+                <dt>Holiday</dt>
+                <dd>Holidays paid by NST - company-observed holidays.</dd>
+              </dl>
+            </div>
           </div>
           
           <!-- Add Hour Type Row -->
@@ -131,6 +158,7 @@
               <div class="hour-type-day-cell">Thu</div>
               <div class="hour-type-day-cell">Fri</div>
               <div class="hour-type-day-cell">Sat</div>
+              <div class="hour-type-total-cell">Total</div>
               <div class="hour-type-actions-cell">Actions</div>
             </div>
             <!-- Dynamic rows will be inserted here by JavaScript -->
@@ -203,7 +231,9 @@
             ⚠️ Field engineers must submit at least one image.
           </div>
           <div class="attachments-section">
-            <div id="attachments-list" class="attachments-list"></div>
+            <div id="attachments-list" class="attachments-list">
+              <p id="empty-attachments-text" class="empty-attachments-text">There is nothing attached.</p>
+            </div>
             <div id="upload-zone" class="upload-zone">
               <div class="upload-zone-icon">📁</div>
               <p>Drag & drop files here or <strong>browse</strong></p>
@@ -323,9 +353,9 @@
 <script>
   window.currentUser = {{ user|tojson }};
 </script>
-<script src="{{ url_for('static', filename='js/api.js') }}?v=20260106"></script>
-<script src="{{ url_for('static', filename='js/timesheet.js') }}?v=20260106"></script>
-<script src="{{ url_for('static', filename='js/admin.js') }}?v=20260106"></script>
-<script src="{{ url_for('static', filename='js/sse.js') }}?v=20260106"></script>
-<script src="{{ url_for('static', filename='js/app.js') }}?v=20260106"></script>
+<script src="{{ url_for('static', filename='js/api.js') }}?v=20260106p1"></script>
+<script src="{{ url_for('static', filename='js/timesheet.js') }}?v=20260106p1"></script>
+<script src="{{ url_for('static', filename='js/admin.js') }}?v=20260106p1"></script>
+<script src="{{ url_for('static', filename='js/sse.js') }}?v=20260106p1"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}?v=20260106p1"></script>
 {% endblock %}

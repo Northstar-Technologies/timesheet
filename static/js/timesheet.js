@@ -125,10 +125,15 @@ const TimesheetModule = {
                            min="0" 
                            max="24" 
                            step="0.5"
-                           placeholder="0">
+                           placeholder="0"
+                           oninput="TimesheetModule.updateRowTotal('${hourType}')">
                 </div>
             `;
         }
+        
+        // Total cell - calculate initial total
+        const initialTotal = existingData ? Object.values(existingData).reduce((sum, val) => sum + (parseFloat(val) || 0), 0) : 0;
+        html += `<div class="hour-type-total-cell" data-total-for="${hourType}">${initialTotal}</div>`;
         
         // Actions cell
         html += `
@@ -427,14 +432,54 @@ const TimesheetModule = {
         
         container.innerHTML = '';
         
-        attachments.forEach(att => {
-            container.innerHTML += `
-                <div class="attachment-item" data-id="${att.id}">
-                    <span>📎 ${att.filename}</span>
-                    <button type="button" class="remove-btn" onclick="removeAttachment('${att.id}')">&times;</button>
-                </div>
-            `;
+        if (attachments.length === 0) {
+            container.innerHTML = '<p id="empty-attachments-text" class="empty-attachments-text">There is nothing attached.</p>';
+        } else {
+            attachments.forEach(att => {
+                container.innerHTML += `
+                    <div class="attachment-item" data-id="${att.id}">
+                        <span>📎 ${att.filename}</span>
+                        <button type="button" class="remove-btn" onclick="removeAttachment('${att.id}')">&times;</button>
+                    </div>
+                `;
+            });
+        }
+        
+        // Update field hours warning when attachments change
+        this.updateFieldHoursWarning();
+    },
+    
+    /**
+     * Update row total when hours change
+     */
+    updateRowTotal(hourType) {
+        const row = document.querySelector(`.hour-type-row[data-hour-type="${hourType}"]`);
+        if (!row) return;
+        
+        const inputs = row.querySelectorAll('.hour-input');
+        let total = 0;
+        inputs.forEach(input => {
+            total += parseFloat(input.value) || 0;
         });
+        
+        const totalCell = row.querySelector('.hour-type-total-cell');
+        if (totalCell) {
+            totalCell.textContent = total;
+        }
+    },
+    
+    /**
+     * Toggle help popup visibility
+     */
+    toggleHelpPopup(popupId) {
+        const popup = document.getElementById(popupId);
+        if (!popup) return;
+        
+        if (popup.classList.contains('hidden')) {
+            popup.classList.remove('hidden');
+        } else {
+            popup.classList.add('hidden');
+        }
     },
     
     /**
@@ -507,7 +552,7 @@ const TimesheetModule = {
         }
         
         if (reimbursementSection) reimbursementSection.classList.add('hidden');
-        if (attachmentsList) attachmentsList.innerHTML = '';
+        if (attachmentsList) attachmentsList.innerHTML = '<p id="empty-attachments-text" class="empty-attachments-text">There is nothing attached.</p>';
         if (adminNotesSection) adminNotesSection.classList.add('hidden');
         if (deleteBtn) deleteBtn.style.display = 'none';
         
@@ -625,6 +670,32 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('input', (e) => {
         if (e.target.classList.contains('hour-input')) {
             TimesheetModule.updateFieldHoursWarning();
+        }
+    });
+    
+    // Help popup toggle handlers
+    const timeCodeHelpBtn = document.getElementById('time-code-help-btn');
+    const timeCodeHelpClose = document.getElementById('time-code-help-close');
+    const timeCodeHelpPopup = document.getElementById('time-code-help-popup');
+    
+    if (timeCodeHelpBtn) {
+        timeCodeHelpBtn.addEventListener('click', () => {
+            TimesheetModule.toggleHelpPopup('time-code-help-popup');
+        });
+    }
+    
+    if (timeCodeHelpClose) {
+        timeCodeHelpClose.addEventListener('click', () => {
+            TimesheetModule.toggleHelpPopup('time-code-help-popup');
+        });
+    }
+    
+    // Close popup when clicking outside
+    document.addEventListener('click', (e) => {
+        if (timeCodeHelpPopup && !timeCodeHelpPopup.classList.contains('hidden')) {
+            if (!timeCodeHelpPopup.contains(e.target) && e.target !== timeCodeHelpBtn) {
+                timeCodeHelpPopup.classList.add('hidden');
+            }
         }
     });
 });

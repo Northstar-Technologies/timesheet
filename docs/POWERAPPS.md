@@ -19,12 +19,12 @@
 
 ### 🟡 P1 - Important (UX Polish)
 
-| Feature                  | Status     | Notes                                       |
-| ------------------------ | ---------- | ------------------------------------------- |
-| Time Code Help Popup     | ❌ Missing | (?) icon that explains each hour type       |
-| Row Totals               | ❌ Missing | Per-row sum column in the time entry table  |
-| Status Definitions Popup | ❌ Missing | Help icon explaining what each status means |
-| Empty Attachments Text   | ❌ Missing | "There is nothing attached." placeholder    |
+| Feature                  | Status      | Notes                                                    |
+| ------------------------ | ----------- | -------------------------------------------------------- |
+| Time Code Help Popup     | ✅ Complete | (?) icon with popup explaining each hour type            |
+| Row Totals               | ✅ Complete | Per-row sum column in the time entry table               |
+| Status Definitions Popup | ❌ Missing  | Help icon explaining what each status means              |
+| Empty Attachments Text   | ✅ Complete | "There is nothing attached." placeholder when no uploads |
 
 ### 🟢 P2 - Nice to Have
 
