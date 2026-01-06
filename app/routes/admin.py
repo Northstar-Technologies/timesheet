@@ -134,7 +134,10 @@ def approve_timesheet(timesheet_id):
     timesheet.approved_by = admin_id
     db.session.commit()
 
-    # TODO: Send SMS notification via Twilio
+    # Send SMS notification
+    from ..services.notification import NotificationService
+
+    NotificationService.notify_approved(timesheet)
 
     return timesheet.to_dict()
 
@@ -176,7 +179,10 @@ def reject_timesheet(timesheet_id):
 
     db.session.commit()
 
-    # TODO: Send SMS notification via Twilio
+    # Send SMS notification
+    from ..services.notification import NotificationService
+
+    NotificationService.notify_needs_attention(timesheet, reason)
 
     return timesheet.to_dict()
 

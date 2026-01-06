@@ -63,6 +63,7 @@ venv.bak/
 *.key
 secrets.json
 config.local.py
+.twilio-recovery
 
 # Flask
 instance/
