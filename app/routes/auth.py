@@ -161,7 +161,7 @@ def logout():
 def dev_login():
     """
     Development login with username/password.
-    
+
     Test accounts:
     - user/user: Regular user
     - admin/password: Admin user
@@ -169,29 +169,33 @@ def dev_login():
     from ..models import User
     from ..extensions import db
     from flask import render_template
-    
+
     username = request.form.get("username", "").strip().lower()
     password = request.form.get("password", "")
-    
+
     # Test account credentials
     TEST_ACCOUNTS = {
         "user": {"password": "user", "is_admin": False, "display_name": "Test User"},
-        "admin": {"password": "password", "is_admin": True, "display_name": "Admin User"},
+        "admin": {
+            "password": "password",
+            "is_admin": True,
+            "display_name": "Admin User",
+        },
     }
-    
+
     # Validate credentials
     if username not in TEST_ACCOUNTS:
         return render_template("login.html", error="Invalid username or password")
-    
+
     if TEST_ACCOUNTS[username]["password"] != password:
         return render_template("login.html", error="Invalid username or password")
-    
+
     account = TEST_ACCOUNTS[username]
-    
+
     # Create or get user in database
     email = f"{username}@localhost"
     user = User.query.filter_by(email=email).first()
-    
+
     if not user:
         user = User(
             azure_id=f"dev-{username}-001",
@@ -207,11 +211,13 @@ def dev_login():
         user.is_admin = account["is_admin"]
         user.display_name = account["display_name"]
         db.session.commit()
-    
+
     # Store user in session
     session["user"] = user.to_dict()
-    current_app.logger.info(f"DEV LOGIN: {username} logged in (admin={account['is_admin']})")
-    
+    current_app.logger.info(
+        f"DEV LOGIN: {username} logged in (admin={account['is_admin']})"
+    )
+
     return redirect(url_for("main.dashboard"))
 
 
@@ -227,4 +233,3 @@ def me():
         return {"error": "Not authenticated"}, 401
 
     return session["user"]
-

@@ -10,3 +10,4 @@ python-dotenv>=1.0.0
 twilio>=8.10.0
 redis>=5.0.0
 Werkzeug>=3.0.0
+botbuilder-core>=4.17.1

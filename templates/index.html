@@ -96,35 +96,29 @@
             <div class="form-section-icon">⏱️</div>
             <h3>Time Entries</h3>
           </div>
-          <div id="entries-grid" class="entries-grid">
-            <!-- Dynamically populated by JavaScript -->
+          
+          <!-- Add Hour Type Row -->
+          <div class="add-hour-type-row">
+            <select id="hour-type-selector" class="form-select">
+              <option value="">Select hour type to add...</option>
+              <option value="Field">Field Hours</option>
+              <option value="Internal">Internal Hours</option>
+              <option value="Training">Training</option>
+              <option value="PTO">PTO</option>
+              <option value="Unpaid">Unpaid Leave</option>
+              <option value="Holiday">Holiday</option>
+            </select>
+            <button type="button" id="add-hour-type-btn" class="btn btn-icon" title="Add hour type">
+              <span>+</span>
+            </button>
           </div>
-        </div>
-
-        <!-- Additional Info -->
-        <div class="form-section">
-          <div class="form-section-header">
-            <div class="form-section-icon">📝</div>
-            <h3>Additional Information</h3>
+          
+          <!-- Dynamic Hour Type Rows Container -->
+          <div id="hour-type-rows" class="hour-type-rows">
+            <!-- Rows added dynamically by JavaScript -->
           </div>
-          <div class="checkbox-group">
-            <div class="checkbox-item">
-              <input type="checkbox" id="traveled" name="traveled" />
-              <label for="traveled">Traveled this week</label>
-            </div>
-            <div class="checkbox-item">
-              <input type="checkbox" id="has-expenses" name="has_expenses" />
-              <label for="has-expenses">Has expenses</label>
-            </div>
-            <div class="checkbox-item">
-              <input
-                type="checkbox"
-                id="reimbursement-needed"
-                name="reimbursement_needed"
-              />
-              <label for="reimbursement-needed">Reimbursement needed</label>
-            </div>
-          </div>
+          
+          <p id="no-entries-hint" class="form-hint">Select an hour type and click + to add time entries.</p>
         </div>
 
         <!-- Reimbursement Details (shown when reimbursement-needed checked) -->

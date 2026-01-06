@@ -16,7 +16,7 @@ def index():
     """
     if "user" not in session:
         return redirect(url_for("main.login_page"))
-    
+
     return redirect(url_for("main.dashboard"))
 
 
@@ -27,7 +27,7 @@ def login_page():
     """
     if "user" in session:
         return redirect(url_for("main.dashboard"))
-    
+
     return render_template("login.html")
 
 
@@ -35,12 +35,12 @@ def login_page():
 def dashboard():
     """
     Dashboard landing page after login.
-    
+
     Shows welcome message and navigation cards.
     """
     if "user" not in session:
         return redirect(url_for("main.login_page"))
-    
+
     return render_template("dashboard.html", user=session["user"])
 
 
@@ -48,12 +48,12 @@ def dashboard():
 def app():
     """
     Main timesheet application page.
-    
+
     Renders the full timesheet application.
     """
     if "user" not in session:
         return redirect(url_for("main.login_page"))
-    
+
     return render_template("index.html", user=session["user"])
 
 

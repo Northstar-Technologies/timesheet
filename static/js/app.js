@@ -159,15 +159,17 @@ async function submitTimesheet() {
     }
     
     try {
+        const currentId = timesheetId || document.getElementById('timesheet-id').value;
+        
         // Save any changes first
         const formData = TimesheetModule.collectFormData();
-        await API.updateTimesheet(timesheetId || document.getElementById('timesheet-id').value, formData);
+        await API.updateTimesheet(currentId, formData);
         
         const entries = TimesheetModule.collectEntries();
-        await API.updateEntries(timesheetId || document.getElementById('timesheet-id').value, entries);
+        await API.updateEntries(currentId, entries);
         
         // Submit
-        const timesheet = await API.submitTimesheet(timesheetId || document.getElementById('timesheet-id').value);
+        const timesheet = await API.submitTimesheet(currentId);
         
         if (timesheet.status === 'NEEDS_APPROVAL') {
             showToast('Timesheet submitted - please upload approval document for field hours', 'warning');
@@ -275,8 +277,18 @@ function showToast(message, type = 'info') {
 // ==========================================
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Load initial data
-    loadTimesheets();
+    // Initial navigation (supports deep links like /app#new)
+    const hash = (window.location.hash || '').replace('#', '').toLowerCase();
+    if (hash === 'new') {
+        showNewTimesheetView();
+    } else if (hash === 'admin') {
+        showView('admin');
+        if (typeof loadAdminTimesheets === 'function') {
+            loadAdminTimesheets();
+        }
+    } else {
+        showTimesheetsView();
+    }
     
     // Setup filter change handler
     const filterStatus = document.getElementById('filter-status');

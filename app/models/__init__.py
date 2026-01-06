@@ -15,6 +15,7 @@ from .timesheet import (
 from .attachment import Attachment
 from .note import Note
 from .notification import Notification, NotificationType
+from .teams_conversation import TeamsConversation
 
 __all__ = [
     "User",
@@ -27,4 +28,5 @@ __all__ = [
     "Note",
     "Notification",
     "NotificationType",
+    "TeamsConversation",
 ]

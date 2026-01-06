@@ -237,6 +237,152 @@
 /* ============================================
    Entries Grid (Time Entry Table)
    ============================================ */
+
+/* Add hour type row - dropdown + button */
+.add-hour-type-row {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+    align-items: center;
+}
+
+.add-hour-type-row .form-select {
+    flex: 1;
+    max-width: 300px;
+}
+
+.btn-icon {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    border-radius: var(--radius-md);
+    background: var(--color-primary);
+    color: var(--color-white);
+    border: none;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.btn-icon:hover {
+    background: var(--color-primary-dark);
+    transform: scale(1.05);
+}
+
+/* Hour type rows container */
+.hour-type-rows {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+/* Individual hour type row */
+.hour-type-row {
+    background: var(--color-white);
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+.hour-type-row[data-editing="false"] .entry-input {
+    background: var(--color-gray-50);
+    color: var(--color-gray-700);
+}
+
+.hour-type-row-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--color-gray-50);
+    border-bottom: 1px solid var(--color-gray-200);
+}
+
+.hour-type-label {
+    font-weight: 600;
+    color: var(--color-gray-800);
+}
+
+.hour-type-actions {
+    display: flex;
+    gap: var(--spacing-xs);
+}
+
+/* Small button variants */
+.btn-sm {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: var(--font-size-xs);
+}
+
+.btn-ghost {
+    background: transparent;
+    border: 1px solid var(--color-gray-300);
+    color: var(--color-gray-600);
+}
+
+.btn-ghost:hover {
+    background: var(--color-gray-100);
+    border-color: var(--color-gray-400);
+}
+
+.btn-danger-ghost {
+    background: transparent;
+    border: 1px solid var(--color-danger);
+    color: var(--color-danger);
+}
+
+.btn-danger-ghost:hover {
+    background: rgba(239, 68, 68, 0.1);
+}
+
+/* Hour type row grid */
+.hour-type-row-grid {
+    padding: var(--spacing-sm);
+}
+
+.entries-grid-row {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+}
+
+.entries-grid-row .header-cell {
+    padding: var(--spacing-xs);
+    background: var(--color-gray-50);
+    font-weight: 600;
+    font-size: var(--font-size-xs);
+    text-align: center;
+    border-radius: var(--radius-sm);
+}
+
+.entries-grid-row .entry-cell {
+    padding: var(--spacing-xs);
+}
+
+.entries-grid-row .entry-input {
+    width: 100%;
+    padding: var(--spacing-xs);
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--radius-sm);
+    text-align: center;
+    font-size: var(--font-size-sm);
+}
+
+.entries-grid-row .entry-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.entries-grid-row .entry-input[readonly] {
+    cursor: default;
+}
+
+/* Legacy grid styles (kept for backwards compatibility) */
 .entries-grid {
     display: grid;
     grid-template-columns: 120px repeat(7, 1fr);
@@ -246,13 +392,26 @@
     overflow: hidden;
 }
 
+.entries-grid-simple {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+    background: var(--color-gray-200);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    margin-top: var(--spacing-md);
+}
+
 .entries-grid .header-cell,
-.entries-grid .entry-cell {
+.entries-grid .entry-cell,
+.entries-grid-simple .header-cell,
+.entries-grid-simple .entry-cell {
     padding: var(--spacing-sm);
     background: var(--color-white);
 }
 
-.entries-grid .header-cell {
+.entries-grid .header-cell,
+.entries-grid-simple .header-cell {
     background: var(--color-gray-50);
     font-weight: 600;
     font-size: var(--font-size-sm);
@@ -266,7 +425,8 @@
     font-size: var(--font-size-sm);
 }
 
-.entries-grid .entry-input {
+.entries-grid .entry-input,
+.entries-grid-simple .entry-input {
     width: 100%;
     padding: var(--spacing-xs);
     border: 1px solid var(--color-gray-300);
@@ -275,9 +435,18 @@
     font-size: var(--font-size-sm);
 }
 
-.entries-grid .entry-input:focus {
+.entries-grid .entry-input:focus,
+.entries-grid-simple .entry-input:focus {
     outline: none;
     border-color: var(--color-primary);
+}
+
+/* Form hint text */
+.form-hint {
+    display: block;
+    margin-top: var(--spacing-xs);
+    color: var(--color-gray-500);
+    font-size: var(--font-size-xs);
 }
 
 /* ============================================
@@ -468,6 +637,10 @@
     
     .entries-grid {
         grid-template-columns: 80px repeat(7, 1fr);
+        font-size: var(--font-size-xs);
+    }
+    
+    .entries-grid-simple {
         font-size: var(--font-size-xs);
     }
     

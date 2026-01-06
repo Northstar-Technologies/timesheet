@@ -2,66 +2,38 @@
  * Timesheet Module
  * 
  * Handles timesheet form rendering and interactions.
+ * Supports multiple hour types per timesheet with add/edit/remove UX.
  */
 
 const TimesheetModule = {
     currentTimesheet: null,
+    currentWeekStart: null,
     
     // Hour types with their labels
-    HOUR_TYPES: [
-        { id: 'Field', label: 'Field Hours' },
-        { id: 'Internal', label: 'Internal Hours' },
-        { id: 'Training', label: 'Training' },
-        { id: 'PTO', label: 'PTO' },
-        { id: 'Unpaid', label: 'Unpaid Leave' },
-        { id: 'Holiday', label: 'Holiday' },
-    ],
+    HOUR_TYPES: {
+        'Field': 'Field Hours',
+        'Internal': 'Internal Hours',
+        'Training': 'Training',
+        'PTO': 'PTO',
+        'Unpaid': 'Unpaid Leave',
+        'Holiday': 'Holiday',
+    },
     
     // Days of the week (Sunday first)
     DAYS: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
     
+    // Track which hour types have been added
+    addedHourTypes: new Set(),
+    
     /**
-     * Initialize the entries grid
+     * Initialize for a given week
      */
-    initEntriesGrid(weekStart) {
-        const grid = document.getElementById('entries-grid');
-        grid.innerHTML = '';
-        
-        // Header row
-        grid.innerHTML += '<div class="header-cell row-label">Hour Type</div>';
-        
-        const startDate = new Date(weekStart + 'T00:00:00');
-        for (let i = 0; i < 7; i++) {
-            const date = new Date(startDate);
-            date.setDate(date.getDate() + i);
-            const dayLabel = this.DAYS[i];
-            const dateLabel = `${date.getMonth() + 1}/${date.getDate()}`;
-            grid.innerHTML += `<div class="header-cell">${dayLabel}<br><small>${dateLabel}</small></div>`;
-        }
-        
-        // Hour type rows
-        for (const hourType of this.HOUR_TYPES) {
-            grid.innerHTML += `<div class="entry-cell row-label">${hourType.label}</div>`;
-            
-            for (let i = 0; i < 7; i++) {
-                const date = new Date(startDate);
-                date.setDate(date.getDate() + i);
-                const dateStr = date.toISOString().split('T')[0];
-                
-                grid.innerHTML += `
-                    <div class="entry-cell">
-                        <input type="number" 
-                               class="entry-input" 
-                               data-date="${dateStr}" 
-                               data-type="${hourType.id}"
-                               min="0" 
-                               max="24" 
-                               step="0.5"
-                               placeholder="0">
-                    </div>
-                `;
-            }
-        }
+    initForWeek(weekStart) {
+        this.currentWeekStart = weekStart;
+        this.addedHourTypes.clear();
+        document.getElementById('hour-type-rows').innerHTML = '';
+        this.updateHourTypeSelector();
+        this.updateNoEntriesHint();
     },
     
     /**
@@ -82,11 +54,169 @@ const TimesheetModule = {
     },
     
     /**
-     * Collect entries from the grid
+     * Update the hour type selector to hide already-added types
+     */
+    updateHourTypeSelector() {
+        const selector = document.getElementById('hour-type-selector');
+        if (!selector) return;
+        
+        Array.from(selector.options).forEach(option => {
+            if (option.value) {
+                option.disabled = this.addedHourTypes.has(option.value);
+                option.style.display = this.addedHourTypes.has(option.value) ? 'none' : '';
+            }
+        });
+        
+        // Reset selection
+        selector.value = '';
+    },
+    
+    /**
+     * Update the "no entries" hint visibility
+     */
+    updateNoEntriesHint() {
+        const hint = document.getElementById('no-entries-hint');
+        if (hint) {
+            hint.style.display = this.addedHourTypes.size === 0 ? 'block' : 'none';
+        }
+    },
+    
+    /**
+     * Generate date headers HTML
+     */
+    generateDateHeaders() {
+        const startDate = new Date(this.currentWeekStart + 'T00:00:00');
+        let html = '';
+        
+        for (let i = 0; i < 7; i++) {
+            const date = new Date(startDate);
+            date.setDate(date.getDate() + i);
+            const dayLabel = this.DAYS[i];
+            const dateLabel = `${date.getMonth() + 1}/${date.getDate()}`;
+            html += `<div class="header-cell">${dayLabel}<br><small>${dateLabel}</small></div>`;
+        }
+        
+        return html;
+    },
+    
+    /**
+     * Add a new hour type row
+     */
+    addHourTypeRow(hourType, entries = [], isEditing = true) {
+        if (this.addedHourTypes.has(hourType)) {
+            return; // Already added
+        }
+        
+        this.addedHourTypes.add(hourType);
+        
+        const container = document.getElementById('hour-type-rows');
+        const startDate = new Date(this.currentWeekStart + 'T00:00:00');
+        const label = this.HOUR_TYPES[hourType] || hourType;
+        
+        // Build entry cells
+        let entryCells = '';
+        for (let i = 0; i < 7; i++) {
+            const date = new Date(startDate);
+            date.setDate(date.getDate() + i);
+            const dateStr = date.toISOString().split('T')[0];
+            
+            // Find existing entry for this date
+            const existingEntry = entries.find(e => e.entry_date === dateStr);
+            const hours = existingEntry ? existingEntry.hours : '';
+            
+            entryCells += `
+                <div class="entry-cell">
+                    <input type="number" 
+                           class="entry-input" 
+                           data-date="${dateStr}"
+                           data-type="${hourType}"
+                           min="0" 
+                           max="24" 
+                           step="0.5"
+                           value="${hours}"
+                           placeholder="0"
+                           ${!isEditing ? 'readonly' : ''}>
+                </div>
+            `;
+        }
+        
+        const rowHtml = `
+            <div class="hour-type-row" data-hour-type="${hourType}" data-editing="${isEditing}">
+                <div class="hour-type-row-header">
+                    <span class="hour-type-label">${label}</span>
+                    <div class="hour-type-actions">
+                        <button type="button" class="btn btn-sm btn-ghost edit-row-btn" 
+                                onclick="TimesheetModule.toggleEditRow('${hourType}')"
+                                style="${isEditing ? 'display:none' : ''}">
+                            ✏️ Edit
+                        </button>
+                        <button type="button" class="btn btn-sm btn-ghost done-row-btn" 
+                                onclick="TimesheetModule.toggleEditRow('${hourType}')"
+                                style="${!isEditing ? 'display:none' : ''}">
+                            ✓ Done
+                        </button>
+                        <button type="button" class="btn btn-sm btn-danger-ghost remove-row-btn" 
+                                onclick="TimesheetModule.removeHourTypeRow('${hourType}')">
+                            ✕
+                        </button>
+                    </div>
+                </div>
+                <div class="hour-type-row-grid">
+                    <div class="entries-grid-row">
+                        ${this.generateDateHeaders()}
+                    </div>
+                    <div class="entries-grid-row entries-row">
+                        ${entryCells}
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        container.insertAdjacentHTML('beforeend', rowHtml);
+        this.updateHourTypeSelector();
+        this.updateNoEntriesHint();
+    },
+    
+    /**
+     * Toggle edit mode for a row
+     */
+    toggleEditRow(hourType) {
+        const row = document.querySelector(`.hour-type-row[data-hour-type="${hourType}"]`);
+        if (!row) return;
+        
+        const isEditing = row.dataset.editing === 'true';
+        row.dataset.editing = (!isEditing).toString();
+        
+        // Toggle input readonly
+        row.querySelectorAll('.entry-input').forEach(input => {
+            input.readOnly = isEditing; // Toggle: was editing, now readonly
+        });
+        
+        // Toggle buttons
+        row.querySelector('.edit-row-btn').style.display = isEditing ? '' : 'none';
+        row.querySelector('.done-row-btn').style.display = isEditing ? 'none' : '';
+    },
+    
+    /**
+     * Remove a hour type row
+     */
+    removeHourTypeRow(hourType) {
+        const row = document.querySelector(`.hour-type-row[data-hour-type="${hourType}"]`);
+        if (row) {
+            row.remove();
+        }
+        
+        this.addedHourTypes.delete(hourType);
+        this.updateHourTypeSelector();
+        this.updateNoEntriesHint();
+    },
+    
+    /**
+     * Collect all entries from all rows
      */
     collectEntries() {
         const entries = [];
-        const inputs = document.querySelectorAll('.entry-input');
+        const inputs = document.querySelectorAll('.hour-type-row .entry-input');
         
         inputs.forEach(input => {
             const hours = parseFloat(input.value) || 0;
@@ -103,22 +233,21 @@ const TimesheetModule = {
     },
     
     /**
-     * Populate entries grid with existing data
+     * Populate form with existing entries (grouped by hour type)
      */
     populateEntries(entries) {
-        // Clear all inputs first
-        document.querySelectorAll('.entry-input').forEach(input => {
-            input.value = '';
+        // Group entries by hour type
+        const byType = {};
+        entries.forEach(entry => {
+            if (!byType[entry.hour_type]) {
+                byType[entry.hour_type] = [];
+            }
+            byType[entry.hour_type].push(entry);
         });
         
-        // Fill in values
-        entries.forEach(entry => {
-            const input = document.querySelector(
-                `.entry-input[data-date="${entry.entry_date}"][data-type="${entry.hour_type}"]`
-            );
-            if (input) {
-                input.value = entry.hours;
-            }
+        // Add a row for each hour type
+        Object.keys(byType).forEach(hourType => {
+            this.addHourTypeRow(hourType, byType[hourType], false); // Not editing by default
         });
     },
     
@@ -161,11 +290,11 @@ const TimesheetModule = {
         // Show/hide reimbursement section
         this.toggleReimbursementSection();
         
-        // Initialize entries grid
-        this.initEntriesGrid(timesheet.week_start);
+        // Initialize for this week
+        this.initForWeek(timesheet.week_start);
         
-        // Populate entries
-        if (timesheet.entries) {
+        // Populate entries (creates rows for each hour type)
+        if (timesheet.entries && timesheet.entries.length > 0) {
             this.populateEntries(timesheet.entries);
         }
         
@@ -222,6 +351,15 @@ const TimesheetModule = {
             input.disabled = readOnly;
         });
         
+        // Hide add controls
+        const addRow = document.querySelector('.add-hour-type-row');
+        if (addRow) addRow.style.display = readOnly ? 'none' : 'flex';
+        
+        // Hide action buttons on rows
+        document.querySelectorAll('.hour-type-actions').forEach(el => {
+            el.style.display = readOnly ? 'none' : 'flex';
+        });
+        
         // Hide action buttons
         const saveBtn = document.getElementById('save-draft-btn');
         const submitBtn = document.getElementById('submit-btn');
@@ -239,11 +377,12 @@ const TimesheetModule = {
         this.currentTimesheet = null;
         
         document.getElementById('timesheet-id').value = '';
-        document.getElementById('week-start').value = this.getCurrentWeekStart();
+        const weekStart = this.getCurrentWeekStart();
+        document.getElementById('week-start').value = weekStart;
         document.getElementById('traveled').checked = false;
         document.getElementById('has-expenses').checked = false;
         document.getElementById('reimbursement-needed').checked = false;
-        document.getElementById('reimbursement-type').value = 'Car';
+        document.getElementById('reimbursement-type').value = '';
         document.getElementById('reimbursement-amount').value = '';
         document.getElementById('stipend-date').value = '';
         document.getElementById('new-note').value = '';
@@ -253,8 +392,8 @@ const TimesheetModule = {
         document.getElementById('notes-list').innerHTML = '';
         document.getElementById('delete-btn').style.display = 'none';
         
-        // Initialize grid for current week
-        this.initEntriesGrid(this.getCurrentWeekStart());
+        // Initialize for current week (clears rows)
+        this.initForWeek(weekStart);
         
         // Ensure form is editable
         this.setFormReadOnly(false);
@@ -300,8 +439,34 @@ const TimesheetModule = {
     },
 };
 
-// Bind the reimbursement toggle
+// Event handlers
 document.addEventListener('DOMContentLoaded', () => {
+    // Add hour type button
+    const addBtn = document.getElementById('add-hour-type-btn');
+    if (addBtn) {
+        addBtn.addEventListener('click', () => {
+            const selector = document.getElementById('hour-type-selector');
+            const hourType = selector.value;
+            
+            if (!hourType) {
+                return; // No type selected
+            }
+            
+            // Initialize week if not set
+            if (!TimesheetModule.currentWeekStart) {
+                const weekStartInput = document.getElementById('week-start');
+                if (weekStartInput && weekStartInput.value) {
+                    TimesheetModule.currentWeekStart = TimesheetModule.getWeekStart(weekStartInput.value);
+                } else {
+                    TimesheetModule.currentWeekStart = TimesheetModule.getCurrentWeekStart();
+                }
+            }
+            
+            TimesheetModule.addHourTypeRow(hourType, [], true);
+        });
+    }
+    
+    // Reimbursement toggle
     const checkbox = document.getElementById('reimbursement-needed');
     if (checkbox) {
         checkbox.addEventListener('change', () => TimesheetModule.toggleReimbursementSection());
@@ -313,7 +478,13 @@ document.addEventListener('DOMContentLoaded', () => {
         weekStartInput.addEventListener('change', (e) => {
             const weekStart = TimesheetModule.getWeekStart(e.target.value);
             e.target.value = weekStart;
-            TimesheetModule.initEntriesGrid(weekStart);
+            
+            // Re-initialize for new week (clears existing rows)
+            if (confirm('Changing the week will clear existing entries. Continue?')) {
+                TimesheetModule.initForWeek(weekStart);
+            } else {
+                e.target.value = TimesheetModule.currentWeekStart;
+            }
         });
     }
 });

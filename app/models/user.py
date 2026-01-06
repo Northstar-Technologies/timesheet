@@ -24,6 +24,7 @@ class User(db.Model):
         phone: Phone number for Twilio SMS notifications
         is_admin: Whether user has admin privileges
         sms_opt_in: Whether user has opted into SMS notifications
+        teams_notifications_enabled: Whether user has opted into Teams notifications
         created_at: When the user record was created
         updated_at: Last modification time
     """
@@ -37,6 +38,7 @@ class User(db.Model):
     phone = db.Column(db.String(20), nullable=True)
     is_admin = db.Column(db.Boolean, default=False, nullable=False)
     sms_opt_in = db.Column(db.Boolean, default=True, nullable=False)
+    teams_notifications_enabled = db.Column(db.Boolean, default=True, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     updated_at = db.Column(
         db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False
@@ -53,6 +55,9 @@ class User(db.Model):
         "Notification", back_populates="user", lazy="dynamic"
     )
     notes = db.relationship("Note", back_populates="author", lazy="dynamic")
+    teams_conversation = db.relationship(
+        "TeamsConversation", back_populates="user", uselist=False
+    )
 
     def __repr__(self):
         return f"<User {self.email}>"
@@ -65,4 +70,5 @@ class User(db.Model):
             "display_name": self.display_name,
             "is_admin": self.is_admin,
             "sms_opt_in": self.sms_opt_in,
+            "teams_notifications_enabled": self.teams_notifications_enabled,
         }

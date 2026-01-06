@@ -41,12 +41,14 @@ def create_app(config_class=Config):
     from .routes.admin import admin_bp
     from .routes.events import events_bp
     from .routes.main import main_bp
+    from .bot import bot_bp
 
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp, url_prefix="/auth")
     app.register_blueprint(timesheets_bp, url_prefix="/api/timesheets")
     app.register_blueprint(admin_bp, url_prefix="/api/admin")
     app.register_blueprint(events_bp, url_prefix="/api")
+    app.register_blueprint(bot_bp, url_prefix="/api/bot")
 
     # Create database tables if they don't exist
     with app.app_context():
