@@ -36,6 +36,8 @@ services:
   # PostgreSQL database
   db:
     image: postgres:15-alpine
+    ports:
+      - "5432:5432"  # Expose for local development
     environment:
       POSTGRES_USER: timesheet
       POSTGRES_PASSWORD: timesheet

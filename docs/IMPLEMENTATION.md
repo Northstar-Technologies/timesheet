@@ -590,7 +590,7 @@ def create_auto_populated_draft(user, week_start):
 - [x] PostgreSQL models with SQLAlchemy
 - [x] MSAL authentication integration
 - [x] Basic HTML templates and CSS
-- [ ] Alembic migrations
+- [x] Alembic migrations
 
 ### Phase 2: Core Features (Week 3-4) ✅ Complete
 
@@ -609,9 +609,9 @@ def create_auto_populated_draft(user, week_start):
 
 ### Phase 4: Notifications & Polish (Week 6)
 
-- [ ] Twilio SMS integration → See [TWILIO.md](TWILIO.md)
+- [x] Twilio SMS integration → See [TWILIO.md](TWILIO.md)
 - [x] SSE real-time updates
-- [ ] Weekly reminder job
+- [x] Weekly reminder job → See [TWILIO.md](TWILIO.md) (Unsubmitted Timesheet Reminder)
 - [ ] Auto-populate feature
 - [x] Tooltips and UX refinements
 
@@ -862,12 +862,12 @@ python -m compileall app
   - [ ] Extract Microsoft logo SVG
   - [ ] Test responsive design on mobile
 
-- [ ] **Database Migrations**
+- [x] **Database Migrations** ✅ Completed Jan 6, 2026
 
-  - [ ] Initialize Alembic: `flask db init`
-  - [ ] Generate initial migration: `flask db migrate -m "Initial schema"`
-  - [ ] Apply migration: `flask db upgrade`
-  - [ ] Test migration rollback: `flask db downgrade`
+  - [x] Initialize Alembic: `flask db init`
+  - [x] Create baseline migration: `001_initial_schema.py`
+  - [x] Stamp database: `flask db stamp 001_initial_schema`
+  - [x] Verify: `flask db current` shows `001_initial_schema (head)`
 
 - [ ] **Complete Workflow Testing**
   - [ ] Create new timesheet as regular user
