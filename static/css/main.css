@@ -6,44 +6,76 @@
  */
 
 /* ============================================
-   CSS Variables (Design Tokens)
+   CSS Variables (Design Tokens) - DARK MODE
+   Based on YouTube/Google Material Design
    ============================================ */
 :root {
-  /* Colors - Northstar Forest Green palette */
-  --color-primary: #006400;
-  --color-primary-dark: #004d00;
-  --color-primary-light: #228b22;
-
-  /* Accent - Olive green for icons/highlights */
-  --color-accent: #7bb033;
-  --color-accent-dark: #5a8a1a;
-
-  --color-secondary: #64748b;
-  --color-secondary-dark: #475569;
-
-  --color-success: #10b981;
-  --color-warning: #f59e0b;
-  --color-danger: #ef4444;
-  --color-info: #06b6d4;
-
-  /* Neutrals */
-  --color-white: #ffffff;
-  --color-gray-50: #f8fafc;
-  --color-gray-100: #f1f5f9;
-  --color-gray-200: #e2e8f0;
-  --color-gray-300: #cbd5e1;
-  --color-gray-400: #94a3b8;
-  --color-gray-500: #64748b;
-  --color-gray-600: #475569;
-  --color-gray-700: #334155;
-  --color-gray-800: #1e293b;
-  --color-gray-900: #0f172a;
-
-  /* Status colors */
-  --status-new: #64748b;
-  --status-submitted: #006400;
-  --status-approved: #10b981;
-  --status-needs-approval: #f59e0b;
+  /* === DARK MODE BASE PALETTE === */
+  
+  /* Backgrounds (darkest to lighter - elevation system) */
+  --color-bg-page: #0f0f0f;        /* Main page background */
+  --color-bg-surface: #121212;     /* Cards, sidebar base */
+  --color-bg-elevated: #181818;    /* Raised cards, modals */
+  --color-bg-overlay: #1e1e1e;     /* Dropdowns, popovers */
+  --color-bg-hover: #252525;       /* Hover states */
+  
+  /* Borders & Dividers */
+  --color-border-subtle: #2a2a2a;  /* Faint dividers */
+  --color-border-default: #3a3a3a; /* Standard borders */
+  --color-border-strong: #4a4a4a;  /* Emphasized borders */
+  
+  /* Text */
+  --color-text-primary: #e8eaed;   /* Primary text (93% white) */
+  --color-text-secondary: #9aa0a6; /* Secondary text (60%) */
+  --color-text-muted: #6e6e6e;     /* Muted/hint text */
+  --color-text-disabled: #5f6368;  /* Disabled text (38%) */
+  --color-text-inverse: #121212;   /* Text on light backgrounds */
+  
+  /* === BRAND COLORS (Lightened for Dark Mode) === */
+  
+  /* Primary - Northstar Green (lightened for accessibility) */
+  --color-primary: #4ade80;        /* Bright green for accents */
+  --color-primary-dark: #22c55e;   /* Hover state */
+  --color-primary-light: #86efac;  /* Light variant */
+  --color-primary-muted: #166534;  /* Muted background green */
+  
+  /* Accent */
+  --color-accent: #7dd87d;
+  --color-accent-dark: #5cb85c;
+  
+  /* Secondary */
+  --color-secondary: #9aa0a6;
+  --color-secondary-dark: #6e6e6e;
+  
+  /* === STATUS COLORS (Lightened for dark backgrounds) === */
+  --color-success: #34d399;        /* Emerald 400 */
+  --color-warning: #fbbf24;        /* Amber 400 */
+  --color-danger: #f87171;         /* Red 400 */
+  --color-info: #22d3ee;           /* Cyan 400 */
+  
+  /* Status-specific */
+  --status-new: #9aa0a6;
+  --status-submitted: #4ade80;
+  --status-approved: #34d399;
+  --status-needs-approval: #fbbf24;
+  
+  /* Legacy aliases for compatibility */
+  --color-white: #e8eaed;
+  --color-gray-50: #0f0f0f;
+  --color-gray-100: #121212;
+  --color-gray-200: #1e1e1e;
+  --color-gray-300: #2a2a2a;
+  --color-gray-400: #5f6368;
+  --color-gray-500: #6e6e6e;
+  --color-gray-600: #9aa0a6;
+  --color-gray-700: #bdc1c6;
+  --color-gray-800: #e8eaed;
+  --color-gray-900: #f1f3f4;
+  
+  /* === INTERACTIVE STATES === */
+  --color-hover: rgba(255, 255, 255, 0.08);
+  --color-active: rgba(255, 255, 255, 0.12);
+  --color-focus-ring: rgba(74, 222, 128, 0.4);
 
   /* Typography */
   --font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
@@ -71,11 +103,11 @@
   --radius-xl: 0.75rem;
   --radius-full: 9999px;
 
-  /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1),
-    0 4px 6px -4px rgb(0 0 0 / 0.1);
+  /* Shadows - subtle for dark mode */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+  --shadow-glow: 0 0 20px rgba(74, 222, 128, 0.15);
 
   /* Transitions */
   --transition-fast: 150ms ease;
@@ -107,8 +139,8 @@ body {
   font-family: var(--font-family);
   font-size: var(--font-size-base);
   line-height: 1.6;
-  color: var(--color-gray-800);
-  background-color: var(--color-gray-50);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-page);
 }
 
 h1,
@@ -146,7 +178,7 @@ a:hover {
 }
 
 /* ============================================
-   Header
+   Header - Dark Mode
    ============================================ */
 .header {
   position: fixed;
@@ -156,11 +188,11 @@ a:hover {
   height: var(--header-height);
   background: linear-gradient(
     135deg,
-    var(--color-primary) 0%,
-    var(--color-primary-dark) 100%
+    #1a1a1a 0%,
+    var(--color-bg-page) 100%
   );
-  color: var(--color-white);
-  box-shadow: var(--shadow-md);
+  color: var(--color-text-primary);
+  border-bottom: 1px solid var(--color-border-subtle);
   z-index: 100;
 }
 
@@ -226,14 +258,14 @@ a:hover {
 }
 
 /* ============================================
-   Footer
+   Footer - Dark Mode
    ============================================ */
 .footer {
   padding: var(--spacing-lg);
   text-align: center;
-  color: var(--color-gray-500);
+  color: var(--color-text-muted);
   font-size: var(--font-size-sm);
-  border-top: 1px solid var(--color-gray-200);
+  border-top: 1px solid var(--color-border-subtle);
 }
 
 .footer p {
@@ -241,7 +273,7 @@ a:hover {
 }
 
 /* ============================================
-   Buttons
+   Buttons - Dark Mode
    ============================================ */
 .btn {
   display: inline-flex;
@@ -266,29 +298,33 @@ a:hover {
 
 .btn-primary {
   background-color: var(--color-primary);
-  color: var(--color-white);
+  color: var(--color-text-inverse);
 }
 
 .btn-primary:hover:not(:disabled) {
   background-color: var(--color-primary-dark);
+  box-shadow: var(--shadow-glow);
 }
 
 .btn-secondary {
-  background-color: var(--color-gray-200);
-  color: var(--color-gray-700);
+  background-color: var(--color-bg-overlay);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border-default);
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background-color: var(--color-gray-300);
+  background-color: var(--color-bg-hover);
+  border-color: var(--color-border-strong);
 }
 
 .btn-danger {
   background-color: var(--color-danger);
-  color: var(--color-white);
+  color: var(--color-text-inverse);
 }
 
 .btn-danger:hover:not(:disabled) {
-  background-color: #dc2626;
+  background-color: #ef4444;
+  box-shadow: 0 0 15px rgba(248, 113, 113, 0.3);
 }
 
 .btn-sm {
@@ -314,18 +350,18 @@ a:hover {
 .btn-back {
   background: none;
   border: none;
-  color: var(--color-gray-600);
+  color: var(--color-text-secondary);
   padding: var(--spacing-sm);
   cursor: pointer;
   font-size: var(--font-size-base);
 }
 
 .btn-back:hover {
-  color: var(--color-gray-800);
+  color: var(--color-text-primary);
 }
 
 /* ============================================
-   Forms
+   Forms - Dark Mode
    ============================================ */
 .form-group {
   margin-bottom: var(--spacing-md);
@@ -336,7 +372,7 @@ a:hover {
   margin-bottom: var(--spacing-xs);
   font-size: var(--font-size-sm);
   font-weight: 500;
-  color: var(--color-gray-700);
+  color: var(--color-text-secondary);
 }
 
 .form-input,
@@ -346,11 +382,17 @@ a:hover {
   padding: var(--spacing-sm) var(--spacing-md);
   font-family: inherit;
   font-size: var(--font-size-base);
-  border: 1px solid var(--color-gray-300);
+  border: 1px solid var(--color-border-default);
   border-radius: var(--radius-md);
-  background-color: var(--color-white);
+  background-color: var(--color-bg-overlay);
+  color: var(--color-text-primary);
   transition: border-color var(--transition-fast),
     box-shadow var(--transition-fast);
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+  color: var(--color-text-disabled);
 }
 
 .form-input:focus,
@@ -358,7 +400,7 @@ a:hover {
 .form-textarea:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(0, 100, 0, 0.15);
+  box-shadow: 0 0 0 3px var(--color-focus-ring);
 }
 
 .form-row {
@@ -368,7 +410,7 @@ a:hover {
 }
 
 /* ============================================
-   Login Page
+   Login Page - Dark Mode
    ============================================ */
 .login-container {
   display: flex;
@@ -379,10 +421,10 @@ a:hover {
 }
 
 .login-card {
-  background: var(--color-white);
+  background: var(--color-bg-elevated);
   padding: var(--spacing-2xl);
   border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--color-border-subtle);
   text-align: center;
   max-width: 420px;
   width: 100%;
@@ -403,7 +445,7 @@ a:hover {
 }
 
 .login-subtitle {
-  color: var(--color-gray-600);
+  color: var(--color-text-secondary);
   margin-bottom: var(--spacing-xl);
 }
 
@@ -428,7 +470,7 @@ a:hover {
   display: flex;
   align-items: center;
   margin: var(--spacing-lg) 0;
-  color: var(--color-gray-400);
+  color: var(--color-text-muted);
 }
 
 .login-divider::before,
@@ -436,7 +478,7 @@ a:hover {
   content: "";
   flex: 1;
   height: 1px;
-  background: var(--color-gray-200);
+  background: var(--color-border-subtle);
 }
 
 .login-divider span {
@@ -453,10 +495,10 @@ a:hover {
 .login-help {
   margin-top: var(--spacing-xl);
   padding: var(--spacing-md);
-  background: var(--color-gray-50);
+  background: var(--color-bg-surface);
   border-radius: var(--radius-md);
   font-size: var(--font-size-sm);
-  color: var(--color-gray-600);
+  color: var(--color-text-secondary);
 }
 
 .login-help p {
@@ -464,10 +506,11 @@ a:hover {
 }
 
 .login-help code {
-  background: var(--color-gray-200);
+  background: var(--color-bg-overlay);
   padding: 2px 6px;
   border-radius: var(--radius-sm);
   font-family: monospace;
+  color: var(--color-primary);
 }
 
 .alert {
@@ -478,8 +521,8 @@ a:hover {
 }
 
 .alert-error {
-  background: #fef2f2;
-  border: 1px solid #fecaca;
+  background: rgba(248, 113, 113, 0.1);
+  border: 1px solid rgba(248, 113, 113, 0.3);
   color: var(--color-danger);
 }
 
@@ -505,7 +548,7 @@ a:hover {
 }
 
 /* ============================================
-   Toast Notifications
+   Toast Notifications - Dark Mode
    ============================================ */
 .toast-container {
   position: fixed;
@@ -520,23 +563,29 @@ a:hover {
 .toast {
   padding: var(--spacing-md) var(--spacing-lg);
   border-radius: var(--radius-md);
-  background: var(--color-gray-800);
-  color: var(--color-white);
+  background: var(--color-bg-elevated);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border-default);
   box-shadow: var(--shadow-lg);
   animation: slideIn 0.3s ease;
 }
 
 .toast-success {
-  background: var(--color-success);
+  background: rgba(52, 211, 153, 0.15);
+  border-color: var(--color-success);
+  color: var(--color-success);
 }
 
 .toast-error {
-  background: var(--color-danger);
+  background: rgba(248, 113, 113, 0.15);
+  border-color: var(--color-danger);
+  color: var(--color-danger);
 }
 
 .toast-warning {
-  background: var(--color-warning);
-  color: var(--color-gray-900);
+  background: rgba(251, 191, 36, 0.15);
+  border-color: var(--color-warning);
+  color: var(--color-warning);
 }
 
 @keyframes slideIn {

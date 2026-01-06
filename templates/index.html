@@ -3,7 +3,7 @@
 {% block title %}Northstar Time Timesheet - Dashboard{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}?v=8" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}?v=10" />
 {% endblock %}
 
 {% block content %}
@@ -303,9 +303,9 @@
 <script>
   window.currentUser = {{ user|tojson }};
 </script>
-<script src="{{ url_for('static', filename='js/api.js') }}?v=8"></script>
-<script src="{{ url_for('static', filename='js/timesheet.js') }}?v=8"></script>
-<script src="{{ url_for('static', filename='js/admin.js') }}?v=8"></script>
-<script src="{{ url_for('static', filename='js/sse.js') }}?v=8"></script>
-<script src="{{ url_for('static', filename='js/app.js') }}?v=8"></script>
+<script src="{{ url_for('static', filename='js/api.js') }}?v=10"></script>
+<script src="{{ url_for('static', filename='js/timesheet.js') }}?v=10"></script>
+<script src="{{ url_for('static', filename='js/admin.js') }}?v=10"></script>
+<script src="{{ url_for('static', filename='js/sse.js') }}?v=10"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}?v=10"></script>
 {% endblock %}
