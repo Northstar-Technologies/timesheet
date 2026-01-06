@@ -12,21 +12,23 @@ Dashboard{% endblock %} {% block extra_css %}
   }
 
   .dashboard-header {
-    background: linear-gradient(135deg, #006400 0%, #004d00 100%);
-    color: white;
+    background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
+    color: #e8eaed;
     padding: 2rem 2.5rem;
     border-radius: 12px;
     margin-bottom: 3rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 4px 20px rgba(0, 100, 0, 0.3);
+    border: 1px solid #2a2a2a;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
   }
 
   .dashboard-header h1 {
     font-size: 2rem;
     font-weight: 300;
     margin: 0;
+    color: #4ade80;
   }
 
   .dashboard-header .date {
@@ -42,8 +44,8 @@ Dashboard{% endblock %} {% block extra_css %}
   }
 
   .dashboard-card {
-    background: white;
-    border: 2px solid #006400;
+    background: #181818;
+    border: 2px solid #4ade80;
     border-radius: 12px;
     padding: 2rem;
     text-align: center;
@@ -51,12 +53,12 @@ Dashboard{% endblock %} {% block extra_css %}
     max-width: 300px;
     transition: all 0.3s ease;
     cursor: pointer;
-    box-shadow: 0 4px 20px rgba(0, 100, 0, 0.15);
+    box-shadow: 0 4px 20px rgba(74, 222, 128, 0.1);
   }
 
   .dashboard-card:hover {
-    border-color: #004d00;
-    box-shadow: 0 8px 30px rgba(0, 100, 0, 0.25);
+    border-color: #22c55e;
+    box-shadow: 0 0 25px rgba(74, 222, 128, 0.3);
     transform: translateY(-4px);
   }
 
@@ -64,13 +66,13 @@ Dashboard{% endblock %} {% block extra_css %}
     opacity: 0.5;
     cursor: not-allowed;
     pointer-events: none;
-    border-color: #ccc;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border-color: #3a3a3a;
+    box-shadow: none;
   }
 
   .dashboard-card.disabled:hover {
-    border-color: #ccc;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border-color: #3a3a3a;
+    box-shadow: none;
     transform: none;
   }
 
@@ -89,19 +91,19 @@ Dashboard{% endblock %} {% block extra_css %}
   }
 
   .card-icon.clock svg {
-    stroke: #006400;
+    stroke: #4ade80;
     fill: none;
     stroke-width: 4;
   }
 
   .card-icon.admin svg {
-    stroke: #ccc;
+    stroke: #5f6368;
     fill: none;
     stroke-width: 3;
   }
 
   .dashboard-card:not(.disabled) .card-icon.admin svg {
-    stroke: #006400;
+    stroke: #4ade80;
   }
 
   .card-button {
@@ -114,28 +116,28 @@ Dashboard{% endblock %} {% block extra_css %}
   }
 
   .card-button.primary {
-    background: linear-gradient(135deg, #8bc34a 0%, #689f38 100%);
-    color: white;
+    background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+    color: #121212;
   }
 
   .card-button.primary:hover {
-    background: linear-gradient(135deg, #9ccc65 0%, #7cb342 100%);
-    box-shadow: 0 4px 15px rgba(139, 195, 74, 0.4);
+    background: linear-gradient(135deg, #86efac 0%, #4ade80 100%);
+    box-shadow: 0 4px 15px rgba(74, 222, 128, 0.4);
   }
 
   .card-button.secondary {
-    background: #e0e0e0;
-    color: #888;
+    background: #2a2a2a;
+    color: #6e6e6e;
   }
 
   .dashboard-card:not(.disabled) .card-button.secondary {
-    background: linear-gradient(135deg, #8bc34a 0%, #689f38 100%);
-    color: white;
+    background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+    color: #121212;
   }
 
   .dashboard-card:not(.disabled) .card-button.secondary:hover {
-    background: linear-gradient(135deg, #9ccc65 0%, #7cb342 100%);
-    box-shadow: 0 4px 15px rgba(139, 195, 74, 0.4);
+    background: linear-gradient(135deg, #86efac 0%, #4ade80 100%);
+    box-shadow: 0 4px 15px rgba(74, 222, 128, 0.4);
   }
 
   @media (max-width: 600px) {

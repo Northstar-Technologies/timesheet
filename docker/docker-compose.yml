@@ -1,3 +1,5 @@
+name: timesheet
+
 services:
   # Nginx reverse proxy
   nginx:
