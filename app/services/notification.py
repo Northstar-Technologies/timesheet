@@ -203,3 +203,69 @@ class NotificationService:
 
         db.session.commit()
         return notification
+
+    @staticmethod
+    def notify_unsubmitted(user, week_start):
+        """
+        Send a reminder for an unsubmitted timesheet from the previous week.
+
+        This is sent starting Monday and every day after until the timesheet
+        is submitted or approved. Includes a link to open the app directly.
+
+        Args:
+            user: The User object to remind
+            week_start: The date of the unsubmitted week (previous week's Sunday)
+
+        Returns:
+            Notification: The created notification record, or None if not sent
+        """
+        # Check if user has opted in and has a phone number
+        if not user.sms_opt_in:
+            current_app.logger.info(
+                f"SMS skipped for {user.email}: user has not opted in"
+            )
+            return None
+
+        phone = format_phone_number(user.phone)
+        if not phone:
+            current_app.logger.info(
+                f"SMS skipped for {user.email}: no valid phone number"
+            )
+            return None
+
+        # Get the app URL from config
+        app_url = current_app.config.get("APP_URL", "http://localhost/app")
+
+        # Format the message - similar to the Timesheets Bot format
+        message = (
+            f"⏰ You have not submitted last week's timesheet.\n\n"
+            f"Open in Timesheets App: {app_url}"
+        )
+
+        # Create notification record
+        notification = Notification(
+            user_id=user.id,
+            timesheet_id=None,
+            type=NotificationType.UNSUBMITTED,
+            message=message,
+        )
+        db.session.add(notification)
+
+        # Send SMS
+        result = send_sms(phone, message)
+
+        if result.get("success"):
+            notification.sent = True
+            notification.sent_at = datetime.utcnow()
+            current_app.logger.info(
+                f"Unsubmitted reminder sent to {user.email} ({phone})"
+            )
+        else:
+            notification.sent = False
+            notification.error = result.get("error", "Unknown error")
+            current_app.logger.error(
+                f"Failed to send unsubmitted reminder to {user.email}: {notification.error}"
+            )
+
+        db.session.commit()
+        return notification

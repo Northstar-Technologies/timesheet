@@ -15,8 +15,9 @@ class NotificationType:
     NEEDS_ATTACHMENT = "NEEDS_ATTACHMENT"
     APPROVED = "APPROVED"
     REMINDER = "REMINDER"
+    UNSUBMITTED = "UNSUBMITTED"  # Daily reminder for unsubmitted timesheets
 
-    ALL = [NEEDS_ATTACHMENT, APPROVED, REMINDER]
+    ALL = [NEEDS_ATTACHMENT, APPROVED, REMINDER, UNSUBMITTED]
 
 
 class Notification(db.Model):

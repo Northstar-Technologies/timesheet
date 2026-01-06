@@ -42,6 +42,9 @@ class Config:
     # Redis
     REDIS_URL = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
 
+    # Application URL (for SMS notification links)
+    APP_URL = os.environ.get("APP_URL", "http://localhost/app")
+
     # File uploads
     UPLOAD_FOLDER = os.environ.get("UPLOAD_FOLDER", "uploads")
     MAX_CONTENT_LENGTH = int(

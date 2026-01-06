@@ -214,6 +214,7 @@ All detailed documentation is in the [`docs/`](docs/) folder:
 | [WALKTHROUGH.md](docs/WALKTHROUGH.md)       | Step-by-step user guide                                |
 | [AZURE.md](docs/AZURE.md)                   | Azure AD / Microsoft 365 authentication setup          |
 | [TWILIO.md](docs/TWILIO.md)                 | Twilio SMS notification configuration                  |
+| [DARKMODE.md](docs/DARKMODE.md)             | Dark mode implementation plan and color system         |
 | [POWERAPPS.md](docs/POWERAPPS.md)           | Legacy PowerApps feature reference                     |
 | [roadmap.md](docs/roadmap.md)               | Production deployment recommendations                  |
 
