@@ -38,6 +38,13 @@ function showTimesheetsView() {
 function showNewTimesheetView() {
     document.getElementById('editor-title').textContent = 'New Timesheet';
     TimesheetModule.clearForm();
+    
+    // Show auto-populate checkbox for new timesheets
+    const autoPopulateGroup = document.getElementById('auto-populate-group');
+    if (autoPopulateGroup) {
+        autoPopulateGroup.classList.remove('hidden');
+    }
+    
     showView('editor');
 }
 
@@ -45,6 +52,13 @@ function showEditTimesheetView(timesheet) {
     document.getElementById('editor-title').textContent = 
         timesheet.status === 'NEW' ? 'Edit Timesheet' : 'View Timesheet';
     TimesheetModule.populateForm(timesheet);
+    
+    // Hide auto-populate checkbox when editing (already has entries)
+    const autoPopulateGroup = document.getElementById('auto-populate-group');
+    if (autoPopulateGroup) {
+        autoPopulateGroup.classList.add('hidden');
+    }
+    
     showView('editor');
 }
 
@@ -127,21 +141,37 @@ async function saveDraft() {
         } else {
             // Create new
             const weekStart = document.getElementById('week-start').value;
-            timesheet = await API.createTimesheet({ week_start: weekStart });
+            const autoPopulate = document.getElementById('auto-populate')?.checked || false;
+            
+            timesheet = await API.createTimesheet({ 
+                week_start: weekStart,
+                auto_populate: autoPopulate 
+            });
             
             // Update with form data
             const formData = TimesheetModule.collectFormData();
             timesheet = await API.updateTimesheet(timesheet.id, formData);
             
-            // Update entries
-            const entries = TimesheetModule.collectEntries();
-            timesheet = await API.updateEntries(timesheet.id, entries);
+            // Only update entries if not auto-populated (auto-populate creates them on server)
+            if (!autoPopulate) {
+                const entries = TimesheetModule.collectEntries();
+                timesheet = await API.updateEntries(timesheet.id, entries);
+            }
+            
+            // Reload the timesheet to get the server-created entries
+            timesheet = await API.getTimesheet(timesheet.id);
         }
         
         showToast('Draft saved successfully', 'success');
         
-        // Update form with saved data
+        // Update form with saved data (including any auto-populated entries)
         TimesheetModule.populateForm(timesheet);
+        
+        // Hide auto-populate checkbox after timesheet is created
+        const autoPopulateGroup = document.getElementById('auto-populate-group');
+        if (autoPopulateGroup) {
+            autoPopulateGroup.classList.add('hidden');
+        }
         
     } catch (error) {
         showToast(error.message, 'error');

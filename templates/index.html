@@ -88,6 +88,12 @@
             <label for="week-start">Week Starting (Sunday)</label>
             <input type="date" id="week-start" name="week_start" class="form-input" required />
           </div>
+          <div class="checkbox-group" id="auto-populate-group">
+            <div class="checkbox-item">
+              <input type="checkbox" id="auto-populate" name="auto_populate" />
+              <label for="auto-populate">Auto-fill 40h Field Hours (8h Mon-Fri)</label>
+            </div>
+          </div>
         </div>
 
         <!-- Time Entries -->
@@ -307,5 +313,5 @@
 <script src="{{ url_for('static', filename='js/timesheet.js') }}?v=3"></script>
 <script src="{{ url_for('static', filename='js/admin.js') }}?v=3"></script>
 <script src="{{ url_for('static', filename='js/sse.js') }}?v=3"></script>
-<script src="{{ url_for('static', filename='js/app.js') }}?v=3"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}?v=4"></script>
 {% endblock %}

@@ -612,7 +612,7 @@ def create_auto_populated_draft(user, week_start):
 - [x] Twilio SMS integration → See [TWILIO.md](TWILIO.md)
 - [x] SSE real-time updates
 - [x] Weekly reminder job → See [TWILIO.md](TWILIO.md) (Unsubmitted Timesheet Reminder)
-- [ ] Auto-populate feature
+- [x] Auto-populate feature
 - [x] Tooltips and UX refinements
 
 ### Phase 5: UI Refactor (Current - `UI` Branch) 🚧 In Progress
