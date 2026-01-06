@@ -31,8 +31,8 @@ class Config:
         "AZURE_REDIRECT_URI", "http://localhost:5000/auth/callback"
     )
     AZURE_AUTHORITY = f"https://login.microsoftonline.com/{AZURE_TENANT_ID}"
-    # OpenID Connect scopes for proper authentication
-    AZURE_SCOPES = ["openid", "profile", "email", "User.Read"]
+    # MSAL automatically adds openid, profile, offline_access - only specify additional scopes
+    AZURE_SCOPES = ["User.Read"]
 
     # Twilio
     TWILIO_ACCOUNT_SID = os.environ.get("TWILIO_ACCOUNT_SID")
