@@ -7,23 +7,32 @@
 
 ---
 
-Missing Features from PowerApps
-🔴 P0 - Critical (Core Functionality)
-Feature Status Notes
-Field Hours Red Warning ⚠️ Partial We have a confirmation dialog, but PowerApps shows a persistent RED text warning above attachments
-User Notes Field ❌ Missing 255 char multi-line text area for user comments
-Admin Notes Field ❌ Missing Read-only for users, editable by admins for feedback
-🟡 P1 - Important (UX Polish)
-Feature Status Notes
-Time Code Help Popup ❌ Missing (?) icon that explains each hour type
-Row Totals ❌ Missing Per-row sum column in the time entry table
-Status Definitions Popup ❌ Missing Help icon explaining what each status means
-Empty Attachments Text ❌ Missing "There is nothing attached." placeholder
-🟢 P2 - Nice to Have
-Feature Status Notes
-Welcome Screen ❌ Missing Personalized greeting with nav cards
-Unsaved Changes Warning ❌ Missing Blue text when there are unsaved changes
-Refresh Button ❌ Missing Manual refresh icon
+## Missing Features from PowerApps
+
+### 🔴 P0 - Critical (Core Functionality)
+
+| Feature                 | Status      | Notes                                                        |
+| ----------------------- | ----------- | ------------------------------------------------------------ |
+| Field Hours Red Warning | ✅ Complete | Red warning appears above attachments when Field Hours added |
+| User Notes Field        | ✅ Complete | 255 char multi-line text area with live character counter    |
+| Admin Notes Field       | ✅ Complete | Read-only for users, editable by admins for feedback         |
+
+### 🟡 P1 - Important (UX Polish)
+
+| Feature                  | Status     | Notes                                       |
+| ------------------------ | ---------- | ------------------------------------------- |
+| Time Code Help Popup     | ❌ Missing | (?) icon that explains each hour type       |
+| Row Totals               | ❌ Missing | Per-row sum column in the time entry table  |
+| Status Definitions Popup | ❌ Missing | Help icon explaining what each status means |
+| Empty Attachments Text   | ❌ Missing | "There is nothing attached." placeholder    |
+
+### 🟢 P2 - Nice to Have
+
+| Feature                 | Status     | Notes                                    |
+| ----------------------- | ---------- | ---------------------------------------- |
+| Welcome Screen          | ❌ Missing | Personalized greeting with nav cards     |
+| Unsaved Changes Warning | ❌ Missing | Blue text when there are unsaved changes |
+| Refresh Button          | ❌ Missing | Manual refresh icon                      |
 
 ## 🎨 Visual Identity & Color Palette
 
@@ -342,7 +351,7 @@ ELSE:
 | Traveled Checkbox        | ✅              | ✅              | Implemented                   |
 | Expenses Checkbox        | ✅              | ✅              | Implemented                   |
 | Need Reimbursement       | ✅              | ✅              | Implemented                   |
-| Field Warning Message    | ✅ **RED TEXT** | ⚠️ Confirmation | Different implementation      |
+| Field Warning Message    | ✅ **RED TEXT** | ✅ **RED TEXT** | ✅ Implemented (Jan 6, 2026)  |
 | Time Code Dropdown       | ✅              | ✅              | Implemented                   |
 | Time Code Help (?)       | ✅ Popup        | ❌              | Missing                       |
 | Daily Hour Inputs        | ✅              | ✅              | Implemented                   |
@@ -351,8 +360,8 @@ ELSE:
 | Attachments Section      | ✅              | ✅              | Implemented                   |
 | "Nothing attached" Text  | ✅              | ❌              | Missing                       |
 | Attachment Info Icon     | ✅              | ❌              | Missing                       |
-| **User Notes**           | ✅ 255 chars    | ❌              | **MISSING**                   |
-| **Admin Notes**          | ✅ Read-only    | ❌              | **MISSING**                   |
+| **User Notes**           | ✅ 255 chars    | ✅ 255 chars    | ✅ Implemented (Jan 6, 2026)  |
+| **Admin Notes**          | ✅ Read-only    | ✅ Read-only    | ✅ Implemented (Jan 6, 2026)  |
 | Unsaved Changes Warning  | ✅ Blue text    | ❌              | Missing                       |
 | Northstar Logo           | ✅ Lower-right  | ✅              | Implemented                   |
 | Refresh Button           | ✅              | ❌              | Missing                       |
@@ -362,27 +371,27 @@ ELSE:
 
 ## 🚨 Priority Items to Implement
 
-### P0 - Critical Missing Features
+### P0 - Critical Missing Features ✅ COMPLETE
 
-1. **Field Hours Red Warning**
+1. ✅ **Field Hours Red Warning** - _Implemented January 6, 2026_
 
    - Text: "Field engineers must submit at least one image."
-   - Color: Red
-   - Position: Above attachments
-   - Trigger: When ANY row has "Field" time code selected
+   - Color: Red/orange with warning icon
+   - Position: Above attachments in the Attachments section
+   - Trigger: When ANY row has "Field" time code selected AND no attachments uploaded
 
-2. **User Notes Field**
+2. ✅ **User Notes Field** - _Implemented January 6, 2026_
 
-   - Label: "Notes"
-   - 255 character limit
+   - Label: "Your Notes" with live character counter
+   - 255 character limit enforced
    - Multi-line text area
-   - Placeholder showing character limit
+   - Counter shows "X/255" and updates in real-time
 
-3. **Admin Notes Field**
-   - Label: "Admin Note"
-   - Read-only for regular users
-   - Editable for admins
-   - Used for approval feedback
+3. ✅ **Admin Notes Field** - _Implemented January 6, 2026_
+   - Label: "Admin Notes"
+   - Read-only display for regular users
+   - Hidden when empty (shown only when admin adds feedback)
+   - Editable via admin API endpoint
 
 ### P1 - Important Missing Features
 
