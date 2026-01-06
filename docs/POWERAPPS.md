@@ -23,7 +23,7 @@
 | ------------------------ | ----------- | -------------------------------------------------------- |
 | Time Code Help Popup     | ✅ Complete | (?) icon with popup explaining each hour type            |
 | Row Totals               | ✅ Complete | Per-row sum column in the time entry table               |
-| Status Definitions Popup | ❌ Missing  | Help icon explaining what each status means              |
+| Status Definitions Popup | ✅ Complete | (?) icon explaining what each status means               |
 | Empty Attachments Text   | ✅ Complete | "There is nothing attached." placeholder when no uploads |
 
 ### 🟢 P2 - Nice to Have

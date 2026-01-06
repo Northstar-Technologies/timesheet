@@ -3,7 +3,7 @@
 {% block title %}Northstar Time Timesheet - Dashboard{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}?v=20260106p3" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}?v=20260106p4" />
 {% endblock %}
 
 {% block content %}
@@ -58,6 +58,29 @@
             <option value="NEEDS_APPROVAL">Needs Approval</option>
             <option value="APPROVED">Approved</option>
           </select>
+          <button type="button" class="help-icon" id="status-help-btn" title="Status Definitions">
+            ?
+          </button>
+          <!-- Status Definitions Help Popup -->
+          <div id="status-help-popup" class="help-popup hidden">
+            <div class="help-popup-header">
+              <h4>Status Definitions</h4>
+              <button type="button" class="help-popup-close" id="status-help-close">&times;</button>
+            </div>
+            <div class="help-popup-content">
+              <dl class="help-definitions">
+                <dt>Draft</dt>
+                <dd>Timesheet is being worked on but not yet submitted for approval.</dd>
+                <dt>Submitted</dt>
+                <dd>Timesheet has been sent to admin for review and approval.</dd>
+                <dt>Needs Approval</dt>
+                <dd>Timesheet requires additional action (e.g., missing attachments for field hours).</dd>
+                <dt>Approved</dt>
+                <dd>Timesheet has been reviewed and approved by an administrator.</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
         </div>
       </div>
       
@@ -354,7 +377,7 @@
   window.currentUser = {{ user|tojson }};
 </script>
 <script src="{{ url_for('static', filename='js/api.js') }}?v=20260106p1"></script>
-<script src="{{ url_for('static', filename='js/timesheet.js') }}?v=20260106p3"></script>
+<script src="{{ url_for('static', filename='js/timesheet.js') }}?v=20260106p4"></script>
 <script src="{{ url_for('static', filename='js/admin.js') }}?v=20260106p1"></script>
 <script src="{{ url_for('static', filename='js/sse.js') }}?v=20260106p1"></script>
 <script src="{{ url_for('static', filename='js/app.js') }}?v=20260106p1"></script>

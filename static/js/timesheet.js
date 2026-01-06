@@ -703,13 +703,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    // Help popup toggle handlers
+    // Help popup toggle handlers - Time Code
     const timeCodeHelpBtn = document.getElementById('time-code-help-btn');
     const timeCodeHelpClose = document.getElementById('time-code-help-close');
     const timeCodeHelpPopup = document.getElementById('time-code-help-popup');
     
     if (timeCodeHelpBtn) {
-        timeCodeHelpBtn.addEventListener('click', () => {
+        timeCodeHelpBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
             TimesheetModule.toggleHelpPopup('time-code-help-popup');
         });
     }
@@ -720,11 +721,36 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // Close popup when clicking outside
+    // Help popup toggle handlers - Status Definitions
+    const statusHelpBtn = document.getElementById('status-help-btn');
+    const statusHelpClose = document.getElementById('status-help-close');
+    const statusHelpPopup = document.getElementById('status-help-popup');
+    
+    if (statusHelpBtn) {
+        statusHelpBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            TimesheetModule.toggleHelpPopup('status-help-popup');
+        });
+    }
+    
+    if (statusHelpClose) {
+        statusHelpClose.addEventListener('click', () => {
+            TimesheetModule.toggleHelpPopup('status-help-popup');
+        });
+    }
+    
+    // Close popups when clicking outside
     document.addEventListener('click', (e) => {
+        // Time Code popup
         if (timeCodeHelpPopup && !timeCodeHelpPopup.classList.contains('hidden')) {
             if (!timeCodeHelpPopup.contains(e.target) && e.target !== timeCodeHelpBtn) {
                 timeCodeHelpPopup.classList.add('hidden');
+            }
+        }
+        // Status popup
+        if (statusHelpPopup && !statusHelpPopup.classList.contains('hidden')) {
+            if (!statusHelpPopup.contains(e.target) && e.target !== statusHelpBtn) {
+                statusHelpPopup.classList.add('hidden');
             }
         }
     });

@@ -99,6 +99,19 @@
     flex-wrap: wrap;
 }
 
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    position: relative;
+}
+
+.filter-label {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    font-weight: 500;
+}
+
 .filters .form-select {
     width: auto;
     min-width: 180px;
