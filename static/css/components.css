@@ -235,39 +235,104 @@
 }
 
 /* ============================================
-   Entries Grid (Time Entry Table)
+   Add Hour Type Row (Dropdown + Button)
    ============================================ */
-.entries-grid {
-    display: grid;
-    grid-template-columns: 120px repeat(7, 1fr);
-    gap: 1px;
-    background: var(--color-gray-200);
-    border-radius: var(--radius-md);
-    overflow: hidden;
+.add-hour-type-row {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-lg);
+    align-items: center;
 }
 
-.entries-grid .header-cell,
-.entries-grid .entry-cell {
-    padding: var(--spacing-sm);
+.add-hour-type-row .form-select {
+    flex: 1;
+    max-width: 300px;
+}
+
+.btn-icon {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    border-radius: var(--radius-md);
+    background: var(--color-primary);
+    color: var(--color-white);
+    border: none;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.btn-icon:hover {
+    background: var(--color-primary-dark);
+    transform: scale(1.05);
+}
+
+/* ============================================
+   Hour Type Table (Horizontal Layout)
+   ============================================ */
+.hour-type-table {
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--radius-md);
+    overflow: hidden;
     background: var(--color-white);
 }
 
-.entries-grid .header-cell {
+.hour-type-header,
+.hour-type-row {
+    display: grid;
+    grid-template-columns: 140px repeat(7, 1fr) 100px;
+    gap: 1px;
+    background: var(--color-gray-200);
+}
+
+.hour-type-header {
+    background: var(--color-gray-100);
+}
+
+.hour-type-header > div {
     background: var(--color-gray-50);
+    padding: var(--spacing-sm) var(--spacing-xs);
     font-weight: 600;
     font-size: var(--font-size-sm);
     text-align: center;
+    color: var(--color-gray-700);
 }
 
-.entries-grid .row-label {
+.hour-type-label-cell {
+    text-align: left !important;
+    padding-left: var(--spacing-md) !important;
+}
+
+.hour-type-row {
+    background: var(--color-gray-200);
+}
+
+.hour-type-row > div {
+    background: var(--color-white);
+    padding: var(--spacing-sm) var(--spacing-xs);
+}
+
+.hour-type-row .hour-type-label-cell {
     display: flex;
     align-items: center;
     font-weight: 500;
     font-size: var(--font-size-sm);
+    padding-left: var(--spacing-md);
 }
 
-.entries-grid .entry-input {
+.hour-type-row .hour-type-day-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hour-type-row .hour-type-day-cell input {
     width: 100%;
+    max-width: 60px;
     padding: var(--spacing-xs);
     border: 1px solid var(--color-gray-300);
     border-radius: var(--radius-sm);
@@ -275,9 +340,81 @@
     font-size: var(--font-size-sm);
 }
 
-.entries-grid .entry-input:focus {
+.hour-type-row .hour-type-day-cell input:focus {
     outline: none;
     border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+}
+
+.hour-type-row .hour-type-day-cell input:disabled {
+    background: var(--color-gray-50);
+    color: var(--color-gray-600);
+    cursor: not-allowed;
+}
+
+.hour-type-row .hour-type-actions-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+}
+
+.hour-type-row .btn-action {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: var(--font-size-xs);
+    border-radius: var(--radius-sm);
+    border: none;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.hour-type-row .btn-done {
+    background: var(--color-success);
+    color: var(--color-white);
+}
+
+.hour-type-row .btn-done:hover {
+    background: #059669;
+}
+
+.hour-type-row .btn-edit {
+    background: var(--color-primary);
+    color: var(--color-white);
+}
+
+.hour-type-row .btn-edit:hover {
+    background: var(--color-primary-dark);
+}
+
+.hour-type-row .btn-remove {
+    background: transparent;
+    color: var(--color-gray-500);
+    font-size: var(--font-size-lg);
+    padding: 0 var(--spacing-xs);
+}
+
+.hour-type-row .btn-remove:hover {
+    color: var(--color-danger);
+}
+
+.hour-type-row.editing {
+    background: rgba(37, 99, 235, 0.05);
+}
+
+.hour-type-row.locked .hour-type-day-cell {
+    background: var(--color-gray-50);
+}
+
+/* Empty state for no rows */
+#hour-type-rows:empty::after {
+    content: "No hour types added yet. Select a type above and click + to add.";
+    display: block;
+    padding: var(--spacing-lg);
+    text-align: center;
+    color: var(--color-gray-500);
+    font-size: var(--font-size-sm);
+    font-style: italic;
+    background: var(--color-white);
 }
 
 /* ============================================
@@ -354,6 +491,22 @@
 
 .upload-zone small {
     font-size: var(--font-size-xs);
+}
+
+/* Warning highlight animation */
+.upload-zone.highlight-warning {
+    animation: pulse-warning 0.5s ease-in-out 3;
+    border-color: var(--color-warning);
+    background: rgba(245, 158, 11, 0.1);
+}
+
+@keyframes pulse-warning {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 0 10px rgba(245, 158, 11, 0);
+    }
 }
 
 /* ============================================

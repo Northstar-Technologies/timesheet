@@ -3,7 +3,7 @@
 {% block title %}Northstar Time Timesheet - Dashboard{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}?v=3" />
 {% endblock %}
 
 {% block content %}
@@ -96,8 +96,39 @@
             <div class="form-section-icon">⏱️</div>
             <h3>Time Entries</h3>
           </div>
-          <div id="entries-grid" class="entries-grid">
-            <!-- Dynamically populated by JavaScript -->
+          
+          <!-- Add Hour Type Row -->
+          <div class="add-hour-type-row">
+            <select id="hour-type-selector" class="form-select">
+              <option value="">Select hour type to add...</option>
+              <option value="Field">Field Hours</option>
+              <option value="Internal">Internal Hours</option>
+              <option value="Training">Training</option>
+              <option value="PTO">PTO</option>
+              <option value="Unpaid">Unpaid Leave</option>
+              <option value="Holiday">Holiday</option>
+            </select>
+            <button type="button" id="add-hour-type-btn" class="btn btn-icon" title="Add hour type">
+              +
+            </button>
+          </div>
+
+          <!-- Hour Type Rows Table -->
+          <div id="hour-type-table" class="hour-type-table">
+            <!-- Table Header -->
+            <div class="hour-type-header">
+              <div class="hour-type-label-cell">Hour Type</div>
+              <div class="hour-type-day-cell">Sun</div>
+              <div class="hour-type-day-cell">Mon</div>
+              <div class="hour-type-day-cell">Tue</div>
+              <div class="hour-type-day-cell">Wed</div>
+              <div class="hour-type-day-cell">Thu</div>
+              <div class="hour-type-day-cell">Fri</div>
+              <div class="hour-type-day-cell">Sat</div>
+              <div class="hour-type-actions-cell">Actions</div>
+            </div>
+            <!-- Dynamic rows will be inserted here by JavaScript -->
+            <div id="hour-type-rows"></div>
           </div>
         </div>
 
@@ -272,9 +303,9 @@
 <script>
   window.currentUser = {{ user|tojson }};
 </script>
-<script src="{{ url_for('static', filename='js/api.js') }}"></script>
-<script src="{{ url_for('static', filename='js/timesheet.js') }}"></script>
-<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
-<script src="{{ url_for('static', filename='js/sse.js') }}"></script>
-<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+<script src="{{ url_for('static', filename='js/api.js') }}?v=3"></script>
+<script src="{{ url_for('static', filename='js/timesheet.js') }}?v=3"></script>
+<script src="{{ url_for('static', filename='js/admin.js') }}?v=3"></script>
+<script src="{{ url_for('static', filename='js/sse.js') }}?v=3"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}?v=3"></script>
 {% endblock %}

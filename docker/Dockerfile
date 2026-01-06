@@ -8,18 +8,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
+# Create non-root user early for security (before COPY)
+RUN useradd --create-home appuser
+
 # Install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
-COPY . .
+# Copy application code with correct ownership (faster than chown -R)
+COPY --chown=appuser:appuser . .
 
-# Create uploads directory
-RUN mkdir -p /app/uploads
+# Create uploads directory with correct ownership
+RUN mkdir -p /app/uploads && chown appuser:appuser /app/uploads
 
-# Create non-root user for security
-RUN useradd --create-home appuser && chown -R appuser:appuser /app
 USER appuser
 
 # Expose port
