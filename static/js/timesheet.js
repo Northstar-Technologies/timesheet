@@ -41,6 +41,19 @@ const TimesheetModule = {
         
         // Setup add button handler
         this.setupAddButton();
+        
+        // Show/hide add row controls based on whether week is selected
+        this.toggleAddRowControls(!!weekStart);
+    },
+    
+    /**
+     * Show/hide the add row controls (selector and button)
+     */
+    toggleAddRowControls(show) {
+        const addRow = document.querySelector('.add-hour-type-row');
+        if (addRow) {
+            addRow.style.display = show ? 'flex' : 'none';
+        }
     },
     
     /**
@@ -50,8 +63,25 @@ const TimesheetModule = {
         const header = document.querySelector('.hour-type-header');
         if (!header) return;
         
-        const startDate = new Date(weekStart + 'T00:00:00');
         const dayCells = header.querySelectorAll('.hour-type-day-cell');
+        
+        // If no weekStart or invalid, show day names only (no date)
+        if (!weekStart) {
+            dayCells.forEach((cell, i) => {
+                cell.innerHTML = this.DAYS[i];
+            });
+            return;
+        }
+        
+        const startDate = new Date(weekStart + 'T00:00:00');
+        
+        // Check if date is valid
+        if (isNaN(startDate.getTime())) {
+            dayCells.forEach((cell, i) => {
+                cell.innerHTML = this.DAYS[i];
+            });
+            return;
+        }
         
         dayCells.forEach((cell, i) => {
             const date = new Date(startDate);
@@ -538,8 +568,8 @@ const TimesheetModule = {
         
         if (timesheetId) timesheetId.value = '';
         
-        const currentWeek = this.getCurrentWeekStart();
-        if (weekStart) weekStart.value = currentWeek;
+        // Clear week start - user must select a week first
+        if (weekStart) weekStart.value = '';
         if (traveled) traveled.checked = false;
         if (hasExpenses) hasExpenses.checked = false;
         if (reimbursementNeeded) reimbursementNeeded.checked = false;
@@ -559,8 +589,8 @@ const TimesheetModule = {
         // Hide field hours warning
         this.updateFieldHoursWarning();
         
-        // Initialize grid for current week
-        this.initForWeek(currentWeek);
+        // Initialize with no week selected - hides add controls
+        this.initForWeek(null);
         
         // Ensure form is editable
         this.setFormReadOnly(false);
