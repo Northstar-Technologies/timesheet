@@ -677,10 +677,9 @@ All feature documentation, planning guides, and reference materials are stored i
 
 ### Planning & Status
 
-| File                       | Purpose                                                                                                                                                                                                                                                         | When to Use              |
-| -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
-| [roadmap.md](roadmap.md)   | **Production hardening recommendations.** Security, scalability, deployment patterns, and architectural decisions for going to production. Forward-looking technical debt and best practices.                                                                   | Before production deploy |
-| [PROGRESS.md](PROGRESS.md) | **Legacy: Development changelog.** ⚠️ _Partially redundant with IMPLEMENTATION.md's Development Phases section._ Contains historical commit logs and quick command reference. Consider this file deprecated in favor of tracking progress in IMPLEMENTATION.md. | Historical reference     |
+| File                     | Purpose                                                                                                                                                                                       | When to Use              |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
+| [roadmap.md](roadmap.md) | **Production hardening recommendations.** Security, scalability, deployment patterns, and architectural decisions for going to production. Forward-looking technical debt and best practices. | Before production deploy |
 
 ### File Purpose Comparison
 
@@ -722,9 +721,36 @@ timesheet/
     │── TWILIO.md            # 📱 Twilio SMS setup guide
     │
     │── roadmap.md           # 🚀 Production hardening recommendations
-    │── PROGRESS.md          # 📜 Legacy: development changelog
     │
-    └── images/              # 📸 Screenshots and diagrams
+    └── images/              # � Screenshots and diagrams
+```
+
+---
+
+## Quick Commands
+
+```bash
+# Start development server
+cd docker && docker compose up -d
+
+# View logs
+docker compose logs -f web
+
+# Rebuild after code changes
+docker compose up --build -d web
+
+# Run tests
+pytest tests/ -v
+
+# Run tests with coverage
+pytest tests/ --cov=app --cov-report=html
+
+# Hard refresh browser (bypass cache)
+# Mac: Cmd+Shift+R | Windows: Ctrl+Shift+R
+
+# Flask database migrations
+docker exec timesheet-web-1 flask db migrate -m "Description"
+docker exec timesheet-web-1 flask db upgrade
 ```
 
 ---
