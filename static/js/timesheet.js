@@ -702,7 +702,11 @@ const TimesheetModule = {
      * Mark form as having unsaved changes
      */
     markAsChanged() {
-        if (!this.hasUnsavedChanges) {
+        // Only track unsaved changes for new/draft timesheets (editable)
+        // Don't show warning for approved, submitted, or other non-editable states
+        const isEditable = !this.currentTimesheet || this.currentTimesheet.status === 'NEW';
+        
+        if (!this.hasUnsavedChanges && isEditable) {
             this.hasUnsavedChanges = true;
             const warning = document.getElementById('unsaved-changes-warning');
             if (warning) {
