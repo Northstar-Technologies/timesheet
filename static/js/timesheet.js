@@ -717,6 +717,28 @@ document.addEventListener('DOMContentLoaded', () => {
             TimesheetModule.initForWeek(weekStart);
             TimesheetModule.markAsChanged();
         });
+        
+        // Click handler - default to current week's Sunday if empty
+        weekStartInput.addEventListener('click', (e) => {
+            if (!e.target.value) {
+                // Get current week's Sunday
+                const today = new Date();
+                const day = today.getDay(); // 0 = Sunday
+                const sunday = new Date(today);
+                sunday.setDate(today.getDate() - day);
+                
+                // Format as YYYY-MM-DD
+                const year = sunday.getFullYear();
+                const month = String(sunday.getMonth() + 1).padStart(2, '0');
+                const dayOfMonth = String(sunday.getDate()).padStart(2, '0');
+                const defaultDate = `${year}-${month}-${dayOfMonth}`;
+                
+                e.target.value = defaultDate;
+                TimesheetModule.initForWeek(defaultDate);
+                TimesheetModule.markAsChanged();
+            }
+            // The native calendar picker will open automatically on click
+        });
     }
     
     // User notes character counter + track changes
