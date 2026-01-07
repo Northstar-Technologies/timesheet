@@ -809,15 +809,30 @@
     border-radius: var(--radius-lg);
     padding: var(--spacing-xl);
     border: 1px solid var(--color-border-subtle);
-    max-width: 500px;
-    width: 100%;
     margin: 0 auto;
+    grid-column: 1 / -1;
+    
+    /* STATE 1: Mobile (Window < 768px, no sidebar) */
+    /* Snaps to a fixed narrow detail box */
+    width: 450px;
+    max-width: 92%; 
 }
 
-@media (min-width: 1100px) {
+/* STATE 2: Medium (Sidebar present, Window 768px - 1300px) */
+/* Snaps to a wider box that fits comfortably next to sidebar */
+@media (min-width: 769px) {
     .timesheet-detail {
-        grid-column: 1 / -1;
-        max-width: 1000px;
+        width: 680px;
+        max-width: none;
+    }
+}
+
+/* STATE 3: Large (Window >= 1300px) */
+/* Snaps to a full-width box for the best grid visibility */
+@media (min-width: 1300px) {
+    .timesheet-detail {
+        width: 1100px;
+        max-width: none;
     }
 }
 
