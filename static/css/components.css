@@ -89,6 +89,25 @@
     flex: 1;
 }
 
+.view-header-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    align-items: center;
+}
+
+/* Unsaved Changes Warning (P2 Feature) */
+.unsaved-changes-warning {
+    color: #3b82f6;
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    animation: pulse-blue 2s infinite;
+}
+
+@keyframes pulse-blue {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
 /* ============================================
    Filters
    ============================================ */

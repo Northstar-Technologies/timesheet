@@ -3,7 +3,7 @@
 {% block title %}Northstar Time Timesheet - Dashboard{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}?v=20260106p5" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}?v=20260106p6" />
 {% endblock %}
 
 {% block content %}
@@ -41,6 +41,10 @@
       <div class="view-header">
         <h2>My Timesheets</h2>
         <div class="view-header-actions">
+          <button class="btn btn-ghost" id="refresh-timesheets-btn" title="Refresh timesheets">
+            <span>🔄</span>
+            Refresh
+          </button>
           <button class="btn btn-primary" id="create-timesheet-btn">
             <span>✨</span>
             New Timesheet
@@ -92,6 +96,9 @@
     <section id="view-editor" class="view">
       <div class="view-header">
         <h2 id="editor-title">New Timesheet</h2>
+        <span id="unsaved-changes-warning" class="unsaved-changes-warning hidden">
+          ● Unsaved changes
+        </span>
         <button class="btn btn-ghost" id="back-to-list-btn">
           ← Back to List
         </button>
@@ -375,7 +382,7 @@
   window.currentUser = {{ user|tojson }};
 </script>
 <script src="{{ url_for('static', filename='js/api.js') }}?v=20260106p1"></script>
-<script src="{{ url_for('static', filename='js/timesheet.js') }}?v=20260106p4"></script>
+<script src="{{ url_for('static', filename='js/timesheet.js') }}?v=20260106p6"></script>
 <script src="{{ url_for('static', filename='js/admin.js') }}?v=20260106p1"></script>
 <script src="{{ url_for('static', filename='js/sse.js') }}?v=20260106p1"></script>
 <script src="{{ url_for('static', filename='js/app.js') }}?v=20260106p1"></script>

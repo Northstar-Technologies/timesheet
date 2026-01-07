@@ -28,11 +28,11 @@
 
 ### 🟢 P2 - Nice to Have
 
-| Feature                 | Status     | Notes                                    |
-| ----------------------- | ---------- | ---------------------------------------- |
-| Welcome Screen          | ❌ Missing | Personalized greeting with nav cards     |
-| Unsaved Changes Warning | ❌ Missing | Blue text when there are unsaved changes |
-| Refresh Button          | ❌ Missing | Manual refresh icon                      |
+| Feature                 | Status      | Notes                                         |
+| ----------------------- | ----------- | --------------------------------------------- |
+| Welcome Screen          | ✅ Complete | Dashboard has personalized greeting           |
+| Unsaved Changes Warning | ✅ Complete | Blue pulsing text when form has unsaved edits |
+| Refresh Button          | ✅ Complete | Manual refresh button in My Timesheets header |
 
 ## 🎨 Visual Identity & Color Palette
 
@@ -342,30 +342,30 @@ ELSE:
 
 ## 📋 Feature Comparison: PowerApps vs Flask App
 
-| Feature                  | PowerApps       | Flask App       | Status                        |
-| ------------------------ | --------------- | --------------- | ----------------------------- |
-| Welcome Screen           | ✅              | ❌              | Missing                       |
-| Week List Sidebar        | ✅              | ✅              | Implemented (as cards)        |
-| Status Definitions Popup | ✅              | ❌              | Missing                       |
-| "+ New Line" Button      | ✅              | ✅              | Implemented (dropdown + add)  |
-| Traveled Checkbox        | ✅              | ✅              | Implemented                   |
-| Expenses Checkbox        | ✅              | ✅              | Implemented                   |
-| Need Reimbursement       | ✅              | ✅              | Implemented                   |
-| Field Warning Message    | ✅ **RED TEXT** | ✅ **RED TEXT** | ✅ Implemented (Jan 6, 2026)  |
-| Time Code Dropdown       | ✅              | ✅              | Implemented                   |
-| Time Code Help (?)       | ✅ Popup        | ❌              | Missing                       |
-| Daily Hour Inputs        | ✅              | ✅              | Implemented                   |
-| Row Total Calculation    | ✅              | ❌              | Missing (need per-row totals) |
-| Row Delete Button        | ✅              | ✅              | Implemented                   |
-| Attachments Section      | ✅              | ✅              | Implemented                   |
-| "Nothing attached" Text  | ✅              | ❌              | Missing                       |
-| Attachment Info Icon     | ✅              | ❌              | Missing                       |
-| **User Notes**           | ✅ 255 chars    | ✅ 255 chars    | ✅ Implemented (Jan 6, 2026)  |
-| **Admin Notes**          | ✅ Read-only    | ✅ Read-only    | ✅ Implemented (Jan 6, 2026)  |
-| Unsaved Changes Warning  | ✅ Blue text    | ❌              | Missing                       |
-| Northstar Logo           | ✅ Lower-right  | ✅              | Implemented                   |
-| Refresh Button           | ✅              | ❌              | Missing                       |
-| Status Badges            | ✅              | ✅              | Implemented                   |
+| Feature                  | PowerApps       | Flask App       | Status                       |
+| ------------------------ | --------------- | --------------- | ---------------------------- |
+| Welcome Screen           | ✅              | ❌              | Missing (P2)                 |
+| Week List Sidebar        | ✅              | ✅              | Implemented (as cards)       |
+| Status Definitions Popup | ✅              | ✅              | ✅ Implemented (Jan 6, 2026) |
+| "+ New Line" Button      | ✅              | ✅              | Implemented (dropdown + add) |
+| Traveled Checkbox        | ✅              | ✅              | Implemented                  |
+| Expenses Checkbox        | ✅              | ✅              | Implemented                  |
+| Need Reimbursement       | ✅              | ✅              | Implemented                  |
+| Field Warning Message    | ✅ **RED TEXT** | ✅ **RED TEXT** | ✅ Implemented (Jan 6, 2026) |
+| Time Code Dropdown       | ✅              | ✅              | Implemented                  |
+| Time Code Help (?)       | ✅ Popup        | ✅ Popup        | ✅ Implemented (Jan 6, 2026) |
+| Daily Hour Inputs        | ✅              | ✅              | Implemented                  |
+| Row Total Calculation    | ✅              | ✅              | ✅ Implemented (Jan 6, 2026) |
+| Row Delete Button        | ✅              | ✅              | Implemented                  |
+| Attachments Section      | ✅              | ✅              | Implemented                  |
+| "Nothing attached" Text  | ✅              | ✅              | ✅ Implemented (Jan 6, 2026) |
+| Attachment Info Icon     | ✅              | ❌              | Missing (P2)                 |
+| **User Notes**           | ✅ 255 chars    | ✅ 255 chars    | ✅ Implemented (Jan 6, 2026) |
+| **Admin Notes**          | ✅ Read-only    | ✅ Read-only    | ✅ Implemented (Jan 6, 2026) |
+| Unsaved Changes Warning  | ✅ Blue text    | ❌              | Missing (P2)                 |
+| Northstar Logo           | ✅ Lower-right  | ✅              | Implemented                  |
+| Refresh Button           | ✅              | ❌              | Missing (P2)                 |
+| Status Badges            | ✅              | ✅              | Implemented                  |
 
 ---
 
@@ -393,38 +393,48 @@ ELSE:
    - Hidden when empty (shown only when admin adds feedback)
    - Editable via admin API endpoint
 
-### P1 - Important Missing Features
+### P1 - Important Missing Features ✅ COMPLETE
 
-4. **Time Code Help Popup**
+4. ✅ **Time Code Help Popup** - _Implemented January 6, 2026_
 
-   - (?) icon next to Time Code header
-   - Shows descriptions of each time code
+   - (?) icon next to Time Entries header
+   - Shows descriptions of each time code in a styled popup
 
-5. **Row Totals**
+5. ✅ **Row Totals** - _Implemented January 6, 2026_
 
-   - Add "Total" column showing sum of hours per row
+   - "Total" column showing sum of hours per row
+   - Updates dynamically as hours are entered
 
-6. **Status Definitions Popup**
+6. ✅ **Status Definitions Popup** - _Implemented January 6, 2026_
 
-   - Help icon in sidebar
-   - Explains each status meaning
+   - Help icon next to status filter on My Timesheets view
+   - Explains each status meaning (Draft, Submitted, Needs Approval, Approved)
 
-7. **Empty Attachments Text**
-   - "There is nothing attached." when no files uploaded
+7. ✅ **Empty Attachments Text** - _Implemented January 6, 2026_
+   - "There is nothing attached." placeholder when no files uploaded
 
-### P2 - Nice to Have
+### P2 - Nice to Have ✅ COMPLETE
 
-8. **Welcome Screen**
+8. ✅ **Welcome Screen** - _Dashboard exists with personalized greeting_
 
-   - Personalized greeting
-   - View/Create and Admin navigation cards
+   - Dashboard shows "Welcome, [User]!" header
+   - Quick action cards for navigation
 
-9. **Unsaved Changes Warning**
+9. ✅ **Unsaved Changes Warning** - _Implemented January 6, 2026_
 
-   - Blue text at bottom when modifications exist
+   - Blue pulsing text "● Unsaved changes" in editor header
+   - Appears when any form field is modified
+   - Clears on form clear/save
 
-10. **Refresh Button**
-    - Circular arrow icon to reload data
+10. ✅ **Refresh Button** - _Implemented January 6, 2026_
+
+    - Ghost button in My Timesheets header
+    - Allows manual refresh of timesheet list
+
+### Remaining Nice-to-Have
+
+11. **Attachment Info Icon**
+    - Information popup about attachment requirements
 
 ---
 

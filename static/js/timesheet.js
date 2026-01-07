@@ -9,6 +9,7 @@ const TimesheetModule = {
     currentTimesheet: null,
     currentWeekStart: null,
     addedHourTypes: new Set(), // Track which hour types have been added
+    hasUnsavedChanges: false, // Track if form has unsaved changes
     
     // Hour types with their labels
     HOUR_TYPES: {
@@ -592,6 +593,9 @@ const TimesheetModule = {
         // Initialize with no week selected - hides add controls
         this.initForWeek(null);
         
+        // Clear unsaved changes flag
+        this.clearChanges();
+        
         // Ensure form is editable
         this.setFormReadOnly(false);
     },
@@ -671,13 +675,40 @@ const TimesheetModule = {
             counter.classList.add('near-limit');
         }
     },
+    
+    /**
+     * Mark form as having unsaved changes
+     */
+    markAsChanged() {
+        if (!this.hasUnsavedChanges) {
+            this.hasUnsavedChanges = true;
+            const warning = document.getElementById('unsaved-changes-warning');
+            if (warning) {
+                warning.classList.remove('hidden');
+            }
+        }
+    },
+    
+    /**
+     * Clear unsaved changes flag
+     */
+    clearChanges() {
+        this.hasUnsavedChanges = false;
+        const warning = document.getElementById('unsaved-changes-warning');
+        if (warning) {
+            warning.classList.add('hidden');
+        }
+    },
 };
 
 // Bind event handlers when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     const checkbox = document.getElementById('reimbursement-needed');
     if (checkbox) {
-        checkbox.addEventListener('change', () => TimesheetModule.toggleReimbursementSection());
+        checkbox.addEventListener('change', () => {
+            TimesheetModule.toggleReimbursementSection();
+            TimesheetModule.markAsChanged();
+        });
     }
     
     // Week start change handler
@@ -687,19 +718,31 @@ document.addEventListener('DOMContentLoaded', () => {
             const weekStart = TimesheetModule.getWeekStart(e.target.value);
             e.target.value = weekStart;
             TimesheetModule.initForWeek(weekStart);
+            TimesheetModule.markAsChanged();
         });
     }
     
-    // User notes character counter
+    // User notes character counter + track changes
     const userNotes = document.getElementById('user-notes');
     if (userNotes) {
-        userNotes.addEventListener('input', () => TimesheetModule.updateCharCounter());
+        userNotes.addEventListener('input', () => {
+            TimesheetModule.updateCharCounter();
+            TimesheetModule.markAsChanged();
+        });
     }
     
-    // Listen for hour input changes to update field hours warning
+    // Listen for hour input changes to update field hours warning and track changes
     document.addEventListener('input', (e) => {
         if (e.target.classList.contains('hour-input')) {
             TimesheetModule.updateFieldHoursWarning();
+            TimesheetModule.markAsChanged();
+        }
+    });
+    
+    // Track changes on all form inputs (checkboxes, selects, etc.)
+    document.addEventListener('change', (e) => {
+        if (e.target.closest('#timesheet-form')) {
+            TimesheetModule.markAsChanged();
         }
     });
     
