@@ -846,6 +846,48 @@
 }
 
 /* ============================================
+   Admin Entries Grid (read-only hour table)
+   ============================================ */
+.entries-grid {
+    display: grid;
+    grid-template-columns: 120px repeat(7, 1fr);
+    gap: 1px;
+    background: var(--color-border-subtle);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+.entries-grid .header-cell {
+    background: var(--color-bg-overlay);
+    padding: var(--spacing-sm);
+    font-weight: 600;
+    font-size: var(--font-size-sm);
+    text-align: center;
+    color: var(--color-text-secondary);
+}
+
+.entries-grid .header-cell.row-label {
+    text-align: left;
+    padding-left: var(--spacing-md);
+}
+
+.entries-grid .entry-cell {
+    background: var(--color-bg-elevated);
+    padding: var(--spacing-sm);
+    font-size: var(--font-size-sm);
+    text-align: center;
+    color: var(--color-text-primary);
+}
+
+.entries-grid .entry-cell.row-label {
+    text-align: left;
+    padding-left: var(--spacing-md);
+    font-weight: 500;
+    background: var(--color-bg-surface);
+}
+
+/* ============================================
    Empty State
    ============================================ */
 .empty-state {
