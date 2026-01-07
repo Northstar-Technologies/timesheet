@@ -367,8 +367,8 @@
           <div class="filter-group">
             <label class="filter-label">Status:</label>
             <select id="admin-filter-status" class="form-select">
-              <option value="">All Statuses</option>
-              <option value="SUBMITTED" selected>Submitted</option>
+              <option value="" selected>All Statuses</option>
+              <option value="SUBMITTED">Submitted</option>
               <option value="NEEDS_APPROVAL">Needs Approval</option>
               <option value="APPROVED">Approved</option>
             </select>
@@ -407,5 +407,5 @@
 <script src="{{ url_for('static', filename='js/timesheet.js') }}?v=20260106p11"></script>
 <script src="{{ url_for('static', filename='js/admin.js') }}?v=20260106p2"></script>
 <script src="{{ url_for('static', filename='js/sse.js') }}?v=20260106p1"></script>
-<script src="{{ url_for('static', filename='js/app.js') }}?v=20260106p2"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}?v=20260106p3"></script>
 {% endblock %}

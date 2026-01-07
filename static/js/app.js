@@ -437,4 +437,35 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+    
+    // ==========================================
+    // Hamburger Menu (Mobile Navigation)
+    // ==========================================
+    const hamburgerBtn = document.getElementById('hamburger-btn');
+    const mobileNav = document.getElementById('mobile-nav');
+    
+    if (hamburgerBtn && mobileNav) {
+        // Toggle menu on hamburger click
+        hamburgerBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            hamburgerBtn.classList.toggle('active');
+            mobileNav.classList.toggle('hidden');
+        });
+        
+        // Close menu when a nav link is clicked
+        mobileNav.querySelectorAll('.mobile-nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                hamburgerBtn.classList.remove('active');
+                mobileNav.classList.add('hidden');
+            });
+        });
+        
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!mobileNav.contains(e.target) && !hamburgerBtn.contains(e.target)) {
+                hamburgerBtn.classList.remove('active');
+                mobileNav.classList.add('hidden');
+            }
+        });
+    }
 });
