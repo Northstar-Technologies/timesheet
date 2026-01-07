@@ -369,10 +369,6 @@ async function rejectTimesheetAdmin(id) {
 }
 
 async function unapproveTimesheetAdmin(id) {
-    if (!confirm('Are you sure you want to un-approve this timesheet?')) {
-        return;
-    }
-    
     try {
         await API.unapproveTimesheet(id);
         showToast('Timesheet un-approved', 'success');
