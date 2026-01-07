@@ -9,7 +9,7 @@
 // View Management
 // ==========================================
 
-function showView(viewId) {
+function showView(viewId, sidebarViewId = null) {
     // Hide all views
     document.querySelectorAll('.view').forEach(view => {
         view.classList.remove('active');
@@ -22,9 +22,11 @@ function showView(viewId) {
     }
     
     // Update sidebar active state
+    // Use sidebarViewId if provided, otherwise match by viewId
+    const highlightView = sidebarViewId || viewId;
     document.querySelectorAll('.sidebar-link').forEach(link => {
         link.classList.remove('active');
-        if (link.dataset.view === viewId) {
+        if (link.dataset.view === highlightView) {
             link.classList.add('active');
         }
     });
@@ -59,7 +61,8 @@ function showEditTimesheetView(timesheet) {
         autoPopulateGroup.classList.add('hidden');
     }
     
-    showView('editor');
+    // Show editor view but keep "My Timesheets" highlighted in sidebar
+    showView('editor', 'timesheets');
 }
 
 // ==========================================
