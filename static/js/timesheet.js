@@ -140,6 +140,10 @@ const TimesheetModule = {
         const startDate = new Date(this.currentWeekStart + 'T00:00:00');
         const label = this.HOUR_TYPES[hourType] || hourType;
         
+        // Check if auto-populate is enabled for Field Hours
+        const autoPopulate = document.getElementById('auto-populate')?.checked || false;
+        const shouldAutoFill = hourType === 'Field' && autoPopulate && !existingData;
+        
         // Create row element
         const row = document.createElement('div');
         row.className = 'hour-type-row editing';
@@ -149,11 +153,21 @@ const TimesheetModule = {
         let html = `<div class="hour-type-label-cell">${label}</div>`;
         
         // Day input cells
+        let autoFillTotal = 0;
         for (let i = 0; i < 7; i++) {
             const date = new Date(startDate);
             date.setDate(date.getDate() + i);
             const dateStr = date.toISOString().split('T')[0];
-            const value = existingData ? (existingData[dateStr] || 0) : 0;
+            
+            // Determine value: existingData > autoFill (8h Mon-Fri) > 0
+            let value = 0;
+            if (existingData) {
+                value = existingData[dateStr] || 0;
+            } else if (shouldAutoFill && i >= 1 && i <= 5) {
+                // Mon=1, Tue=2, Wed=3, Thu=4, Fri=5
+                value = 8;
+                autoFillTotal += 8;
+            }
             
             html += `
                 <div class="hour-type-day-cell">
@@ -172,7 +186,9 @@ const TimesheetModule = {
         }
         
         // Total cell - calculate initial total
-        const initialTotal = existingData ? Object.values(existingData).reduce((sum, val) => sum + (parseFloat(val) || 0), 0) : 0;
+        const initialTotal = existingData 
+            ? Object.values(existingData).reduce((sum, val) => sum + (parseFloat(val) || 0), 0) 
+            : autoFillTotal;
         html += `<div class="hour-type-total-cell" data-total-for="${hourType}">${initialTotal}</div>`;
         
         // Actions cell
