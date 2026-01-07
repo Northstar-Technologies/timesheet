@@ -3,7 +3,7 @@
 {% block title %}Northstar Time Timesheet - Dashboard{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}?v=20260106p4" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}?v=20260106p5" />
 {% endblock %}
 
 {% block content %}
@@ -126,29 +126,28 @@
             <button type="button" class="help-icon" id="time-code-help-btn" title="Time Code Definitions">
               ?
             </button>
-          </div>
-          
-          <!-- Time Code Help Popup -->
-          <div id="time-code-help-popup" class="help-popup hidden">
-            <div class="help-popup-header">
-              <h4>Time Code Definitions</h4>
-              <button type="button" class="help-popup-close" id="time-code-help-close">&times;</button>
-            </div>
-            <div class="help-popup-content">
-              <dl class="help-definitions">
-                <dt>Field Hours</dt>
-                <dd>Hours worked for client - billable time on-site or remote for customer projects.</dd>
-                <dt>Internal Hours</dt>
-                <dd>Hours worked for NST (Northstar internal) - non-billable company work.</dd>
-                <dt>Training</dt>
-                <dd>Hours spent in training - tracking purposes, not billable.</dd>
-                <dt>PTO</dt>
-                <dd>Paid Time-Off approved by NST - vacation, personal days.</dd>
-                <dt>Unpaid Leave</dt>
-                <dd>Unpaid time off, or hours not worked - no pay or billing.</dd>
-                <dt>Holiday</dt>
-                <dd>Holidays paid by NST - company-observed holidays.</dd>
-              </dl>
+            <!-- Time Code Help Popup (inside header for proper positioning) -->
+            <div id="time-code-help-popup" class="help-popup hidden">
+              <div class="help-popup-header">
+                <h4>Time Code Definitions</h4>
+                <button type="button" class="help-popup-close" id="time-code-help-close">&times;</button>
+              </div>
+              <div class="help-popup-content">
+                <dl class="help-definitions">
+                  <dt>Field Hours</dt>
+                  <dd>Hours worked for client - billable time on-site or remote for customer projects.</dd>
+                  <dt>Internal Hours</dt>
+                  <dd>Hours worked for NST (Northstar internal) - non-billable company work.</dd>
+                  <dt>Training</dt>
+                  <dd>Hours spent in training - tracking purposes, not billable.</dd>
+                  <dt>PTO</dt>
+                  <dd>Paid Time-Off approved by NST - vacation, personal days.</dd>
+                  <dt>Unpaid Leave</dt>
+                  <dd>Unpaid time off, or hours not worked - no pay or billing.</dd>
+                  <dt>Holiday</dt>
+                  <dd>Holidays paid by NST - company-observed holidays.</dd>
+                </dl>
+              </div>
             </div>
           </div>
           
