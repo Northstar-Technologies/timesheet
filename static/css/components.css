@@ -809,6 +809,10 @@
     border-radius: var(--radius-lg);
     padding: var(--spacing-xl);
     border: 1px solid var(--color-border-subtle);
+    max-width: 1000px;
+    width: 100%;
+    grid-column: 1 / -1;
+    margin: 0 auto;
 }
 
 .detail-section {
@@ -850,12 +854,20 @@
    ============================================ */
 .entries-grid {
     display: grid;
-    grid-template-columns: 120px repeat(7, 1fr);
+    grid-template-columns: 140px repeat(7, minmax(80px, 1fr));
     gap: 1px;
     background: var(--color-border-subtle);
     border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-md);
     overflow: hidden;
+    min-width: 700px;
+}
+
+.admin-grid-wrapper {
+    overflow-x: auto;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border-subtle);
+    background: var(--color-bg-surface);
 }
 
 .entries-grid .header-cell {

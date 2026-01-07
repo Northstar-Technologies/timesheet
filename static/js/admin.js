@@ -157,8 +157,10 @@ function showAdminTimesheetDetail(timesheet) {
             
             <div class="detail-section">
                 <h4>Time Entries</h4>
-                <div id="admin-entries-grid" class="entries-grid">
-                    <!-- Populated below -->
+                <div class="admin-grid-wrapper">
+                    <div id="admin-entries-grid" class="entries-grid">
+                        <!-- Populated below -->
+                    </div>
                 </div>
             </div>
             
