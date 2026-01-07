@@ -344,7 +344,7 @@ ELSE:
 
 | Feature                  | PowerApps       | Flask App       | Status                       |
 | ------------------------ | --------------- | --------------- | ---------------------------- |
-| Welcome Screen           | ✅              | ❌              | Missing (P2)                 |
+| Welcome Screen           | ✅              | ✅              | ✅ Implemented (Dashboard)   |
 | Week List Sidebar        | ✅              | ✅              | Implemented (as cards)       |
 | Status Definitions Popup | ✅              | ✅              | ✅ Implemented (Jan 6, 2026) |
 | "+ New Line" Button      | ✅              | ✅              | Implemented (dropdown + add) |
@@ -362,9 +362,9 @@ ELSE:
 | Attachment Info Icon     | ✅              | ❌              | Missing (P2)                 |
 | **User Notes**           | ✅ 255 chars    | ✅ 255 chars    | ✅ Implemented (Jan 6, 2026) |
 | **Admin Notes**          | ✅ Read-only    | ✅ Read-only    | ✅ Implemented (Jan 6, 2026) |
-| Unsaved Changes Warning  | ✅ Blue text    | ❌              | Missing (P2)                 |
+| Unsaved Changes Warning  | ✅ Blue text    | ✅ Blue text    | ✅ Implemented (Jan 6, 2026) |
 | Northstar Logo           | ✅ Lower-right  | ✅              | Implemented                  |
-| Refresh Button           | ✅              | ❌              | Missing (P2)                 |
+| Refresh Button           | ✅              | ✅              | ✅ Implemented (Jan 6, 2026) |
 | Status Badges            | ✅              | ✅              | Implemented                  |
 
 ---
