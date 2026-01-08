@@ -1,14 +1,27 @@
 # Northstar Timesheet App - Employee Timesheet Management
 
-A modern timesheet management system replacing the legacy PowerApps solution. Built with Flask, vanilla JavaScript/CSS, and PostgreSQL for all Northstar employees and trainees.
+A modern timesheet management system replacing the legacy PowerApps solution. Built with Flask, vanilla JavaScript/CSS, and PostgreSQL for ~60 Northstar employees and trainees.
+
+## Current Status
+
+| Component          | Status                                              |
+| ------------------ | --------------------------------------------------- |
+| **Core App**       | ✅ Functional - CRUD, attachments, admin workflow   |
+| **Authentication** | ✅ Microsoft 365 / MSAL integrated                  |
+| **Role System**    | ✅ Four-tier roles (Trainee, Staff, Support, Admin) |
+| **UI/UX**          | ✅ Dark mode, PowerApps parity complete             |
+| **Test Suite**     | ✅ 85 tests, 74% coverage                           |
+| **Deployment**     | ✅ Docker Compose (local)                           |
 
 ## Features
 
-### For Regular Users
+### For All Users
 
+- **Role-Based Access** - Four-tier role system (Trainee, Staff, Support, Admin)
 - **View Timesheets** - Browse existing timesheets with status filtering
 - **Create & Edit Timesheets** - Manage weekly timesheets with intuitive form interface
-- **Multiple Hour Types** - Track Field Hours, Internal, Training, PTO, Unpaid Leave, and Holiday time
+- **Multiple Hour Types** - Track Field Hours, Internal, Training, PTO, Unpaid Leave, and Holiday
+  - _Trainees can only log Training hours_
 - **Travel & Expenses** - Mark travel status and expense claims with reimbursement details
 - **File Attachments** - Upload approval documents (images/PDFs) for field hours
 - **Draft Management** - Save work-in-progress timesheets and submit when ready
@@ -22,6 +35,7 @@ A modern timesheet management system replacing the legacy PowerApps solution. Bu
 - **User Management** - View and filter by employee
 - **Admin Notes** - Add notes to any submitted timesheet
 - **Real-time Updates** - SSE notifications for new submissions
+- **CSV Export** - Export timesheet data for payroll
 
 ## Architecture
 
@@ -206,18 +220,33 @@ pytest tests/test_models.py -v
 
 ## Documentation
 
-All detailed documentation is in the [`docs/`](docs/) folder:
+Detailed documentation is available in multiple locations:
+
+### Root-Level Docs
+
+| Document                   | Description                                          |
+| -------------------------- | ---------------------------------------------------- |
+| [SECURITY.md](SECURITY.md) | Pre-deployment security checklist and best practices |
+
+### docs/ Folder
 
 | Document                                    | Description                                            |
 | ------------------------------------------- | ------------------------------------------------------ |
 | [IMPLEMENTATION.md](docs/IMPLEMENTATION.md) | Technical architecture, API reference, database schema |
+| [REQUIREMENTS.md](docs/REQUIREMENTS.md)     | Feature requirements with priorities (P0/P1/P2)        |
+| [DESIGN.md](docs/DESIGN.md)                 | Architecture decisions and stakeholder answers         |
+| [TESTING.md](docs/TESTING.md)               | Testing strategy, coverage, and test structure         |
 | [WALKTHROUGH.md](docs/WALKTHROUGH.md)       | Step-by-step user guide                                |
-| [docs/SECURITY.md](docs/SECURITY.md)        | Pre-deployment security checklist and best practices   |
+| [UI.md](docs/UI.md)                         | UI/UX patterns and component design                    |
+| [POWERAPPS.md](docs/POWERAPPS.md)           | Legacy PowerApps feature reference and parity          |
 | [AZURE.md](docs/AZURE.md)                   | Azure AD / Microsoft 365 authentication setup          |
 | [TWILIO.md](docs/TWILIO.md)                 | Twilio SMS notification configuration                  |
-| [DARKMODE.md](docs/DARKMODE.md)             | Dark mode implementation plan and color system         |
+| [BOT.md](docs/BOT.md)                       | Microsoft Teams bot integration planning               |
+| [MCP.md](docs/MCP.md)                       | Model Context Protocol integration guide               |
+| [DARKMODE.md](docs/DARKMODE.md)             | Dark mode implementation and color system              |
 | [RESPONSIVE.md](docs/RESPONSIVE.md)         | Responsive design and mobile breakpoints               |
-| [POWERAPPS.md](docs/POWERAPPS.md)           | Legacy PowerApps feature reference                     |
+| [LOGIN.md](docs/LOGIN.md)                   | Authentication flow and login page design              |
+| [SECURITY.md](docs/SECURITY.md)             | Detailed security implementation notes                 |
 | [roadmap.md](docs/roadmap.md)               | Production deployment recommendations                  |
 
 ## License
