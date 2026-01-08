@@ -54,6 +54,29 @@ def list_timesheets():
     if week_start:
         query = query.filter_by(week_start=datetime.fromisoformat(week_start).date())
 
+    # Filter by hour type (REQ-018)
+    from ..models import TimesheetEntry
+    hour_type = request.args.get("hour_type")
+    if hour_type:
+        if hour_type == "has_field":
+            # Special case: show timesheets that have any Field hours
+            query = query.filter(
+                Timesheet.id.in_(
+                    db.session.query(TimesheetEntry.timesheet_id)
+                    .filter(TimesheetEntry.hour_type == "Field")
+                    .distinct()
+                )
+            )
+        else:
+            # Filter by specific hour type
+            query = query.filter(
+                Timesheet.id.in_(
+                    db.session.query(TimesheetEntry.timesheet_id)
+                    .filter(TimesheetEntry.hour_type == hour_type)
+                    .distinct()
+                )
+            )
+
     # Join with user for display name (explicit join due to multiple FKs)
     query = query.join(User, Timesheet.user_id == User.id)
 

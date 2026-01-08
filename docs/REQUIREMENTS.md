@@ -470,7 +470,7 @@ Submitted timesheets should be read-only. Users should not be able to edit a tim
 | REQ-015     | 📋 Planned  | Azure AD integration                     |
 | REQ-016     | ✅ Complete | Auto-redirect to /app after login        |
 | REQ-017     | ✅ Complete | 4 quick-login buttons on login page      |
-| REQ-018     | 📋 Planned  | Hour type filter                         |
+| REQ-018     | ✅ Complete | Hour type filter dropdown on admin dash  |
 | REQ-019     | 📋 Planned  | Export format options                    |
 | REQ-020     | ✅ Complete | Travel ✈️ and expense 💰 badges on cards |
 | REQ-021     | 📋 Planned  | Per-option reimbursement attachments     |

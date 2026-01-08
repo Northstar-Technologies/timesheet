@@ -21,14 +21,17 @@ async function loadAdminTimesheets() {
         const statusEl = document.getElementById('admin-filter-status');
         const userEl = document.getElementById('admin-filter-user');
         const weekEl = document.getElementById('admin-filter-week');
+        const hourTypeEl = document.getElementById('admin-filter-hourtype');
         const status = statusEl ? statusEl.value : '';
         const userId = userEl ? userEl.value : '';
         const weekStart = weekEl ? weekEl.value : '';
+        const hourType = hourTypeEl ? hourTypeEl.value : '';
         
         const params = {};
         if (status) params.status = status;
         if (userId) params.user_id = userId;
         if (weekStart) params.week_start = weekStart;
+        if (hourType) params.hour_type = hourType;
         
         const data = await API.getAdminTimesheets(params);
         
@@ -449,6 +452,12 @@ document.addEventListener('DOMContentLoaded', () => {
         weekFilter.addEventListener('change', loadAdminTimesheets);
     }
     
+    // Hour type filter (REQ-018)
+    const hourTypeFilter = document.getElementById('admin-filter-hourtype');
+    if (hourTypeFilter) {
+        hourTypeFilter.addEventListener('change', loadAdminTimesheets);
+    }
+    
     // Clear filters button
     const clearFiltersBtn = document.getElementById('admin-clear-filters');
     if (clearFiltersBtn) {
@@ -456,10 +465,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const statusEl = document.getElementById('admin-filter-status');
             const userEl = document.getElementById('admin-filter-user');
             const weekEl = document.getElementById('admin-filter-week');
+            const hourTypeEl = document.getElementById('admin-filter-hourtype');
             
             if (statusEl) statusEl.value = '';
             if (userEl) userEl.value = '';
             if (weekEl) weekEl.value = '';
+            if (hourTypeEl) hourTypeEl.value = '';
             
             // Remove active state from stat cards and this week button
             document.querySelectorAll('.stat-card').forEach(card => {

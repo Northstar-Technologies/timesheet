@@ -524,6 +524,18 @@ endblock %} {% block extra_css %}
             </select>
           </div>
           <div class="filter-group">
+            <label class="filter-label">Hours:</label>
+            <select id="admin-filter-hourtype" class="form-select">
+              <option value="">All Types</option>
+              <option value="Field">Field Hours</option>
+              <option value="Internal">Internal Hours</option>
+              <option value="Training">Training</option>
+              <option value="PTO">PTO</option>
+              <option value="Holiday">Holiday</option>
+              <option value="has_field">Has Field Hours</option>
+            </select>
+          </div>
+          <div class="filter-group">
             <label class="filter-label">Week:</label>
             <input
               type="date"
@@ -578,7 +590,7 @@ endblock %} {% block extra_css %}
 </script>
 <script src="{{ url_for('static', filename='js/api.js') }}?v=20260106p1"></script>
 <script src="{{ url_for('static', filename='js/timesheet.js') }}?v=20260108p2"></script>
-<script src="{{ url_for('static', filename='js/admin.js') }}?v=20260108p3"></script>
+<script src="{{ url_for('static', filename='js/admin.js') }}?v=20260108p4"></script>
 <script src="{{ url_for('static', filename='js/sse.js') }}?v=20260106p1"></script>
 <script src="{{ url_for('static', filename='js/app.js') }}?v=20260107p1"></script>
 {% endblock %}
