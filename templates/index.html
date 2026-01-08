@@ -1,19 +1,17 @@
-{% extends "base.html" %}
-
-{% block title %}Northstar Timesheet App - Dashboard{% endblock %}
-
-{% block extra_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}?v=20260108p1" />
-{% endblock %}
-
-{% block content %}
+{% extends "base.html" %} {% block title %}Northstar Timesheet App - Dashboard{%
+endblock %} {% block extra_css %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/components.css') }}?v=20260108p2"
+/>
+{% endblock %} {% block content %}
 <div class="app-container">
   <!-- Sidebar Navigation -->
   <aside class="sidebar">
     <div class="sidebar-header">
       <p class="sidebar-title">Navigation</p>
     </div>
-    
+
     <nav class="sidebar-nav">
       <a href="#timesheets" class="sidebar-link active" data-view="timesheets">
         <span class="icon">📋</span>
@@ -35,13 +33,16 @@
 
   <!-- Main Content Area -->
   <main class="content-area">
-    
     <!-- Timesheets List View -->
     <section id="view-timesheets" class="view active">
       <div class="view-header">
         <h2>My Timesheets</h2>
         <div class="view-header-actions">
-          <button class="btn btn-ghost" id="refresh-timesheets-btn" title="Refresh timesheets">
+          <button
+            class="btn btn-ghost"
+            id="refresh-timesheets-btn"
+            title="Refresh timesheets"
+          >
             <span>🔄</span>
             Refresh
           </button>
@@ -51,7 +52,7 @@
           </button>
         </div>
       </div>
-      
+
       <div class="filters">
         <div class="filter-group">
           <label class="filter-label">Status:</label>
@@ -62,31 +63,52 @@
             <option value="NEEDS_APPROVAL">Needs Approval</option>
             <option value="APPROVED">Approved</option>
           </select>
-          <button type="button" class="help-icon" id="status-help-btn" title="Status Definitions">
+          <button
+            type="button"
+            class="help-icon"
+            id="status-help-btn"
+            title="Status Definitions"
+          >
             ?
           </button>
           <!-- Status Definitions Help Popup -->
           <div id="status-help-popup" class="help-popup hidden">
             <div class="help-popup-header">
               <h4>Status Definitions</h4>
-              <button type="button" class="help-popup-close" id="status-help-close">&times;</button>
+              <button
+                type="button"
+                class="help-popup-close"
+                id="status-help-close"
+              >
+                &times;
+              </button>
             </div>
             <div class="help-popup-content">
               <dl class="help-definitions">
                 <dt>Draft</dt>
-                <dd>Timesheet is being worked on but not yet submitted for approval.</dd>
+                <dd>
+                  Timesheet is being worked on but not yet submitted for
+                  approval.
+                </dd>
                 <dt>Submitted</dt>
-                <dd>Timesheet has been sent to admin for review and approval.</dd>
+                <dd>
+                  Timesheet has been sent to admin for review and approval.
+                </dd>
                 <dt>Needs Approval</dt>
-                <dd>Timesheet requires additional action (e.g., missing attachments for field hours).</dd>
+                <dd>
+                  Timesheet requires additional action (e.g., missing
+                  attachments for field hours).
+                </dd>
                 <dt>Approved</dt>
-                <dd>Timesheet has been reviewed and approved by an administrator.</dd>
+                <dd>
+                  Timesheet has been reviewed and approved by an administrator.
+                </dd>
               </dl>
             </div>
           </div>
         </div>
       </div>
-      
+
       <div id="timesheets-list" class="timesheets-grid">
         <div class="loading">Loading timesheets...</div>
       </div>
@@ -96,17 +118,20 @@
     <section id="view-editor" class="view">
       <div class="view-header">
         <h2 id="editor-title">New Timesheet</h2>
-        <span id="unsaved-changes-warning" class="unsaved-changes-warning hidden">
+        <span
+          id="unsaved-changes-warning"
+          class="unsaved-changes-warning hidden"
+        >
           ● Unsaved changes
         </span>
         <button class="btn btn-ghost" id="back-to-list-btn">
           ← Back to List
         </button>
       </div>
-      
+
       <form id="timesheet-form" class="timesheet-form">
         <input type="hidden" id="timesheet-id" />
-        
+
         <!-- Week Selection -->
         <div class="form-section">
           <div class="form-section-header">
@@ -115,12 +140,20 @@
           </div>
           <div class="form-group">
             <label for="week-start">Week Starting (Sunday)</label>
-            <input type="date" id="week-start" name="week_start" class="form-input" required />
+            <input
+              type="date"
+              id="week-start"
+              name="week_start"
+              class="form-input"
+              required
+            />
           </div>
           <div class="checkbox-group" id="auto-populate-group">
             <div class="checkbox-item">
               <input type="checkbox" id="auto-populate" name="auto_populate" />
-              <label for="auto-populate">Auto-fill 40h Field Hours (8h Mon-Fri)</label>
+              <label for="auto-populate"
+                >Auto-fill 40h Field Hours (8h Mon-Fri)</label
+              >
             </div>
           </div>
         </div>
@@ -130,41 +163,69 @@
           <div class="form-section-header">
             <div class="form-section-icon">⏱️</div>
             <h3>Time Entries</h3>
-            <button type="button" class="help-icon" id="time-code-help-btn" title="Time Code Definitions">
+            <button
+              type="button"
+              class="help-icon"
+              id="time-code-help-btn"
+              title="Time Code Definitions"
+            >
               ?
             </button>
             <!-- Time Code Help Popup (inside header for proper positioning) -->
             <div id="time-code-help-popup" class="help-popup hidden">
               <div class="help-popup-header">
                 <h4>Time Code Definitions</h4>
-                <button type="button" class="help-popup-close" id="time-code-help-close">&times;</button>
+                <button
+                  type="button"
+                  class="help-popup-close"
+                  id="time-code-help-close"
+                >
+                  &times;
+                </button>
               </div>
               <div class="help-popup-content">
                 <dl class="help-definitions">
                   <dt>Field Hours</dt>
-                  <dd>Hours worked for client - billable time on-site or remote for customer projects.</dd>
+                  <dd>
+                    Hours worked for client - billable time on-site or remote
+                    for customer projects.
+                  </dd>
                   <dt>Internal Hours</dt>
-                  <dd>Hours worked for NST (Northstar internal) - non-billable company work.</dd>
+                  <dd>
+                    Hours worked for NST (Northstar internal) - non-billable
+                    company work.
+                  </dd>
                   <dt>Training</dt>
-                  <dd>Hours spent in training - tracking purposes, not billable.</dd>
+                  <dd>
+                    Hours spent in training - tracking purposes, not billable.
+                  </dd>
                   <dt>PTO</dt>
-                  <dd>Paid Time-Off approved by NST - vacation, personal days.</dd>
+                  <dd>
+                    Paid Time-Off approved by NST - vacation, personal days.
+                  </dd>
                   <dt>Unpaid Leave</dt>
-                  <dd>Unpaid time off, or hours not worked - no pay or billing.</dd>
+                  <dd>
+                    Unpaid time off, or hours not worked - no pay or billing.
+                  </dd>
                   <dt>Holiday</dt>
                   <dd>Holidays paid by NST - company-observed holidays.</dd>
                 </dl>
               </div>
             </div>
           </div>
-          
+
           <!-- Add Hour Type Row -->
           <div class="add-hour-type-row">
             <select id="hour-type-selector" class="form-select">
               <option value="">Select hour type to add...</option>
               <!-- Options populated by JavaScript based on user role -->
             </select>
-            <button type="button" id="add-hour-type-btn" class="btn btn-icon" title="Add hour type">
+            <button
+              type="button"
+              id="add-hour-type-btn"
+              class="btn btn-icon"
+              title="Add hour type"
+            >
               +
             </button>
           </div>
@@ -186,6 +247,22 @@
             </div>
             <!-- Dynamic rows will be inserted here by JavaScript -->
             <div id="hour-type-rows"></div>
+            <!-- Day Totals Footer Row (REQ-007) -->
+            <div
+              id="day-totals-row"
+              class="hour-type-row day-totals-row hidden"
+            >
+              <div class="hour-type-label-cell">Day Total</div>
+              <div class="hour-type-day-cell" data-day="0">0</div>
+              <div class="hour-type-day-cell" data-day="1">0</div>
+              <div class="hour-type-day-cell" data-day="2">0</div>
+              <div class="hour-type-day-cell" data-day="3">0</div>
+              <div class="hour-type-day-cell" data-day="4">0</div>
+              <div class="hour-type-day-cell" data-day="5">0</div>
+              <div class="hour-type-day-cell" data-day="6">0</div>
+              <div class="hour-type-total-cell" id="grand-total">0</div>
+              <div class="hour-type-actions-cell"></div>
+            </div>
           </div>
         </div>
 
@@ -224,7 +301,11 @@
           <div class="form-row">
             <div class="form-group">
               <label for="reimbursement-type">Type</label>
-              <select id="reimbursement-type" name="reimbursement_type" class="form-select">
+              <select
+                id="reimbursement-type"
+                name="reimbursement_type"
+                class="form-select"
+              >
                 <option value="">Select type...</option>
                 <option value="Car">Car</option>
                 <option value="Flight">Flight</option>
@@ -234,11 +315,24 @@
             </div>
             <div class="form-group">
               <label for="reimbursement-amount">Amount ($)</label>
-              <input type="number" id="reimbursement-amount" name="reimbursement_amount" class="form-input" step="0.01" min="0" placeholder="0.00" />
+              <input
+                type="number"
+                id="reimbursement-amount"
+                name="reimbursement_amount"
+                class="form-input"
+                step="0.01"
+                min="0"
+                placeholder="0.00"
+              />
             </div>
             <div class="form-group">
               <label for="stipend-date">Stipend Date</label>
-              <input type="date" id="stipend-date" name="stipend_date" class="form-input" />
+              <input
+                type="date"
+                id="stipend-date"
+                name="stipend_date"
+                class="form-input"
+              />
             </div>
           </div>
         </div>
@@ -248,25 +342,41 @@
           <div class="form-section-header">
             <div class="form-section-icon">📎</div>
             <h3>Attachments</h3>
-            <button type="button" class="help-icon" id="attachment-help-btn" title="Attachment Requirements">
+            <button
+              type="button"
+              class="help-icon"
+              id="attachment-help-btn"
+              title="Attachment Requirements"
+            >
               ?
             </button>
             <!-- Attachment Info Popup -->
             <div id="attachment-help-popup" class="help-popup hidden">
               <div class="help-popup-header">
                 <h4>Attachment Requirements</h4>
-                <button type="button" class="help-popup-close" id="attachment-help-close">&times;</button>
+                <button
+                  type="button"
+                  class="help-popup-close"
+                  id="attachment-help-close"
+                >
+                  &times;
+                </button>
               </div>
               <div class="help-popup-content">
                 <dl class="help-definitions">
                   <dt>Field Hours</dt>
-                  <dd>Field engineers must upload at least one image as proof of work.</dd>
+                  <dd>
+                    Field engineers must upload at least one image as proof of
+                    work.
+                  </dd>
                   <dt>Accepted Formats</dt>
                   <dd>PDF, PNG, JPG, JPEG, GIF files are supported.</dd>
                   <dt>File Size Limit</dt>
                   <dd>Maximum 16MB per file.</dd>
                   <dt>Multiple Files</dt>
-                  <dd>You can attach multiple files by dragging or selecting them.</dd>
+                  <dd>
+                    You can attach multiple files by dragging or selecting them.
+                  </dd>
                 </dl>
               </div>
             </div>
@@ -277,13 +387,21 @@
           </div>
           <div class="attachments-section">
             <div id="attachments-list" class="attachments-list">
-              <p id="empty-attachments-text" class="empty-attachments-text">There is nothing attached.</p>
+              <p id="empty-attachments-text" class="empty-attachments-text">
+                There is nothing attached.
+              </p>
             </div>
             <div id="upload-zone" class="upload-zone">
               <div class="upload-zone-icon">📁</div>
               <p>Drag & drop files here or <strong>browse</strong></p>
               <small>PDF, PNG, JPG, GIF up to 16MB</small>
-              <input type="file" id="file-upload" accept=".pdf,.png,.jpg,.jpeg,.gif" multiple hidden />
+              <input
+                type="file"
+                id="file-upload"
+                accept=".pdf,.png,.jpg,.jpeg,.gif"
+                multiple
+                hidden
+              />
             </div>
           </div>
         </div>
@@ -295,8 +413,20 @@
             <h3>Notes</h3>
           </div>
           <div class="form-group">
-            <label for="user-notes">Your Notes <span class="char-counter" id="user-notes-counter">0/255</span></label>
-            <textarea id="user-notes" name="user_notes" class="form-textarea" rows="3" maxlength="255" placeholder="Enter any comments (255 characters max)..."></textarea>
+            <label for="user-notes"
+              >Your Notes
+              <span class="char-counter" id="user-notes-counter"
+                >0/255</span
+              ></label
+            >
+            <textarea
+              id="user-notes"
+              name="user_notes"
+              class="form-textarea"
+              rows="3"
+              maxlength="255"
+              placeholder="Enter any comments (255 characters max)..."
+            ></textarea>
           </div>
         </div>
 
@@ -313,7 +443,11 @@
 
         <!-- Form Actions -->
         <div class="form-actions">
-          <button type="button" id="delete-btn" class="btn btn-danger-outline hidden">
+          <button
+            type="button"
+            id="delete-btn"
+            class="btn btn-danger-outline hidden"
+          >
             🗑️ Delete
           </button>
           <button type="button" id="save-draft-btn" class="btn btn-secondary">
@@ -332,23 +466,38 @@
       <div class="view-header">
         <h2>Admin Dashboard</h2>
       </div>
-      
+
       <div class="stats-grid">
-        <div class="stat-card clickable" data-filter="SUBMITTED" id="stat-card-pending" title="Click to filter">
+        <div
+          class="stat-card clickable"
+          data-filter="SUBMITTED"
+          id="stat-card-pending"
+          title="Click to filter"
+        >
           <div class="stat-icon primary">📊</div>
           <div class="stat-content">
             <h4 id="stat-pending">-</h4>
             <p>Pending Review</p>
           </div>
         </div>
-        <div class="stat-card clickable" data-filter="APPROVED" id="stat-card-approved" title="Click to filter">
+        <div
+          class="stat-card clickable"
+          data-filter="APPROVED"
+          id="stat-card-approved"
+          title="Click to filter"
+        >
           <div class="stat-icon accent">✅</div>
           <div class="stat-content">
             <h4 id="stat-approved">-</h4>
             <p>Approved This Week</p>
           </div>
         </div>
-        <div class="stat-card clickable" data-filter="NEEDS_APPROVAL" id="stat-card-attention" title="Click to filter">
+        <div
+          class="stat-card clickable"
+          data-filter="NEEDS_APPROVAL"
+          id="stat-card-attention"
+          title="Click to filter"
+        >
           <div class="stat-icon warning">⚠️</div>
           <div class="stat-content">
             <h4 id="stat-needs-attention">-</h4>
@@ -356,7 +505,7 @@
           </div>
         </div>
       </div>
-      
+
       <div class="admin-section">
         <div class="filters">
           <div class="filter-group">
@@ -376,43 +525,53 @@
           </div>
           <div class="filter-group">
             <label class="filter-label">Week:</label>
-            <input type="date" id="admin-filter-week" class="form-input" placeholder="Filter by week">
+            <input
+              type="date"
+              id="admin-filter-week"
+              class="form-input"
+              placeholder="Filter by week"
+            />
           </div>
           <div class="filter-group">
-            <button class="btn btn-ghost btn-sm" id="admin-clear-filters" title="Clear all filters">
+            <button
+              class="btn btn-ghost btn-sm"
+              id="admin-clear-filters"
+              title="Clear all filters"
+            >
               🔄 Reset
             </button>
-            <button class="btn btn-ghost btn-sm" id="admin-export-btn" title="Export to CSV">
+            <button
+              class="btn btn-ghost btn-sm"
+              id="admin-export-btn"
+              title="Export to CSV"
+            >
               📊 Export
             </button>
           </div>
         </div>
-        
+
         <div id="admin-timesheets-list" class="timesheets-grid">
           <div class="loading">Loading timesheets...</div>
         </div>
       </div>
-      
+
       <div id="admin-detail" class="timesheet-detail hidden">
         <!-- Populated by JavaScript -->
       </div>
     </section>
     {% endif %}
-    
   </main>
 </div>
 
 <!-- Toast Container -->
 <div id="toast-container" class="toast-container"></div>
-{% endblock %}
-
-{% block extra_js %}
+{% endblock %} {% block extra_js %}
 <script>
   window.currentUser = {{ user|tojson }};
 </script>
 <script src="{{ url_for('static', filename='js/api.js') }}?v=20260106p1"></script>
 <script src="{{ url_for('static', filename='js/timesheet.js') }}?v=20260108p2"></script>
-<script src="{{ url_for('static', filename='js/admin.js') }}?v=20260107p4"></script>
+<script src="{{ url_for('static', filename='js/admin.js') }}?v=20260108p1"></script>
 <script src="{{ url_for('static', filename='js/sse.js') }}?v=20260106p1"></script>
 <script src="{{ url_for('static', filename='js/app.js') }}?v=20260107p1"></script>
 {% endblock %}

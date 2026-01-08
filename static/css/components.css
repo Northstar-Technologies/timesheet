@@ -1001,13 +1001,40 @@
    ============================================ */
 .entries-grid {
     display: grid;
-    grid-template-columns: 140px repeat(7, minmax(80px, 1fr));
+    grid-template-columns: 140px repeat(7, minmax(70px, 1fr)) 80px;
     gap: 1px;
     background: var(--color-border-subtle);
     border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-md);
     overflow: hidden;
-    min-width: 700px;
+    min-width: 750px;
+}
+
+/* Total column styling */
+.entries-grid .header-cell.total-column,
+.entries-grid .entry-cell.total-column {
+    background: rgba(74, 222, 128, 0.15);
+    font-weight: 600;
+    color: var(--color-primary);
+}
+
+/* Day Total row styling */
+.entries-grid .entry-cell.total-row {
+    background: var(--color-bg-overlay);
+    font-weight: 600;
+    color: var(--color-text-primary);
+    border-top: 2px solid var(--color-border-default);
+}
+
+.entries-grid .entry-cell.total-row.row-label {
+    background: var(--color-bg-overlay);
+}
+
+/* Grand total (intersection of Total column and Day Total row) */
+.entries-grid .entry-cell.grand-total {
+    background: rgba(74, 222, 128, 0.25);
+    font-weight: 700;
+    color: var(--color-primary);
 }
 
 .admin-grid-wrapper {
@@ -1102,7 +1129,7 @@
     }
     
     .entries-grid {
-        grid-template-columns: 80px repeat(7, 1fr);
+        grid-template-columns: 80px repeat(7, 1fr) 60px;
         font-size: var(--font-size-xs);
     }
     

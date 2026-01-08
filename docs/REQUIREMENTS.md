@@ -428,8 +428,8 @@ Display holidays on the time entry grid and show a confirmation warning when use
 | REQ-004     | 📋 Planned  | Admin dashboard enhancement              |
 | REQ-005     | 📋 Planned  | Admin dashboard enhancement              |
 | REQ-006     | 📋 Planned  | New workflow                             |
-| REQ-007     | 📋 Planned  | Grid enhancement                         |
-| REQ-008     | ✅ Partial  | Exists in some views                     |
+| REQ-007     | ✅ Complete | Column totals added to admin grid        |
+| REQ-008     | ✅ Complete | Row totals added to all grid views       |
 | REQ-009     | ✅ Partial  | Works for Field, needs generalization    |
 | REQ-010     | 📋 Planned  | SharePoint integration                   |
 | REQ-011     | 📋 Planned  | Email service                            |

@@ -313,29 +313,49 @@ function renderAdminEntriesGrid(timesheet) {
         entriesMap[key] = e.hours;
     });
     
-    // Header row
-    let html = '<div class="header-cell row-label">Hour Type</div>';
     const startDate = new Date(timesheet.week_start + 'T00:00:00');
+    
+    // Calculate day totals (column totals)
+    const dayTotals = [0, 0, 0, 0, 0, 0, 0];
+    
+    // Header row with Total column
+    let html = '<div class="header-cell row-label">Hour Type</div>';
     
     for (let i = 0; i < 7; i++) {
         const date = new Date(startDate);
         date.setDate(date.getDate() + i);
         html += `<div class="header-cell">${DAYS[i]}<br><small>${date.getMonth() + 1}/${date.getDate()}</small></div>`;
     }
+    html += '<div class="header-cell total-column">Total</div>';
     
-    // Data rows
+    // Data rows with row totals
     HOUR_TYPES.forEach(type => {
         html += `<div class="entry-cell row-label">${type}</div>`;
         
+        let rowTotal = 0;
         for (let i = 0; i < 7; i++) {
             const date = new Date(startDate);
             date.setDate(date.getDate() + i);
             const dateStr = date.toISOString().split('T')[0];
             const hours = entriesMap[`${dateStr}-${type}`] || 0;
             
+            rowTotal += hours;
+            dayTotals[i] += hours;
+            
             html += `<div class="entry-cell" style="text-align: center;">${hours || '-'}</div>`;
         }
+        
+        // Row total cell
+        html += `<div class="entry-cell total-column">${rowTotal || '-'}</div>`;
     });
+    
+    // Day Total row (footer with column totals)
+    const grandTotal = dayTotals.reduce((sum, val) => sum + val, 0);
+    html += '<div class="entry-cell row-label total-row">Day Total</div>';
+    for (let i = 0; i < 7; i++) {
+        html += `<div class="entry-cell total-row">${dayTotals[i] || '-'}</div>`;
+    }
+    html += `<div class="entry-cell total-column total-row grand-total">${grandTotal || '-'}</div>`;
     
     grid.innerHTML = html;
 }
