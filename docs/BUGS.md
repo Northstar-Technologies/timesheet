@@ -122,6 +122,66 @@ When a user views a timesheet they've submitted, the form still shows editable c
 
 ---
 
+### BUG-002: Reimbursement Amounts Display "$null"
+
+**Status:** 🔴 Open  
+**Severity:** Medium (P1)  
+**Reported:** January 8, 2026  
+**Related:** REQ-026
+
+**Description:**
+When a timesheet with reimbursement is saved without a proper amount value, the expense displays as "Car: $null" or similar instead of a formatted currency value.
+
+**Steps to Reproduce:**
+
+1. Create a new timesheet
+2. Check "Reimbursement needed" checkbox
+3. Select an expense type (e.g., "Car")
+4. Leave the Amount field empty or unclear
+5. Save/submit the timesheet
+6. View the timesheet in the admin dashboard
+
+**Expected Behavior:**
+
+- Amount should default to $0.00 if left empty
+- Display should always show properly formatted currency: "$45.00"
+
+**Actual Behavior:**
+
+- Amount stores as `null` in database
+- Display renders as "Car: $null"
+
+**Root Cause:**
+
+1. **Frontend:** No validation requiring amount field to be filled
+2. **Backend:** `reimbursement_amount` column allows NULL values
+3. **Display:** Template/JS does not handle null values gracefully
+
+**Affected Files:**
+
+- `templates/index.html` - Reimbursement display in form
+- `static/js/timesheet.js` - Form submission logic
+- `app/models.py` - Timesheet model (reimbursement_amount field)
+- `app/routes/timesheets.py` - API validation
+
+**Fix Plan:**
+
+1. Add `required` attribute to reimbursement amount input
+2. Add client-side validation: amount must be a valid number ≥ 0
+3. Add server-side validation: reject null/empty amounts
+4. Database migration: set DEFAULT 0.00 on reimbursement_amount
+5. Display fix: if amount is null, display "$0.00" instead of "$null"
+
+**Acceptance Criteria:**
+
+- [ ] Amount field cannot be submitted empty when reimbursement type is selected
+- [ ] Existing null amounts display as "$0.00"
+- [ ] New submissions always have valid decimal amounts
+- [ ] Client-side validation shows error for invalid amounts
+- [ ] Server-side validation rejects null/empty amounts
+
+---
+
 ## ✅ Resolved Issues
 
 _None yet._

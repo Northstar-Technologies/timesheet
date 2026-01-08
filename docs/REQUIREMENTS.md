@@ -449,6 +449,126 @@ Submitted timesheets should be read-only. Users should not be able to edit a tim
 
 ---
 
+### REQ-024: Travel Mileage Tracking (P1)
+
+When "Traveled this week" is checked in Additional Information, display a **Travel Details** section for mileage entry.
+
+**Current Bug:**
+
+- Checking "Traveled this week" does not reveal any additional input fields
+- No way to track miles driven or travel method
+
+**Required UI Elements:**
+
+| Field                 | Type     | Description                                   | Validation              |
+| --------------------- | -------- | --------------------------------------------- | ----------------------- |
+| **Miles Traveled**    | Number   | Total miles driven for the week               | Min: 0, Max: 9999       |
+| **Starting Location** | Text     | Origin address or city                        | Optional, max 100 chars |
+| **Destination**       | Text     | Destination address or city                   | Optional, max 100 chars |
+| **Travel Method**     | Dropdown | Car (Personal), Car (Company), Rental, Flight | Required when traveled  |
+
+**Display Logic:**
+
+- Show "Travel Details" section ONLY when "Traveled this week" checkbox is checked
+- Collapse/hide section when unchecked
+- Calculate mileage reimbursement rate (configurable, e.g., $0.67/mile IRS rate)
+
+**Implementation Notes:**
+
+- Add `miles_traveled` field to Timesheet model (nullable integer)
+- Add `travel_method` enum field to Timesheet model
+- Connect to Reimbursement Details if travel reimbursement is also needed
+- Admin view should display travel icons based on travel_method
+
+---
+
+### REQ-025: Expanded Expense Type Dropdown (P1)
+
+Expand the reimbursement expense type dropdown to include all common business expense categories.
+
+**Current State:**
+
+| Option  | Status     |
+| ------- | ---------- |
+| Car     | ✅ Exists  |
+| Flight  | ✅ Exists  |
+| Food    | ✅ Exists  |
+| Other   | ✅ Exists  |
+| Hotel   | ❌ Missing |
+| Gas     | ❌ Missing |
+| Parking | ❌ Missing |
+| Toll    | ❌ Missing |
+
+**Required Dropdown Options:**
+
+| Expense Type | Icon | Attachment Required       |
+| ------------ | ---- | ------------------------- |
+| Car          | 🚗   | Mileage log               |
+| Gas          | ⛽   | Gas station receipt       |
+| Hotel        | 🏨   | Hotel folio/receipt       |
+| Flight       | ✈️   | Flight confirmation       |
+| Food         | 🍽️   | Receipt(s)                |
+| Parking      | 🅿️   | Parking receipt           |
+| Toll         | 🛣️   | Toll receipt or statement |
+| Other        | 📄   | Supporting documentation  |
+
+**Implementation Notes:**
+
+- Update `reimbursement_type` enum in database schema
+- Update frontend dropdown in timesheet form
+- Each expense type should allow optional notes field
+- Support multiple expenses of same type (e.g., multiple meals)
+
+---
+
+### REQ-026: Expense Amount Validation (P1)
+
+Prevent null, empty, or invalid values in expense amount fields to avoid displaying "$null" or "$undefined".
+
+**Current Bug:**
+
+- Expense entries display "Car: $null" when amount is not properly set
+- No client-side validation prevents empty submissions
+- Backend accepts null values for reimbursement amounts
+
+**Required Validation:**
+
+| Rule                        | Client-Side       | Server-Side              |
+| --------------------------- | ----------------- | ------------------------ |
+| Amount must be a number     | ✅ type="number"  | ✅ Decimal validation    |
+| Amount cannot be null/empty | ✅ required field | ✅ NOT NULL or default 0 |
+| Amount must be ≥ $0.00      | ✅ min="0"        | ✅ Check constraint      |
+| Amount must be ≤ $10,000    | ✅ max="10000"    | ✅ Check constraint      |
+| Amount max 2 decimal places | ✅ step="0.01"    | ✅ Decimal(10,2)         |
+
+**UI Improvements:**
+
+- Display currency symbol ($) prefix in input field
+- Default placeholder: "0.00" (not empty)
+- If user clears field and submits, auto-set to $0.00
+- Show inline error message for invalid amounts
+
+**Display Formatting:**
+
+- Always display amounts as "$X.XX" format (e.g., "$45.00" not "$45")
+- For zero amounts, display "$0.00" (not "$null" or empty)
+- Format negative refunds as "-$X.XX" if applicable
+
+**Database Migration:**
+
+- Add DEFAULT 0.00 to reimbursement_amount column
+- Update existing NULL values to 0.00
+- Add CHECK constraint: amount >= 0 AND amount <= 10000
+
+**Implementation Notes:**
+
+- Add client-side validation in timesheet form JavaScript
+- Add server-side validation in `/api/timesheets` endpoint
+- Update display logic in admin dashboard to handle edge cases
+- Add unit tests for amount validation
+
+---
+
 ## ✅ Implementation Status
 
 | Requirement | Status      | Notes                                    |
@@ -476,6 +596,9 @@ Submitted timesheets should be read-only. Users should not be able to edit a tim
 | REQ-021     | 📋 Planned  | Per-option reimbursement attachments     |
 | REQ-022     | ✅ Complete | Holiday indicators + entry warning       |
 | REQ-023     | 🐛 Bug      | Read-only submitted timesheets (BUG-001) |
+| REQ-024     | 📋 Planned  | Travel mileage tracking & details        |
+| REQ-025     | 📋 Planned  | Expanded expense type dropdown           |
+| REQ-026     | 🐛 Bug      | Expense amount validation ($null fix)    |
 
 ---
 
