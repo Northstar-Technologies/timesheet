@@ -45,14 +45,18 @@ class HourType:
 
 
 class ReimbursementType:
-    """Reimbursement type constants."""
+    """Reimbursement type constants (REQ-025)."""
 
     CAR = "Car"
+    GAS = "Gas"
+    HOTEL = "Hotel"
     FLIGHT = "Flight"
     FOOD = "Food"
+    PARKING = "Parking"
+    TOLL = "Toll"
     OTHER = "Other"
 
-    ALL = [CAR, FLIGHT, FOOD, OTHER]
+    ALL = [CAR, GAS, HOTEL, FLIGHT, FOOD, PARKING, TOLL, OTHER]
 
 
 class Timesheet(db.Model):

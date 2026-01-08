@@ -7,6 +7,23 @@
 // Store for loaded users
 let adminUsers = [];
 
+// REQ-025: Expense type icons
+const EXPENSE_TYPE_ICONS = {
+    'Car': '🚗',
+    'Gas': '⛽',
+    'Hotel': '🏨',
+    'Flight': '✈️',
+    'Food': '🍽️',
+    'Parking': '🅿️',
+    'Toll': '🛣️',
+    'Other': '📄'
+};
+
+function formatExpenseType(type) {
+    const icon = EXPENSE_TYPE_ICONS[type] || '💰';
+    return `${icon} ${type}`;
+}
+
 // ==========================================
 // Data Loading
 // ==========================================
@@ -235,7 +252,7 @@ function showAdminTimesheetDetail(timesheet) {
                     ${timesheet.reimbursement_needed ? `
                         <div class="detail-item">
                             <label>Reimbursement</label>
-                            <span class="value">${timesheet.reimbursement_type}: $${timesheet.reimbursement_amount}</span>
+                            <span class="value">${formatExpenseType(timesheet.reimbursement_type)}: $${timesheet.reimbursement_amount.toFixed(2)}</span>
                         </div>
                     ` : ''}
                 </div>
@@ -610,7 +627,7 @@ async function exportTimesheetsToCSV() {
             ts.totals.unpaid,
             ts.traveled ? 'Yes' : 'No',
             ts.has_expenses ? 'Yes' : 'No',
-            ts.reimbursement_needed ? `${ts.reimbursement_type}: $${ts.reimbursement_amount}` : 'No',
+            ts.reimbursement_needed ? `${formatExpenseType(ts.reimbursement_type)}: $${ts.reimbursement_amount.toFixed(2)}` : 'No',
             ts.attachments?.length || 0,
             new Date(ts.created_at).toLocaleDateString()
         ]);

@@ -970,7 +970,7 @@ Optional AI tooling integration using MCP servers.
 | REQ-022     | ✅ Complete | Holiday indicators + entry warning        |
 | REQ-023     | 🐛 Bug      | Read-only submitted timesheets (BUG-001)  |
 | REQ-024     | 📋 Planned  | Travel mileage tracking & details         |
-| REQ-025     | 📋 Planned  | Expanded expense type dropdown            |
+| REQ-025     | ✅ Complete | Expanded expense type dropdown            |
 | REQ-026     | ✅ Complete | Expense amount validation ($null fix)     |
 | REQ-027     | 📋 Planned  | "Has expenses" expense details section    |
 | REQ-028     | 📋 Planned  | Multiple reimbursement line items         |
