@@ -10,6 +10,20 @@ const TimesheetModule = {
     currentWeekStart: null,
     addedHourTypes: new Set(), // Track which hour types have been added
     hasUnsavedChanges: false, // Track if form has unsaved changes
+    reimbursementItems: [], // REQ-028: Track multiple reimbursement line items
+    nextReimbursementId: 1, // REQ-028: Counter for unique item IDs
+    
+    // REQ-028: Expense types for reimbursement dropdown
+    EXPENSE_TYPES: {
+        'Car': '🚗 Car (Mileage)',
+        'Gas': '⛽ Gas',
+        'Hotel': '🏨 Hotel',
+        'Flight': '✈️ Flight',
+        'Food': '🍽️ Food',
+        'Parking': '🅿️ Parking',
+        'Toll': '🛣️ Toll',
+        'Other': '📄 Other'
+    },
     
     // Hour types with their labels
     HOUR_TYPES: {
@@ -668,6 +682,156 @@ const TimesheetModule = {
         } else {
             notice.style.display = 'none';
         }
+    },
+    
+    /**
+     * Add a new reimbursement line item (REQ-028)
+     */
+    addReimbursementItem(existingItem = null) {
+        const id = existingItem?.id || this.nextReimbursementId++;
+        const item = existingItem || {
+            id: id,
+            type: '',
+            amount: 0,
+            date: '',
+            notes: ''
+        };
+        
+        // Only add to array if it's a new item
+        if (!existingItem) {
+            this.reimbursementItems.push(item);
+        }
+        
+        this.renderReimbursementItems();
+        this.updateReimbursementTotal();
+        this.markAsChanged();
+    },
+    
+    /**
+     * Remove a reimbursement line item (REQ-028)
+     */
+    removeReimbursementItem(id) {
+        this.reimbursementItems = this.reimbursementItems.filter(item => item.id !== id);
+        this.renderReimbursementItems();
+        this.updateReimbursementTotal();
+        this.markAsChanged();
+    },
+    
+    /**
+     * Render all reimbursement line items (REQ-028)
+     */
+    renderReimbursementItems() {
+        const container = document.getElementById('reimbursement-items');
+        if (!container) return;
+        
+        if (this.reimbursementItems.length === 0) {
+            container.innerHTML = '<div class="empty-items">No expense items added yet. Click "Add Expense Item" to start.</div>';
+            return;
+        }
+        
+        // Build expense type options
+        const typeOptions = Object.entries(this.EXPENSE_TYPES)
+            .map(([value, label]) => `<option value="${value}">${label}</option>`)
+            .join('');
+        
+        container.innerHTML = this.reimbursementItems.map(item => `
+            <div class="reimbursement-item" data-item-id="${item.id}">
+                <div class="item-row">
+                    <div class="item-field">
+                        <label>Type</label>
+                        <select class="form-select item-type" onchange="TimesheetModule.updateItemFromInput(${item.id}, 'type', this.value)">
+                            <option value="">Select...</option>
+                            ${typeOptions}
+                        </select>
+                    </div>
+                    <div class="item-field">
+                        <label>Amount ($)</label>
+                        <input type="number" class="form-input item-amount" 
+                               value="${item.amount || ''}" 
+                               step="0.01" min="0" max="10000" 
+                               placeholder="0.00"
+                               oninput="TimesheetModule.updateItemFromInput(${item.id}, 'amount', this.value)">
+                    </div>
+                    <div class="item-field">
+                        <label>Date</label>
+                        <input type="date" class="form-input item-date" 
+                               value="${item.date || ''}"
+                               onchange="TimesheetModule.updateItemFromInput(${item.id}, 'date', this.value)">
+                    </div>
+                    <div class="item-field item-notes">
+                        <label>Notes</label>
+                        <input type="text" class="form-input" 
+                               value="${item.notes || ''}" 
+                               maxlength="100" 
+                               placeholder="Brief description..."
+                               oninput="TimesheetModule.updateItemFromInput(${item.id}, 'notes', this.value)">
+                    </div>
+                    <button type="button" class="btn-remove-item" onclick="TimesheetModule.removeReimbursementItem(${item.id})" title="Remove item">
+                        ×
+                    </button>
+                </div>
+            </div>
+        `).join('');
+        
+        // Set the selected type for each item
+        this.reimbursementItems.forEach(item => {
+            const itemEl = container.querySelector(`[data-item-id="${item.id}"]`);
+            if (itemEl && item.type) {
+                const typeSelect = itemEl.querySelector('.item-type');
+                if (typeSelect) typeSelect.value = item.type;
+            }
+        });
+    },
+    
+    /**
+     * Update item data from input change (REQ-028)
+     */
+    updateItemFromInput(id, field, value) {
+        const item = this.reimbursementItems.find(i => i.id === id);
+        if (item) {
+            if (field === 'amount') {
+                item[field] = parseFloat(value) || 0;
+            } else {
+                item[field] = value;
+            }
+            this.updateReimbursementTotal();
+            this.markAsChanged();
+        }
+    },
+    
+    /**
+     * Update running total display (REQ-028)
+     */
+    updateReimbursementTotal() {
+        const totalEl = document.getElementById('reimbursement-total-value');
+        const hiddenAmount = document.getElementById('reimbursement-amount');
+        
+        const total = this.reimbursementItems.reduce((sum, item) => sum + (item.amount || 0), 0);
+        
+        if (totalEl) {
+            totalEl.textContent = `$${total.toFixed(2)}`;
+        }
+        
+        // Update hidden field for backward compatibility
+        if (hiddenAmount) {
+            hiddenAmount.value = total;
+        }
+        
+        // Also update hidden type with first item's type (backward compat)
+        const hiddenType = document.getElementById('reimbursement-type');
+        if (hiddenType && this.reimbursementItems.length > 0) {
+            hiddenType.value = this.reimbursementItems[0].type || '';
+        }
+    },
+    
+    /**
+     * Clear all reimbursement items (REQ-028)
+     */
+    clearReimbursementItems() {
+        this.reimbursementItems = [];
+        this.nextReimbursementId = 1;
+        this.renderReimbursementItems();
+        this.updateReimbursementTotal();
     },
     
     /**

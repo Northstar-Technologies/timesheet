@@ -415,55 +415,35 @@ endblock %} {% block extra_css %}
           </div>
         </div>
 
-        <!-- Reimbursement Details (shown when reimbursement-needed checked) -->
+        <!-- Reimbursement Details (shown when reimbursement-needed checked) - REQ-028 -->
         <div id="reimbursement-section" class="form-section hidden">
           <div class="form-section-header">
             <div class="form-section-icon">💰</div>
             <h3>Reimbursement Details</h3>
           </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="reimbursement-type">Type</label>
-              <select
-                id="reimbursement-type"
-                name="reimbursement_type"
-                class="form-select"
-              >
-                <option value="">Select type...</option>
-                <option value="Car">🚗 Car (Mileage)</option>
-                <option value="Gas">⛽ Gas</option>
-                <option value="Hotel">🏨 Hotel</option>
-                <option value="Flight">✈️ Flight</option>
-                <option value="Food">🍽️ Food</option>
-                <option value="Parking">🅿️ Parking</option>
-                <option value="Toll">🛣️ Toll</option>
-                <option value="Other">📄 Other</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="reimbursement-amount">Amount ($)</label>
-              <input
-                type="number"
-                id="reimbursement-amount"
-                name="reimbursement_amount"
-                class="form-input"
-                step="0.01"
-                min="0"
-                max="10000"
-                value="0.00"
-                placeholder="0.00"
-              />
-            </div>
-            <div class="form-group">
-              <label for="stipend-date">Stipend Date</label>
-              <input
-                type="date"
-                id="stipend-date"
-                name="stipend_date"
-                class="form-input"
-              />
-            </div>
+          
+          <!-- Reimbursement Line Items Container -->
+          <div id="reimbursement-items" class="reimbursement-items">
+            <!-- Dynamic line items will be added here by JavaScript -->
           </div>
+          
+          <!-- Add Item Button -->
+          <div class="add-item-row">
+            <button type="button" id="add-reimbursement-btn" class="btn btn-secondary btn-sm">
+              ➕ Add Expense Item
+            </button>
+          </div>
+          
+          <!-- Running Total -->
+          <div class="reimbursement-total">
+            <span class="total-label">Total Reimbursement:</span>
+            <span class="total-value" id="reimbursement-total-value">$0.00</span>
+          </div>
+          
+          <!-- Hidden field for backward compatibility -->
+          <input type="hidden" id="reimbursement-amount" name="reimbursement_amount" value="0" />
+          <input type="hidden" id="reimbursement-type" name="reimbursement_type" value="" />
+          <input type="hidden" id="stipend-date" name="stipend_date" value="" />
         </div>
 
         <!-- Attachments -->
