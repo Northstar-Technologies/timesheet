@@ -109,14 +109,14 @@ Before deploying to production, run through this comprehensive checklist to ensu
 
 #### User Input
 
-- [ ] **Validate all form inputs** - Check timesheet entries, notes, admin notes for appropriate length and content
-- [ ] **XSS prevention** - Use Jinja2's auto-escaping for all user-generated content:
+- [x] **Validate all form inputs** - ✅ Notes have `maxlength="255"`, hours validated client/server-side
+- [x] **XSS prevention** - ✅ Jinja2 auto-escaping enabled by default, no `|safe` filters used
   ```jinja2
   {{ user_input }}  <!-- Auto-escaped -->
   {{ user_input|safe }}  <!-- Only if you're absolutely sure it's safe -->
   ```
-- [ ] **Sanitize rich text** - If implementing rich text notes, use a library like Bleach to sanitize HTML
-- [ ] **Validate numeric inputs** - Ensure hours, amounts use proper decimal validation
+- [x] **Sanitize rich text** - ✅ Not applicable - using plain text notes only
+- [x] **Validate numeric inputs** - ✅ Hours use `type="number" min="0" max="24" step="0.5"`
 
 ---
 
@@ -168,10 +168,10 @@ Before deploying to production, run through this comprehensive checklist to ensu
 
 #### Container Security
 
-- [ ] **Use official base images** - Python, PostgreSQL, Redis from official sources
+- [x] **Use official base images** - ✅ Using `python:3.11-slim`, official PostgreSQL, Redis
 - [ ] **Keep images updated** - Regularly update base images for security patches
 - [ ] **Scan for vulnerabilities** - Use `docker scan` or Trivy to check for CVEs
-- [ ] **Non-root user** - Run application as non-root user in container
+- [x] **Non-root user** - ✅ App runs as `appuser` (created via `useradd` in Dockerfile)
 - [ ] **Minimal permissions** - Container should have minimal necessary permissions
 
 #### Environment Variables
@@ -230,17 +230,22 @@ Before deploying to production, run through this comprehensive checklist to ensu
 ### ✅ Good Security Practices Implemented
 
 1. **Session-based authentication** - Server-side session storage (no JWT in localStorage)
-2. **Decorator-based authorization** - `@login_required` and `@admin_required` decorators
-3. **SQLAlchemy ORM** - Parameterized queries prevent SQL injection
-4. **Ownership verification** - Timesheets filtered by `user_id` in all routes
-5. **Development mode detection** - `_is_dev_mode()` prevents accidental bypass in production
-6. **File extension validation** - `ALLOWED_EXTENSIONS` restricts upload types
-7. **File magic number validation** - Verifies file content matches extension _(Added Jan 7, 2026)_
-8. **Secure filename handling** - Uses `secure_filename()` for uploads
-9. **Environment-based configuration** - Secrets loaded from environment variables
-10. **`.gitignore` properly configured** - `.env`, secrets, and sensitive files excluded
-11. **Session cookie flags** - `SECURE`, `HTTPONLY`, `SAMESITE` configured _(Added Jan 7, 2026)_
-12. **Security headers** - `X-Frame-Options`, `X-Content-Type-Options`, `X-XSS-Protection` _(Added Jan 7, 2026)_
+2. **Decorator-based authorization** - `@login_required`, `@admin_required`, `@role_required` decorators
+3. **Role-based access control** - Four-tier role system (Trainee, Staff, Support, Admin) _(Added Jan 8, 2026)_
+4. **SQLAlchemy ORM** - Parameterized queries prevent SQL injection
+5. **Ownership verification** - Timesheets filtered by `user_id` in all routes
+6. **Development mode detection** - `_is_dev_mode()` prevents accidental bypass in production
+7. **File extension validation** - `ALLOWED_EXTENSIONS` restricts upload types
+8. **File magic number validation** - Verifies file content matches extension _(Added Jan 7, 2026)_
+9. **Secure filename handling** - Uses `secure_filename()` for uploads
+10. **Environment-based configuration** - Secrets loaded from environment variables
+11. **`.gitignore` properly configured** - `.env`, secrets, and sensitive files excluded
+12. **Session cookie flags** - `SECURE`, `HTTPONLY`, `SAMESITE` configured _(Added Jan 7, 2026)_
+13. **Security headers** - `X-Frame-Options`, `X-Content-Type-Options`, `X-XSS-Protection` _(Added Jan 7, 2026)_
+14. **Input validation** - Form length limits, numeric validation on hours
+15. **XSS prevention** - Jinja2 auto-escaping enabled, no unsafe filters
+16. **Non-root container** - Application runs as `appuser`, not root
+17. **Official Docker images** - Using verified base images from Docker Hub
 
 ### ⚠️ Areas Requiring Attention Before Production
 
@@ -273,5 +278,5 @@ If you discover a security vulnerability in this application:
 
 ---
 
-**Last Updated:** 2026-01-07  
+**Last Updated:** 2026-01-08  
 **Review Schedule:** Quarterly or before major releases
