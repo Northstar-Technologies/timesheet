@@ -240,6 +240,17 @@ Create dummy logins at landing page for each role (will be Azure credentials in 
 - **Row totals:** Show total hours for each hour type (row) in all grids
 - **Applies to:** All appearances of Time Entries grid (not just the submission summary)
 
+### Holiday Awareness ✅
+
+**Decision:** Display holidays on time entry grid with confirmation warning for double-verification
+
+- **Visual Indicators:** Mark holidays in the grid with distinct styling (color, icon, label)
+- **Warning Dialog:** When entering hours on a holiday, show confirmation:
+  - "This day is [Holiday Name]. Are you sure you want to enter hours?"
+  - User must confirm before hours are saved
+- **Holiday List:** Configurable list of company-observed holidays
+- **Purpose:** Prevent accidental hour entry on holidays, ensure intentional entries are verified
+
 ---
 
 ## ✅ Technical Stack Decisions
@@ -254,4 +265,4 @@ Create dummy logins at landing page for each role (will be Azure credentials in 
 
 ---
 
-_Document updated January 7, 2026_
+_Document updated January 8, 2026_

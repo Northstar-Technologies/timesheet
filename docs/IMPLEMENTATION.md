@@ -415,6 +415,16 @@ stateDiagram-v2
 | Unpaid    | ❌      | ❌       | ❌                  |
 | Holiday   | ✅      | ❌       | ❌                  |
 
+### Holiday Awareness (REQ-022)
+
+The time entry grid displays company holidays with visual indicators. When a user enters hours on a date that is a recognized holiday:
+
+1. **Visual Indicator** - The day column shows a holiday marker (icon/color/label)
+2. **Confirmation Warning** - A dialog prompts: "This day is [Holiday Name]. Are you sure you want to enter hours?"
+3. **Double Verification** - User must confirm before hours are saved
+
+This prevents accidental entries on holidays while still allowing intentional work logging (e.g., on-call support).
+
 ### Hour Type Configuration
 
 ```python

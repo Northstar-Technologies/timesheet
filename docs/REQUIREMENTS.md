@@ -385,6 +385,39 @@ Each reimbursement type should have its own attachment requirement:
 
 ---
 
+### REQ-022: Holiday Awareness & Warning (P1)
+
+Display holidays on the time entry grid and show a confirmation warning when users enter hours on a holiday.
+
+**Features:**
+
+- **Holiday Indicators:** Visually mark holidays on the calendar/grid (e.g., colored cell, icon, label)
+- **Holiday List:** Maintain list of company-observed holidays (configurable)
+- **Double-Verification Warning:** When a user enters hours on a holiday:
+  - Display confirmation dialog: "This day is a holiday ([Holiday Name]). Are you sure you want to enter hours?"
+  - User must confirm to proceed
+  - Works for all hour types (Field, Internal, Training, etc.)
+- **Holiday Hour Type:** Users can still select "Holiday" hour type for holiday pay
+
+**Implementation Notes:**
+
+- Store holidays in database (date, name, year) or configuration file
+- Check entry dates against holiday list on input
+- Show warning modal before saving hours on holiday
+- Consider making holidays configurable per year
+- Visual indicator should be visible before user enters hours
+
+**Holiday Examples (US):**
+
+- New Year's Day
+- Memorial Day
+- Independence Day (July 4th)
+- Labor Day
+- Thanksgiving
+- Christmas Day
+
+---
+
 ## ✅ Implementation Status
 
 | Requirement | Status      | Notes                                 |
@@ -410,7 +443,8 @@ Each reimbursement type should have its own attachment requirement:
 | REQ-019     | 📋 Planned  | Export format options                 |
 | REQ-020     | 📋 Planned  | Travel flag visibility                |
 | REQ-021     | 📋 Planned  | Per-option reimbursement attachments  |
+| REQ-022     | 📋 Planned  | Holiday awareness & warning           |
 
 ---
 
-_Document updated January 7, 2026_
+_Document updated January 8, 2026_
