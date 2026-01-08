@@ -5,16 +5,35 @@ Loads settings from environment variables with sensible defaults.
 """
 
 import os
+import secrets
 from dotenv import load_dotenv
 
 load_dotenv()
+
+
+_SECRET_KEY_PLACEHOLDERS = (
+    "dev-secret-key",
+    "your-secret-key",
+)
+
+
+def _load_secret_key():
+    secret_key = os.environ.get("SECRET_KEY")
+    if not secret_key:
+        return secrets.token_hex(32)
+
+    lowered = str(secret_key).lower()
+    if any(marker in lowered for marker in _SECRET_KEY_PLACEHOLDERS):
+        return secrets.token_hex(32)
+
+    return secret_key
 
 
 class Config:
     """Base configuration class."""
 
     # Flask
-    SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key-change-me")
+    SECRET_KEY = _load_secret_key()
 
     # Database
     SQLALCHEMY_DATABASE_URI = os.environ.get(
