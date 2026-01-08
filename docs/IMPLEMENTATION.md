@@ -985,6 +985,55 @@ python -m compileall app
 
 ---
 
+## MCP Integration (AI-Assisted Development)
+
+The project supports **Model Context Protocol (MCP)** servers to enhance AI-assisted development and operations. MCP allows AI assistants to directly interact with git, databases, cloud services, and more.
+
+### Currently Active
+
+| MCP Server    | Purpose                                |
+| ------------- | -------------------------------------- |
+| **GitKraken** | Git operations, commits, branches, PRs |
+
+### Recommended Additions
+
+| MCP Server          | Priority    | Relevance                            |
+| ------------------- | ----------- | ------------------------------------ |
+| **Microsoft Graph** | ⭐⭐⭐ High | Azure AD, SharePoint, Teams, Outlook |
+| **PostgreSQL**      | ⭐⭐⭐ High | Direct database queries, debugging   |
+| **Twilio**          | ⭐⭐ Medium | SMS notifications (REQ-011)          |
+| **Docker**          | ⭐⭐ Medium | Container management                 |
+| **Sentry**          | ⭐ Low      | Error tracking                       |
+
+### Benefits
+
+- **Faster debugging**: AI can query database directly
+- **Automated operations**: Container restarts, deployments
+- **Integration testing**: AI can send test SMS/emails
+- **User management**: Sync users from Azure AD
+
+### Configuration
+
+MCP servers are configured in your AI assistant's config file:
+
+```json
+{
+  "mcpServers": {
+    "postgres": {
+      "command": "npx",
+      "args": ["@anthropic/mcp-server-postgres"],
+      "env": {
+        "DATABASE_URL": "postgresql://user:pass@localhost:5432/timesheet"
+      }
+    }
+  }
+}
+```
+
+📖 **Full documentation**: See [MCP.md](./MCP.md) for installation instructions, security best practices, and detailed use cases.
+
+---
+
 ## Open Questions
 
 1. **File Storage**: Local vs. cloud - currently using local filesystem. Consider S3/Azure Blob for production?
