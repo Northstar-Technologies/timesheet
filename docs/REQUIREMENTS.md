@@ -434,7 +434,7 @@ Display holidays on the time entry grid and show a confirmation warning when use
 | REQ-010     | 📋 Planned  | SharePoint integration                |
 | REQ-011     | 📋 Planned  | Email service                         |
 | REQ-012     | 📋 Planned  | Teams bot                             |
-| REQ-013     | ✅ Partial  | Backend ready, UI filter pending      |
+| REQ-013     | ✅ Complete | Dropdown filters by user role         |
 | REQ-014     | ✅ Partial  | Warning exists, needs flow change     |
 | REQ-015     | 📋 Planned  | Azure AD integration                  |
 | REQ-016     | 📋 Planned  | Auto-redirect after login             |

@@ -162,12 +162,7 @@
           <div class="add-hour-type-row">
             <select id="hour-type-selector" class="form-select">
               <option value="">Select hour type to add...</option>
-              <option value="Field">Field Hours</option>
-              <option value="Internal">Internal Hours</option>
-              <option value="Training">Training</option>
-              <option value="PTO">PTO</option>
-              <option value="Unpaid">Unpaid Leave</option>
-              <option value="Holiday">Holiday</option>
+              <!-- Options populated by JavaScript based on user role -->
             </select>
             <button type="button" id="add-hour-type-btn" class="btn btn-icon" title="Add hour type">
               +
@@ -416,7 +411,7 @@
   window.currentUser = {{ user|tojson }};
 </script>
 <script src="{{ url_for('static', filename='js/api.js') }}?v=20260106p1"></script>
-<script src="{{ url_for('static', filename='js/timesheet.js') }}?v=20260106p11"></script>
+<script src="{{ url_for('static', filename='js/timesheet.js') }}?v=20260108p1"></script>
 <script src="{{ url_for('static', filename='js/admin.js') }}?v=20260107p4"></script>
 <script src="{{ url_for('static', filename='js/sse.js') }}?v=20260106p1"></script>
 <script src="{{ url_for('static', filename='js/app.js') }}?v=20260107p1"></script>

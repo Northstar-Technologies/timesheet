@@ -37,6 +37,9 @@ const TimesheetModule = {
             rowsContainer.innerHTML = '';
         }
         
+        // Populate hour type selector based on user role (REQ-013)
+        this.populateHourTypeSelector();
+        
         // Update header with dates
         this.updateHeaderDates(weekStart);
         
@@ -45,6 +48,39 @@ const TimesheetModule = {
         
         // Show/hide add row controls based on whether week is selected
         this.toggleAddRowControls(!!weekStart);
+    },
+    
+    /**
+     * Populate hour type selector based on user's role (REQ-013)
+     * Trainees can only select "Training", others get all hour types
+     */
+    populateHourTypeSelector() {
+        const selector = document.getElementById('hour-type-selector');
+        if (!selector) return;
+        
+        // Get allowed hour types from current user (set in window.currentUser)
+        const allowedTypes = window.currentUser?.allowed_hour_types || Object.keys(this.HOUR_TYPES);
+        
+        // Clear existing options (except placeholder)
+        selector.innerHTML = '<option value="">Select hour type to add...</option>';
+        
+        // Add only allowed hour types
+        allowedTypes.forEach(type => {
+            if (this.HOUR_TYPES[type]) {
+                const option = document.createElement('option');
+                option.value = type;
+                option.textContent = this.HOUR_TYPES[type];
+                selector.appendChild(option);
+            }
+        });
+        
+        // Show trainee-only message if restricted
+        if (allowedTypes.length === 1 && allowedTypes[0] === 'Training') {
+            const hint = document.createElement('option');
+            hint.disabled = true;
+            hint.textContent = '(Trainees can only log Training hours)';
+            selector.appendChild(hint);
+        }
     },
     
     /**
