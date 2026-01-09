@@ -194,23 +194,23 @@ Add ability to filter timesheets by current pay period (biweekly).
 
 ---
 
-### REQ-005: Current Week Filter (P1) ✅
+### REQ-005: Current Week Filter (P1)
 
 Add quick filter for current week's timesheets or the current pay period (biweekly).
 
-**Status: ✅ IMPLEMENTED (January 2026)**
+**Status: 📋 Planned**
 
 **Features:**
 
-- ✅ "This Week" quick filter button on admin dashboard
-- ✅ Shows only timesheets with `week_start` = current Sunday
-- ✅ Works alongside pay period filter (REQ-004)
+- "This Week" quick filter button on admin dashboard
+- Shows only timesheets with `week_start` = current Sunday
+- Works alongside pay period filter (REQ-004)
 
 **Implementation:**
 
-- ✅ `getWeekStart()` calculates current week's Sunday
-- ✅ Filter button in admin dashboard toolbar
-- ✅ Clears when "Reset" clicked
+- `getWeekStart()` calculates current week's Sunday
+- Filter button in admin dashboard toolbar
+- Clears when "Reset" clicked
 
 ---
 
@@ -1448,7 +1448,7 @@ Add end-to-end browser tests for critical user flows.
 | REQ-002     | ✅ Complete | All 4 test accounts available                   |
 | REQ-003     | ✅ Complete | User notification preferences + settings page   |
 | REQ-004     | ✅ Complete | Pay period filter button + display              |
-| REQ-005     | ✅ Complete | "This Week" or "Pay Period" quick filter        |
+| REQ-005     | 📋 Planned  | "This Week" or "Pay Period" quick filter        |
 | REQ-006     | ✅ Complete | Pay period confirmation + payroll export        |
 | REQ-007     | ✅ Complete | Column totals added to admin grid               |
 | REQ-008     | ✅ Complete | Row totals added to all grid views              |
