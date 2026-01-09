@@ -14,6 +14,7 @@ from ..models import (
     TimesheetStatus,
     HourType,
     ReimbursementItem,
+    ReimbursementType,
 )
 from ..extensions import db
 from ..utils.decorators import login_required
@@ -346,7 +347,8 @@ def submit_timesheet(timesheet_id):
         return {"error": "Only draft or rejected timesheets can be submitted"}, 400
 
     # Check if attachment is required but missing
-    if timesheet.requires_attachment():
+    missing_reimbursement = timesheet.get_missing_reimbursement_attachments()
+    if timesheet.requires_attachment() or missing_reimbursement:
         timesheet.status = TimesheetStatus.NEEDS_APPROVAL
     else:
         timesheet.status = TimesheetStatus.SUBMITTED
@@ -445,6 +447,13 @@ def upload_attachment(timesheet_id):
     if ext not in allowed:
         return {"error": f'File type not allowed. Allowed: {", ".join(allowed)}'}, 400
 
+    reimbursement_type = request.form.get("reimbursement_type", "").strip()
+    if reimbursement_type:
+        if reimbursement_type not in ReimbursementType.ALL:
+            return {"error": "Invalid reimbursement type"}, 400
+    else:
+        reimbursement_type = None
+
     # Generate unique filename
     original_filename = secure_filename(file.filename)
     stored_filename = f"{uuid_lib.uuid4()}.{ext}"
@@ -490,6 +499,7 @@ def upload_attachment(timesheet_id):
         original_filename=original_filename,
         mime_type=file.content_type,
         file_size=file_size,
+        reimbursement_type=reimbursement_type,
     )
     db.session.add(attachment)
 

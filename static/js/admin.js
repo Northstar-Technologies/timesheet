@@ -457,7 +457,7 @@ function showAdminTimesheetDetail(timesheet) {
                     ${timesheet.attachments.map(att => `
                         <a href="/api/admin/timesheets/${timesheet.id}/attachments/${att.id}" 
                            class="attachment-item" target="_blank">
-                            📎 ${att.filename}
+                            📎 ${att.filename}${att.reimbursement_type ? ` (${att.reimbursement_type})` : ''}
                         </a>
                     `).join('')}
                 </div>

@@ -489,6 +489,41 @@ const TimesheetModule = {
         if (!attachmentsList) return false;
         return attachmentsList.querySelectorAll('.attachment-item').length > 0;
     },
+
+    /**
+     * Get unique reimbursement types selected in line items (REQ-021)
+     */
+    getReimbursementTypes() {
+        return Array.from(
+            new Set(
+                this.reimbursementItems
+                    .map(item => item.type)
+                    .filter(type => type)
+            )
+        );
+    },
+
+    /**
+     * Get reimbursement types that have attachments (REQ-021)
+     */
+    getAttachmentReimbursementTypes() {
+        const types = new Set();
+        document.querySelectorAll('.attachment-item').forEach(item => {
+            const type = item.dataset.reimbursementType;
+            if (type) types.add(type);
+        });
+        return Array.from(types);
+    },
+
+    /**
+     * Get missing reimbursement attachment types (REQ-021)
+     */
+    getMissingReimbursementTypes() {
+        const needed = this.getReimbursementTypes();
+        if (!needed.length) return [];
+        const attached = new Set(this.getAttachmentReimbursementTypes());
+        return needed.filter(type => !attached.has(type));
+    },
     
     /**
      * Populate rows with existing entry data
@@ -846,6 +881,9 @@ const TimesheetModule = {
                 if (typeSelect) typeSelect.value = item.type;
             }
         });
+
+        this.updateAttachmentTypeOptions();
+        this.updateReimbursementAttachmentWarning();
     },
     
     /**
@@ -861,6 +899,8 @@ const TimesheetModule = {
             }
             this.updateReimbursementTotal();
             this.markAsChanged();
+            this.updateAttachmentTypeOptions();
+            this.updateReimbursementAttachmentWarning();
         }
     },
     
@@ -897,6 +937,8 @@ const TimesheetModule = {
         this.nextReimbursementId = 1;
         this.renderReimbursementItems();
         this.updateReimbursementTotal();
+        this.updateAttachmentTypeOptions();
+        this.updateReimbursementAttachmentWarning();
     },
     
     /**
@@ -912,9 +954,10 @@ const TimesheetModule = {
             container.innerHTML = '<p id="empty-attachments-text" class="empty-attachments-text">There is nothing attached.</p>';
         } else {
             attachments.forEach(att => {
+                const typeLabel = att.reimbursement_type ? ` (${att.reimbursement_type})` : '';
                 container.innerHTML += `
-                    <div class="attachment-item" data-id="${att.id}">
-                        <span>📎 ${att.filename}</span>
+                    <div class="attachment-item" data-id="${att.id}" data-reimbursement-type="${att.reimbursement_type || ''}">
+                        <span>📎 ${att.filename}${typeLabel}</span>
                         <button type="button" class="remove-btn" onclick="removeAttachment('${att.id}')">&times;</button>
                     </div>
                 `;
@@ -923,6 +966,8 @@ const TimesheetModule = {
         
         // Update field hours warning when attachments change
         this.updateFieldHoursWarning();
+        this.updateAttachmentTypeOptions();
+        this.updateReimbursementAttachmentWarning();
     },
     /**
      * Update row total when hours change
@@ -1097,6 +1142,8 @@ const TimesheetModule = {
         
         // Hide field hours warning
         this.updateFieldHoursWarning();
+        this.updateReimbursementAttachmentWarning();
+        this.updateAttachmentTypeOptions();
         
         // Initialize with no week selected - hides add controls
         this.initForWeek(null);
@@ -1161,6 +1208,49 @@ const TimesheetModule = {
             warning.classList.remove('hidden');
         } else {
             warning.classList.add('hidden');
+        }
+    },
+
+    /**
+     * Update reimbursement attachment warning visibility (REQ-021)
+     */
+    updateReimbursementAttachmentWarning() {
+        const warning = document.getElementById('reimbursement-attachments-warning');
+        const missingLabel = document.getElementById('reimbursement-attachments-missing');
+        if (!warning || !missingLabel) return;
+
+        const missing = this.getMissingReimbursementTypes();
+        if (missing.length > 0) {
+            missingLabel.textContent = missing.join(', ');
+            warning.classList.remove('hidden');
+        } else {
+            warning.classList.add('hidden');
+        }
+    },
+
+    /**
+     * Update attachment purpose options based on reimbursement items (REQ-021)
+     */
+    updateAttachmentTypeOptions() {
+        const select = document.getElementById('attachment-purpose');
+        if (!select) return;
+
+        const currentValue = select.value;
+        const types = new Set(this.getReimbursementTypes());
+        const attachedTypes = this.getAttachmentReimbursementTypes();
+        attachedTypes.forEach(type => types.add(type));
+
+        const options = ['<option value="">Field Hours / General</option>'];
+        Array.from(types).sort().forEach(type => {
+            options.push(`<option value="${type}">${type} Receipt</option>`);
+        });
+
+        select.innerHTML = options.join('');
+
+        if (currentValue && types.has(currentValue)) {
+            select.value = currentValue;
+        } else {
+            select.value = '';
         }
     },
     

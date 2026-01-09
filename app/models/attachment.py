@@ -23,6 +23,7 @@ class Attachment(db.Model):
         original_filename: User's original filename
         mime_type: File MIME type
         file_size: Size in bytes
+        reimbursement_type: Optional reimbursement type tag (REQ-021)
         uploaded_at: Upload timestamp
     """
 
@@ -36,6 +37,7 @@ class Attachment(db.Model):
     original_filename = db.Column(db.String(255), nullable=False)
     mime_type = db.Column(db.String(100), nullable=False)
     file_size = db.Column(db.Integer, nullable=False)
+    reimbursement_type = db.Column(db.String(20), nullable=True)
     uploaded_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
     # Relationships
@@ -51,5 +53,6 @@ class Attachment(db.Model):
             "filename": self.original_filename,
             "mime_type": self.mime_type,
             "file_size": self.file_size,
+            "reimbursement_type": self.reimbursement_type,
             "uploaded_at": self.uploaded_at.isoformat(),
         }

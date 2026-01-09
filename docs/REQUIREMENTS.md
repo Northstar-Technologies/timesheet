@@ -635,6 +635,14 @@ Each reimbursement type should have its own attachment requirement:
 - Validate each selected reimbursement type has attachment
 - Show warning if missing (similar to Field Hours warning)
 
+**Status: ✅ IMPLEMENTED (January 9, 2026)**
+
+**Implementation:**
+
+- ✅ Attachments tagged with reimbursement type
+- ✅ UI warning for missing reimbursement receipts
+- ✅ Submit flow warns and marks as Needs Approval when missing
+
 ---
 
 ### REQ-022: Holiday Awareness & Warning (P1)
@@ -1367,7 +1375,7 @@ Add end-to-end browser tests for critical user flows.
 | REQ-018     | ✅ Complete | Hour type filter dropdown on admin dash         |
 | REQ-019     | ✅ Complete | CSV/XLSX/PDF exports + pay period summary       |
 | REQ-020     | ✅ Complete | Travel ✈️ and expense 💰 badges on cards        |
-| REQ-021     | 📋 Planned  | Per-option reimbursement attachments            |
+| REQ-021     | ✅ Complete | Reimbursement-type attachment validation        |
 | REQ-022     | ✅ Complete | Holiday indicators + entry warning              |
 | REQ-023     | ✅ Complete | Read-only submitted timesheets                  |
 | REQ-024     | ✅ Complete | Travel mileage tracking & details               |

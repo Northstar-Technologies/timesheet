@@ -141,9 +141,12 @@ const API = {
     /**
      * Upload attachment
      */
-    async uploadAttachment(id, file) {
+    async uploadAttachment(id, file, reimbursementType = '') {
         const formData = new FormData();
         formData.append('file', file);
+        if (reimbursementType) {
+            formData.append('reimbursement_type', reimbursementType);
+        }
         
         return this.fetch(`/api/timesheets/${id}/attachments`, {
             method: 'POST',

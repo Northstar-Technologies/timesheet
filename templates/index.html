@@ -484,6 +484,18 @@ endblock %} {% block extra_css %}
                     Field engineers must upload at least one image as proof of
                     work.
                   </dd>
+                  <dt>Reimbursement Items</dt>
+                  <dd>
+                    Each reimbursement type requires its own receipt or supporting documentation.
+                  </dd>
+                  <dt>Car</dt>
+                  <dd>Mileage log or receipt.</dd>
+                  <dt>Flight</dt>
+                  <dd>Flight receipt or confirmation.</dd>
+                  <dt>Food</dt>
+                  <dd>Meal receipts.</dd>
+                  <dt>Other</dt>
+                  <dd>Supporting documentation.</dd>
                   <dt>Accepted Formats</dt>
                   <dd>PDF, PNG, JPG, JPEG, GIF files are supported.</dd>
                   <dt>File Size Limit</dt>
@@ -499,6 +511,17 @@ endblock %} {% block extra_css %}
           <!-- Field Hours Warning -->
           <div id="field-hours-warning" class="field-hours-warning hidden">
             ⚠️ Field engineers must submit at least one image.
+          </div>
+          <!-- Reimbursement Attachment Warning -->
+          <div id="reimbursement-attachments-warning" class="field-hours-warning hidden">
+            ⚠️ Reimbursement items require attachments for:
+            <span id="reimbursement-attachments-missing"></span>
+          </div>
+          <div class="attachment-meta">
+            <label for="attachment-purpose" class="filter-label">Attach for:</label>
+            <select id="attachment-purpose" class="form-select form-select-sm">
+              <option value="">Field Hours / General</option>
+            </select>
           </div>
           <div class="attachments-section">
             <div id="attachments-list" class="attachments-list">

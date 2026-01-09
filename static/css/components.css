@@ -905,6 +905,14 @@
   gap: var(--spacing-sm);
 }
 
+.attachment-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
 /* Character Counter for User Notes */
 .char-counter {
   font-size: var(--font-size-xs);

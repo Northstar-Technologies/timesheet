@@ -49,14 +49,15 @@ const AttachmentsModule = {
         const isEditable = TimesheetState.isEditable();
         const icon = this._getFileIcon(attachment.filename);
         const size = this._formatFileSize(attachment.file_size);
+        const typeLabel = attachment.reimbursement_type ? ` (${attachment.reimbursement_type})` : '';
         
         return `
-            <div class="attachment-item" data-id="${attachment.id}">
+            <div class="attachment-item" data-id="${attachment.id}" data-reimbursement-type="${attachment.reimbursement_type || ''}">
                 <span class="attachment-icon">${icon}</span>
                 <a href="/api/timesheets/${TimesheetState.getTimesheetId()}/attachments/${attachment.id}" 
                    target="_blank" 
                    class="attachment-name">
-                    ${this._escapeHtml(attachment.filename)}
+                    ${this._escapeHtml(attachment.filename)}${typeLabel}
                 </a>
                 <span class="attachment-size">${size}</span>
                 ${isEditable ? `
@@ -167,6 +168,10 @@ const AttachmentsModule = {
         // Create form data
         const formData = new FormData();
         formData.append('file', file);
+        const purposeSelect = document.getElementById('attachment-purpose');
+        if (purposeSelect && purposeSelect.value) {
+            formData.append('reimbursement_type', purposeSelect.value);
+        }
         
         // Upload via API
         const response = await fetch(`/api/timesheets/${timesheetId}/attachments`, {

@@ -237,6 +237,30 @@ async function submitTimesheet() {
             return;
         }
     }
+
+    // Check reimbursement items missing attachments (REQ-021)
+    const missingReimbursement = TimesheetModule.getMissingReimbursementTypes
+        ? TimesheetModule.getMissingReimbursementTypes()
+        : [];
+    if (missingReimbursement.length > 0) {
+        const proceed = confirm(
+            '⚠️ Reimbursement Attachments Required\n\n' +
+            `Missing attachments for: ${missingReimbursement.join(', ')}\n\n` +
+            'Click "Cancel" to add receipts.\n' +
+            'Click "OK" to submit anyway (you\'ll need to upload later).'
+        );
+
+        if (!proceed) {
+            const attachmentsSection = document.getElementById('upload-zone');
+            if (attachmentsSection) {
+                attachmentsSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                attachmentsSection.classList.add('highlight-warning');
+                setTimeout(() => attachmentsSection.classList.remove('highlight-warning'), 3000);
+            }
+            showToast('Please attach receipts for reimbursement items', 'warning');
+            return;
+        }
+    }
     
     try {
         const currentId = timesheetId || document.getElementById('timesheet-id').value;
@@ -252,7 +276,7 @@ async function submitTimesheet() {
         const timesheet = await API.submitTimesheet(currentId);
         
         if (timesheet.status === 'NEEDS_APPROVAL') {
-            showToast('Timesheet submitted - please upload approval document for field hours', 'warning');
+            showToast('Timesheet submitted - please upload required attachments', 'warning');
         } else {
             showToast('Timesheet submitted successfully!', 'success');
         }
@@ -291,6 +315,8 @@ async function deleteTimesheet() {
 
 async function handleFileUpload(file) {
     const timesheetId = document.getElementById('timesheet-id').value;
+    const purposeSelect = document.getElementById('attachment-purpose');
+    const reimbursementType = purposeSelect ? purposeSelect.value : '';
     
     if (!timesheetId) {
         showToast('Please save the timesheet first', 'warning');
@@ -298,17 +324,24 @@ async function handleFileUpload(file) {
     }
     
     try {
-        const attachment = await API.uploadAttachment(timesheetId, file);
+        const attachment = await API.uploadAttachment(timesheetId, file, reimbursementType);
         
         // Add to attachments list
         const container = document.getElementById('attachments-list');
+        const typeLabel = attachment.reimbursement_type ? ` (${attachment.reimbursement_type})` : '';
         container.innerHTML += `
-            <div class="attachment-item" data-id="${attachment.id}">
-                <span>📎 ${attachment.filename}</span>
+            <div class="attachment-item" data-id="${attachment.id}" data-reimbursement-type="${attachment.reimbursement_type || ''}">
+                <span>📎 ${attachment.filename}${typeLabel}</span>
                 <button type="button" class="remove-btn" onclick="removeAttachment('${attachment.id}')">&times;</button>
             </div>
         `;
         
+        if (typeof TimesheetModule !== 'undefined') {
+            TimesheetModule.updateFieldHoursWarning();
+            TimesheetModule.updateReimbursementAttachmentWarning();
+            TimesheetModule.updateAttachmentTypeOptions();
+        }
+
         showToast('File uploaded', 'success');
         
     } catch (error) {
@@ -325,6 +358,12 @@ async function removeAttachment(attachmentId) {
         // Remove from UI
         const item = document.querySelector(`.attachment-item[data-id="${attachmentId}"]`);
         if (item) item.remove();
+
+        if (typeof TimesheetModule !== 'undefined') {
+            TimesheetModule.updateFieldHoursWarning();
+            TimesheetModule.updateReimbursementAttachmentWarning();
+            TimesheetModule.updateAttachmentTypeOptions();
+        }
         
         showToast('Attachment removed', 'success');
         

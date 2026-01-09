@@ -189,6 +189,30 @@ class Timesheet(db.Model):
 
         return has_field_hours and not has_attachment
 
+    def get_missing_reimbursement_attachments(self):
+        """
+        Check for reimbursement types without attachments (REQ-021).
+
+        Returns:
+            list: Reimbursement types missing attachments
+        """
+        reimbursement_items = self.reimbursement_items.all()
+        types_needed = {
+            item.expense_type for item in reimbursement_items if item.expense_type
+        }
+
+        if not types_needed:
+            return []
+
+        attachments = self.attachments.all()
+        attached_types = {
+            attachment.reimbursement_type
+            for attachment in attachments
+            if attachment.reimbursement_type
+        }
+
+        return sorted(types_needed - attached_types)
+
     def to_dict(self, include_entries=True):
         """Serialize timesheet to dictionary."""
         data = {
@@ -227,6 +251,8 @@ class Timesheet(db.Model):
             data["attachments"] = [a.to_dict() for a in self.attachments]
             # REQ-028: Include reimbursement line items
             data["reimbursement_items"] = [r.to_dict() for r in self.reimbursement_items]
+            # REQ-021: Missing reimbursement attachments
+            data["missing_reimbursement_attachments"] = self.get_missing_reimbursement_attachments()
 
         return data
 
