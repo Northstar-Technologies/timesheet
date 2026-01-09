@@ -1,7 +1,7 @@
 """Add user notification settings fields
 
-Revision ID: 005_add_user_notification_settings
-Revises: 004_add_reimbursement_items
+Revision ID: 005_notify_settings
+Revises: 004_reimb_items
 Create Date: 2026-01-10
 """
 from alembic import op
@@ -9,8 +9,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = "005_add_user_notification_settings"
-down_revision = "004_add_reimbursement_items"
+revision = "005_notify_settings"
+down_revision = "004_reimb_items"
 branch_labels = None
 depends_on = None
 

@@ -851,9 +851,16 @@ endblock %} {% block extra_css %}
   window.currentUser = {{ user|tojson }};
 </script>
 <script src="{{ url_for('static', filename='js/api.js') }}?v=20260108p1"></script>
+<!-- REQ-044: New modular timesheet scripts -->
+<script src="{{ url_for('static', filename='js/timesheet/state.js') }}?v=20260109"></script>
+<script src="{{ url_for('static', filename='js/timesheet/dates.js') }}?v=20260109"></script>
+<script src="{{ url_for('static', filename='js/timesheet/entries.js') }}?v=20260109"></script>
+<script src="{{ url_for('static', filename='js/timesheet/attachments.js') }}?v=20260109"></script>
+<script src="{{ url_for('static', filename='js/timesheet/index.js') }}?v=20260109"></script>
+<!-- Legacy timesheet.js - will be deprecated incrementally -->
 <script src="{{ url_for('static', filename='js/timesheet.js') }}?v=20260108p8"></script>
 <script src="{{ url_for('static', filename='js/admin.js') }}?v=20260108p6"></script>
 <script src="{{ url_for('static', filename='js/settings.js') }}?v=20260110p1"></script>
 <script src="{{ url_for('static', filename='js/sse.js') }}?v=20260106p1"></script>
-<script src="{{ url_for('static', filename='js/app.js') }}?v=20260107p1"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}?v=20260109p1"></script>
 {% endblock %}

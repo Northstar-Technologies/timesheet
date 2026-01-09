@@ -1,7 +1,7 @@
 """Add pay_periods table for REQ-006
 
-Revision ID: 006_add_pay_periods
-Revises: 005_add_user_notification_settings
+Revision ID: 006_pay_periods
+Revises: 005_notify_settings
 Create Date: 2026-01-10
 """
 from alembic import op
@@ -9,8 +9,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = "006_add_pay_periods"
-down_revision = "005_add_user_notification_settings"
+revision = "006_pay_periods"
+down_revision = "005_notify_settings"
 branch_labels = None
 depends_on = None
 
