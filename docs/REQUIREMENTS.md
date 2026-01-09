@@ -958,13 +958,36 @@ Implement the missing PowerApps `Screen1` data report view.
 
 ### REQ-040: MCP Tooling Integration (P3)
 
-Optional AI tooling integration using MCP servers.
+Optional AI tooling integration using Model Context Protocol (MCP) servers.
+
+**Priority 1 - High Value Servers:**
+
+| MCP Server      | Use Case                                  | Related Features          |
+| --------------- | ----------------------------------------- | ------------------------- |
+| Microsoft Graph | Azure AD sync, SharePoint, Teams, Email   | REQ-010, REQ-011, REQ-015 |
+| PostgreSQL      | Direct DB queries for debugging/reporting | Development               |
+| Twilio          | SMS notifications management              | REQ-011 (SMS)             |
+
+**Priority 2 - Operations Servers:**
+
+| MCP Server | Use Case                          |
+| ---------- | --------------------------------- |
+| Docker     | Container management, log viewing |
+| Sentry     | Error tracking, stack traces      |
 
 **Implementation Notes:**
 
-- Configure MCP servers as needed (Graph, Postgres, Twilio, Docker, Sentry)
-- Follow MCP security best practices (MCP.md)
-- Document credentials and scopes in team setup notes
+- Configure MCP servers as needed (see [MCP.md](MCP.md) for full setup)
+- Use read-only database credentials when possible
+- Store API keys securely (environment variables, not committed)
+- Dynamic MCP available via Docker MCP Toolkit (experimental)
+
+**Security Requirements:**
+
+- Principle of least privilege for all MCP credentials
+- Audit logging for database access via MCP
+- Never commit credentials to git
+- See [MCP.md](MCP.md) Security Best Practices section
 
 ---
 
