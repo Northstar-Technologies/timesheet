@@ -240,49 +240,6 @@ Add confirmation step at end of pay period.
 
 ---
 
-### REQ-041: Support Dashboard for Trainee Approvals (P1) ✅
-
-Support users should have access to an Admin Dashboard, but it should only display trainee training timesheets that require their approval.
-
-**Status: ✅ IMPLEMENTED (January 8, 2026)**
-
-**Previous Bug:**
-
-- Support users did not see any Admin Dashboard option
-- Support users could not access timesheets they are authorized to approve (per REQ-001)
-
-**Required Behavior:**
-
-| Role    | Dashboard Access | Visible Timesheets      |
-| ------- | ---------------- | ----------------------- |
-| Trainee | ❌ None          | N/A                     |
-| Support | ✅ Limited       | Trainee timesheets only |
-| Staff   | ❌ None          | N/A                     |
-| Admin   | ✅ Full          | All timesheets          |
-
-**Features:**
-
-- ✅ Show "Trainee Approvals" navigation link for Support role
-- ✅ Filter dashboard to show ONLY timesheets submitted by users with role = `trainee`
-- ✅ Support can Approve/Reject trainee timesheets
-- ✅ Support cannot see Staff or other Support timesheets
-
-**UI Differences from Full Admin Dashboard:**
-
-- ✅ Title: "Trainee Approvals" instead of "Admin Dashboard"
-- ✅ No access to system settings or user management (list_users remains admin-only)
-- ✅ Only approval-related actions available
-
-**Implementation Notes:**
-
-- ✅ Added `_can_access_timesheet()` helper for role-based authorization
-- ✅ Changed all approval endpoints from `@admin_required` to `@can_approve`
-- ✅ Added role-based filtering in `list_timesheets()` for Support users
-- ✅ Updated sidebar navigation in `templates/index.html`
-- ✅ Dashboard returns `view_mode` to frontend for UI customization
-
----
-
 ## ⏱️ Time Entry Grid
 
 ### REQ-007: Column Totals (All Grids) (P1) ✅
@@ -372,6 +329,35 @@ Sync uploaded attachments to SharePoint for permanent storage.
 - Handle sync failures gracefully
 - Roadmap recommends S3/R2 object storage for scale; decide whether SharePoint sync remains primary or becomes secondary (see REQ-033)
 
+**Implementation Detail:**
+
+- Data model additions:
+  - `Attachment` fields: `sharepoint_item_id`, `sharepoint_site_id`, `sharepoint_drive_id`, `sharepoint_web_url`, `sharepoint_sync_status` (`PENDING|SYNCED|FAILED`), `sharepoint_synced_at`, `sharepoint_last_error`
+  - Index `sharepoint_sync_status` for background job scans
+- Storage flow:
+  - Keep local file in `uploads/` for immediate access
+  - After upload, enqueue a sync job with attachment ID and storage path
+  - If SharePoint upload succeeds, store item IDs and mark `SYNCED`
+  - If upload fails, increment retry count and mark `FAILED` with error
+- Background job:
+  - Add job in `app/jobs/` (similar to existing job patterns) that polls `PENDING|FAILED` items with exponential backoff
+  - Limit concurrency to avoid Graph throttling
+  - Log sync metrics and emit structured logs (success/failure) for observability
+- Microsoft Graph integration:
+  - Use app-only credentials from Azure AD (client credentials flow)
+  - Create a SharePoint folder structure by year/week: `Timesheets/{YYYY}/{YYYY-MM-DD}/`
+  - Upload to the correct drive (document library) and folder
+  - Store `webUrl` for quick access from admin UI
+- Admin UI:
+  - Add read-only sync status + link in attachment display
+  - Show failure reason and retry action for admins
+- Security:
+  - Store tokens server-side only
+  - Restrict to specific site/drive IDs via config
+- Config:
+  - New env vars: `SP_SITE_ID`, `SP_DRIVE_ID`, `SP_BASE_FOLDER`, plus existing Azure credentials
+  - Feature flag: `SHAREPOINT_SYNC_ENABLED` to gate background sync
+
 ---
 
 ## 🔔 Notifications
@@ -413,6 +399,25 @@ Extend existing Timesheet Bot to send all notification types.
 
 - See [BOT.md](BOT.md) for Teams bot architecture
 - Requires Teams app registration
+
+**Implementation Detail:**
+
+- Bot delivery:
+  - Use the existing bot endpoint to send proactive messages for approvals, needs attention, reminders, and new submissions
+  - Respect user notification preferences (Teams opt-in + saved Teams account)
+- Adaptive Cards:
+  - Include timesheet summary, week range, and totals
+  - Approve/Reject buttons post back to bot command handlers
+  - Provide deep link to `/app#admin` for full review
+- Auth & identity:
+  - Map incoming Teams user to `User.teams_account`
+  - Validate bot framework tokens for incoming actions
+- Background reminders:
+  - Hook into existing reminder schedule; send Teams notifications alongside SMS/email
+  - De-duplicate per user/week to avoid double sends
+- Config:
+  - `TEAMS_APP_ID`, `TEAMS_APP_PASSWORD`, `TEAMS_TENANT_ID`
+  - Feature flag: `TEAMS_NOTIFICATIONS_ENABLED`
 
 ---
 
@@ -508,6 +513,26 @@ Enable full Azure AD SSO for production authentication.
 - Replace dev auth with Azure AD in production environments
 - Fix BUG-003: Use `get_or_create` pattern for user provisioning
 - See [AZURE.md](AZURE.md) for full setup and troubleshooting guide
+
+**Implementation Detail:**
+
+- Auth flow:
+  - Use MSAL confidential client with authorization code flow
+  - Accept optional `login_hint` to streamline sign-in
+  - Store access token + ID token claims in session
+- User provisioning:
+  - Create user on first login with `azure_id`, `email`, `display_name`
+  - Default role to `STAFF` until admin assigns roles
+  - Initialize `notification_emails` with primary email
+- Admin controls:
+  - Role management in admin UI (add manual override if role mapping exists)
+  - Optional domain allowlist to restrict login to company domains
+- Session security:
+  - Rotate session on login, set secure cookie flags in production
+  - Validate callback state/nonce with MSAL helpers
+- Config:
+  - `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`, `AZURE_TENANT_ID`, `AZURE_REDIRECT_URI`
+  - `AZURE_SCOPES` for profile/email
 
 ---
 
@@ -1205,6 +1230,49 @@ Optional AI tooling integration using Model Context Protocol (MCP) servers. This
 - MCP is not currently used in this project
 - Direct API integrations (Microsoft Graph, PostgreSQL, Twilio) are preferred
 - Document retained for future reference if MCP becomes relevant
+
+---
+
+### REQ-041: Support Dashboard for Trainee Approvals (P1) ✅
+
+Support users should have access to an Admin Dashboard, but it should only display trainee training timesheets that require their approval.
+
+**Status: ✅ IMPLEMENTED (January 8, 2026)**
+
+**Previous Bug:**
+
+- Support users did not see any Admin Dashboard option
+- Support users could not access timesheets they are authorized to approve (per REQ-001)
+
+**Required Behavior:**
+
+| Role    | Dashboard Access | Visible Timesheets      |
+| ------- | ---------------- | ----------------------- |
+| Trainee | ❌ None          | N/A                     |
+| Support | ✅ Limited       | Trainee timesheets only |
+| Staff   | ❌ None          | N/A                     |
+| Admin   | ✅ Full          | All timesheets          |
+
+**Features:**
+
+- ✅ Show "Trainee Approvals" navigation link for Support role
+- ✅ Filter dashboard to show ONLY timesheets submitted by users with role = `trainee`
+- ✅ Support can Approve/Reject trainee timesheets
+- ✅ Support cannot see Staff or other Support timesheets
+
+**UI Differences from Full Admin Dashboard:**
+
+- ✅ Title: "Trainee Approvals" instead of "Admin Dashboard"
+- ✅ No access to system settings or user management (list_users remains admin-only)
+- ✅ Only approval-related actions available
+
+**Implementation Notes:**
+
+- ✅ Added `_can_access_timesheet()` helper for role-based authorization
+- ✅ Changed all approval endpoints from `@admin_required` to `@can_approve`
+- ✅ Added role-based filtering in `list_timesheets()` for Support users
+- ✅ Updated sidebar navigation in `templates/index.html`
+- ✅ Dashboard returns `view_mode` to frontend for UI customization
 
 ---
 
