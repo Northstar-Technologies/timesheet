@@ -27,6 +27,12 @@ endblock %} {% block extra_css %}
         <span class="icon">👥</span>
         {% if user.role == 'support' %}Trainee Approvals{% else %}Admin Dashboard{% endif %}
       </a>
+      {% if user.is_admin %}
+      <a href="#report" class="sidebar-link" data-view="report">
+        <span class="icon">📑</span>
+        Data Report
+      </a>
+      {% endif %}
       {% endif %}
     </nav>
   </aside>
@@ -866,6 +872,112 @@ endblock %} {% block extra_css %}
 
       <div id="admin-detail" class="timesheet-detail hidden">
         <!-- Populated by JavaScript -->
+      </div>
+    </section>
+    {% endif %}
+
+    {% if user.is_admin %}
+    <section id="view-report" class="view">
+      <div class="view-header">
+        <h2>Timesheet Data Report</h2>
+        <div class="view-header-actions">
+          <button class="btn btn-ghost" id="report-refresh-btn" title="Refresh report">
+            <span>🔄</span>
+            Refresh
+          </button>
+        </div>
+      </div>
+
+      <div class="admin-section">
+        <div class="filters">
+          <div class="filter-group">
+            <label class="filter-label">User:</label>
+            <select id="report-filter-user" class="form-select">
+              <option value="">All Users</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">Status:</label>
+            <select id="report-filter-status" class="form-select">
+              <option value="">All Statuses</option>
+              <option value="SUBMITTED">Submitted</option>
+              <option value="NEEDS_APPROVAL">Needs Approval</option>
+              <option value="APPROVED">Approved</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">Hour Type:</label>
+            <select id="report-filter-hourtype" class="form-select">
+              <option value="">All Types</option>
+              <option value="Field">Field Hours</option>
+              <option value="Internal">Internal Hours</option>
+              <option value="Training">Training</option>
+              <option value="PTO">PTO</option>
+              <option value="Holiday">Holiday</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">Week:</label>
+            <input type="date" id="report-filter-week" class="form-input" />
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">Entry Dates:</label>
+            <div class="date-range">
+              <input type="date" id="report-filter-start" class="form-input" />
+              <span class="date-range-sep">→</span>
+              <input type="date" id="report-filter-end" class="form-input" />
+            </div>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">Rows:</label>
+            <select id="report-per-page" class="form-select form-select-sm">
+              <option value="100">100</option>
+              <option value="200" selected>200</option>
+              <option value="500">500</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <button class="btn btn-ghost btn-sm" id="report-clear-filters">🔄 Reset</button>
+          </div>
+        </div>
+
+        <div class="report-meta" id="report-meta">Loading report...</div>
+
+        <div class="report-table-wrapper">
+          <table class="report-table">
+            <thead>
+              <tr>
+                <th>Employee</th>
+                <th>Email</th>
+                <th>Week Start</th>
+                <th>Entry Date</th>
+                <th>Hour Type</th>
+                <th>Hours</th>
+                <th>Status</th>
+                <th>Total</th>
+                <th>Payable</th>
+                <th>Billable</th>
+                <th>Unpaid</th>
+                <th>Travel</th>
+                <th>Expenses</th>
+                <th>Reimbursement</th>
+                <th>Attachments</th>
+                <th>Open</th>
+              </tr>
+            </thead>
+            <tbody id="report-table-body">
+              <tr>
+                <td colspan="16">Loading report...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="report-pagination">
+          <button class="btn btn-ghost btn-sm" id="report-prev">◀ Prev</button>
+          <span id="report-page-label">Page 1</span>
+          <button class="btn btn-ghost btn-sm" id="report-next">Next ▶</button>
+        </div>
       </div>
     </section>
     {% endif %}

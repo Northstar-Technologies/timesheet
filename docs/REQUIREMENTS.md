@@ -1177,11 +1177,18 @@ Complete the remaining UI/UX items from supporting docs.
 
 Implement the missing PowerApps `Screen1` data report view.
 
+**Status: ✅ IMPLEMENTED (January 2026)**
+
 **Implementation Notes:**
 
 - Build a read-only data table view for raw entries
 - Decide routing (admin-only vs separate report page)
 - Preserve parity with the original PowerApps report fields (POWERAPPS.md)
+
+**Implementation:**
+
+- Admin-only data report view with filters + pagination
+- Raw timesheet entries with user + totals context
 
 ---
 
@@ -1405,7 +1412,7 @@ Add end-to-end browser tests for critical user flows.
 | REQ-036     | ✅ Complete | Observability, JSON logging, /metrics endpoint  |
 | REQ-037     | ✅ Complete | Testing coverage (4 new test files added)       |
 | REQ-038     | ✅ Complete | UX & accessibility backlog                      |
-| REQ-039     | 📋 Planned  | PowerApps data report view                      |
+| REQ-039     | ✅ Complete | PowerApps data report view                      |
 | REQ-040     | � Deferred  | MCP tooling integration (not used)              |
 | REQ-041     | ✅ Complete | Support dashboard for trainee approvals         |
 | REQ-042     | ✅ Complete | Rate limiting on auth endpoints (Flask-Limiter) |

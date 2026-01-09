@@ -7,6 +7,8 @@
 // Store for loaded users
 let adminUsers = [];
 let payPeriodStatus = null;
+let reportPage = 1;
+let reportPages = 1;
 
 // REQ-025: Expense type icons
 const EXPENSE_TYPE_ICONS = {
@@ -23,6 +25,14 @@ const EXPENSE_TYPE_ICONS = {
 function formatExpenseType(type) {
     const icon = EXPENSE_TYPE_ICONS[type] || '💰';
     return `${icon} ${type}`;
+}
+
+function populateUserSelect(select, users) {
+    if (!select) return;
+    select.innerHTML = '<option value=\"\">All Users</option>';
+    users.forEach(user => {
+        select.innerHTML += `<option value=\"${user.id}\">${user.display_name}</option>`;
+    });
 }
 
 // REQ-004: Pay Period Configuration
@@ -275,13 +285,11 @@ async function loadAdminUsers() {
         const data = await API.getUsers();
         adminUsers = data.users;
         
-        const select = document.getElementById('admin-filter-user');
-        if (select) {
-            select.innerHTML = '<option value="">All Users</option>';
-            adminUsers.forEach(user => {
-                select.innerHTML += `<option value="${user.id}">${user.display_name}</option>`;
-            });
-        }
+        const adminSelect = document.getElementById('admin-filter-user');
+        populateUserSelect(adminSelect, adminUsers);
+
+        const reportSelect = document.getElementById('report-filter-user');
+        populateUserSelect(reportSelect, adminUsers);
     } catch (error) {
         console.error('Failed to load users:', error);
     }
@@ -348,6 +356,105 @@ async function openAdminTimesheet(id) {
     } catch (error) {
         showToast(error.message, 'error');
     }
+}
+
+// ==========================================
+// Data Report View (REQ-039)
+// ==========================================
+
+async function loadAdminReport(page = 1) {
+    const body = document.getElementById('report-table-body');
+    if (!body) return;
+
+    reportPage = page;
+    body.innerHTML = '<tr><td colspan="16">Loading report...</td></tr>';
+
+    const statusEl = document.getElementById('report-filter-status');
+    const userEl = document.getElementById('report-filter-user');
+    const weekEl = document.getElementById('report-filter-week');
+    const hourTypeEl = document.getElementById('report-filter-hourtype');
+    const startEl = document.getElementById('report-filter-start');
+    const endEl = document.getElementById('report-filter-end');
+    const perPageEl = document.getElementById('report-per-page');
+
+    const params = {
+        page: reportPage,
+        per_page: perPageEl && perPageEl.value ? perPageEl.value : 200,
+    };
+
+    if (statusEl && statusEl.value) params.status = statusEl.value;
+    if (userEl && userEl.value) params.user_id = userEl.value;
+    if (weekEl && weekEl.value) params.week_start = weekEl.value;
+    if (hourTypeEl && hourTypeEl.value) params.hour_type = hourTypeEl.value;
+    if (startEl && startEl.value) params.start_date = startEl.value;
+    if (endEl && endEl.value) params.end_date = endEl.value;
+
+    try {
+        const data = await API.getTimesheetReport(params);
+        reportPages = data.pages || 1;
+
+        const meta = document.getElementById('report-meta');
+        if (meta) {
+            meta.textContent = `Showing ${data.rows.length} of ${data.total} entries`;
+        }
+
+        if (!data.rows.length) {
+            body.innerHTML = '<tr><td colspan="16">No entries found.</td></tr>';
+            updateReportPagination();
+            return;
+        }
+
+        body.innerHTML = data.rows.map(row => `
+            <tr>
+                <td>${row.employee}</td>
+                <td>${row.email || ''}</td>
+                <td>${row.week_start || ''}</td>
+                <td>${row.entry_date}</td>
+                <td>${row.hour_type}</td>
+                <td>${row.hours}</td>
+                <td>${row.status || ''}</td>
+                <td>${row.total_hours}</td>
+                <td>${row.payable_hours}</td>
+                <td>${row.billable_hours}</td>
+                <td>${row.unpaid_hours}</td>
+                <td>${row.traveled ? 'Yes' : 'No'}</td>
+                <td>${row.expenses ? 'Yes' : 'No'}</td>
+                <td>${row.reimbursement}</td>
+                <td>${row.attachments}</td>
+                <td>
+                    <button class="btn btn-ghost btn-sm" onclick="openReportTimesheet('${row.timesheet_id}')">
+                        Open
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+
+        updateReportPagination();
+    } catch (error) {
+        showToast(error.message, 'error');
+        body.innerHTML = '<tr><td colspan="16">Failed to load report.</td></tr>';
+    }
+}
+
+function updateReportPagination() {
+    const label = document.getElementById('report-page-label');
+    const prevBtn = document.getElementById('report-prev');
+    const nextBtn = document.getElementById('report-next');
+
+    if (label) {
+        label.textContent = `Page ${reportPage} of ${reportPages}`;
+    }
+    if (prevBtn) {
+        prevBtn.disabled = reportPage <= 1;
+    }
+    if (nextBtn) {
+        nextBtn.disabled = reportPage >= reportPages;
+    }
+}
+
+function openReportTimesheet(timesheetId) {
+    navigateToView('admin');
+    openAdminTimesheet(timesheetId);
 }
 
 // ==========================================
@@ -644,6 +751,68 @@ document.addEventListener('DOMContentLoaded', () => {
     if (window.currentUser && window.currentUser.is_admin) {
         loadAdminUsers();
         loadAdminStats(); // Load stats for KPI cards
+    }
+
+    if (window.currentUser && window.currentUser.is_admin) {
+        const reportRefreshBtn = document.getElementById('report-refresh-btn');
+        if (reportRefreshBtn) {
+            reportRefreshBtn.addEventListener('click', () => loadAdminReport(1));
+        }
+
+        const reportFilters = [
+            'report-filter-status',
+            'report-filter-user',
+            'report-filter-week',
+            'report-filter-hourtype',
+            'report-filter-start',
+            'report-filter-end',
+            'report-per-page',
+        ];
+        reportFilters.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('change', () => loadAdminReport(1));
+            }
+        });
+
+        const reportClear = document.getElementById('report-clear-filters');
+        if (reportClear) {
+            reportClear.addEventListener('click', () => {
+                const ids = [
+                    'report-filter-status',
+                    'report-filter-user',
+                    'report-filter-week',
+                    'report-filter-hourtype',
+                    'report-filter-start',
+                    'report-filter-end',
+                ];
+                ids.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.value = '';
+                });
+                const perPageEl = document.getElementById('report-per-page');
+                if (perPageEl) perPageEl.value = '200';
+                loadAdminReport(1);
+            });
+        }
+
+        const reportPrev = document.getElementById('report-prev');
+        if (reportPrev) {
+            reportPrev.addEventListener('click', () => {
+                if (reportPage > 1) {
+                    loadAdminReport(reportPage - 1);
+                }
+            });
+        }
+
+        const reportNext = document.getElementById('report-next');
+        if (reportNext) {
+            reportNext.addEventListener('click', () => {
+                if (reportPage < reportPages) {
+                    loadAdminReport(reportPage + 1);
+                }
+            });
+        }
     }
     
     // Setup filter handlers

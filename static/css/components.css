@@ -1080,6 +1080,70 @@
 }
 
 /* ============================================
+   Admin Data Report Table
+   ============================================ */
+.report-meta {
+  margin: var(--spacing-sm) 0 var(--spacing-md);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.report-table-wrapper {
+  overflow-x: auto;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-surface);
+}
+
+.report-table {
+  width: 100%;
+  min-width: 1200px;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+
+.report-table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--color-bg-overlay);
+  color: var(--color-text-secondary);
+  text-align: left;
+  padding: var(--spacing-sm);
+  border-bottom: 1px solid var(--color-border-subtle);
+  font-weight: 600;
+}
+
+.report-table tbody td {
+  padding: var(--spacing-sm);
+  border-bottom: 1px solid var(--color-border-subtle);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
+
+.report-table tbody tr:hover {
+  background: var(--color-hover);
+}
+
+.report-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-md);
+}
+
+.date-range {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.date-range-sep {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+/* ============================================
    Admin Entries Grid (read-only hour table)
    ============================================ */
 .entries-grid {

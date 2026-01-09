@@ -130,6 +130,116 @@ def list_timesheets():
     }
 
 
+@admin_bp.route("/reports/timesheet-data", methods=["GET"])
+@login_required
+@admin_required
+def timesheet_data_report():
+    """
+    Raw data report view for timesheet entries (REQ-039).
+
+    Query params:
+        status: Filter by timesheet status
+        user_id: Filter by user
+        week_start: Filter by timesheet week (ISO date)
+        hour_type: Filter by entry hour type
+        start_date: Filter by entry date >= (ISO date)
+        end_date: Filter by entry date <= (ISO date)
+        page: Page number (default 1)
+        per_page: Items per page (default 200)
+    """
+    query = TimesheetEntry.query.join(Timesheet).join(User)
+
+    # Exclude drafts by default
+    query = query.filter(Timesheet.status != TimesheetStatus.NEW)
+
+    status = request.args.get("status")
+    if status and status in [
+        TimesheetStatus.SUBMITTED,
+        TimesheetStatus.APPROVED,
+        TimesheetStatus.NEEDS_APPROVAL,
+    ]:
+        query = query.filter(Timesheet.status == status)
+
+    user_id = request.args.get("user_id")
+    if user_id:
+        query = query.filter(Timesheet.user_id == user_id)
+
+    week_start = request.args.get("week_start")
+    if week_start:
+        query = query.filter(Timesheet.week_start == datetime.fromisoformat(week_start).date())
+
+    hour_type = request.args.get("hour_type")
+    if hour_type:
+        query = query.filter(TimesheetEntry.hour_type == hour_type)
+
+    start_date = request.args.get("start_date")
+    if start_date:
+        query = query.filter(
+            TimesheetEntry.entry_date >= datetime.fromisoformat(start_date).date()
+        )
+
+    end_date = request.args.get("end_date")
+    if end_date:
+        query = query.filter(
+            TimesheetEntry.entry_date <= datetime.fromisoformat(end_date).date()
+        )
+
+    query = query.order_by(
+        TimesheetEntry.entry_date.desc(), TimesheetEntry.created_at.desc()
+    )
+
+    page = request.args.get("page", 1, type=int)
+    per_page = request.args.get("per_page", 200, type=int)
+    pagination = query.paginate(page=page, per_page=per_page)
+
+    rows = []
+    for entry in pagination.items:
+        timesheet = entry.timesheet
+        user = timesheet.user if timesheet else None
+        totals = timesheet.calculate_totals() if timesheet else {}
+        reimbursement = "No"
+        if timesheet and timesheet.reimbursement_needed:
+            amount = float(timesheet.reimbursement_amount or 0)
+            label = timesheet.reimbursement_type or "Reimbursement"
+            reimbursement = f"{label}: ${amount:.2f}"
+
+        rows.append(
+            {
+                "entry_id": entry.id,
+                "timesheet_id": entry.timesheet_id,
+                "employee": user.display_name if user else "Unknown",
+                "email": user.email if user else "",
+                "week_start": timesheet.week_start.isoformat()
+                if timesheet
+                else None,
+                "entry_date": entry.entry_date.isoformat(),
+                "hour_type": entry.hour_type,
+                "hours": float(entry.hours),
+                "status": timesheet.status if timesheet else None,
+                "total_hours": float(totals.get("total", 0)),
+                "payable_hours": float(totals.get("payable", 0)),
+                "billable_hours": float(totals.get("billable", 0)),
+                "unpaid_hours": float(totals.get("unpaid", 0)),
+                "traveled": bool(timesheet.traveled) if timesheet else False,
+                "expenses": bool(timesheet.has_expenses) if timesheet else False,
+                "reimbursement": reimbursement,
+                "attachments": timesheet.attachments.count() if timesheet else 0,
+                "timesheet_created_at": timesheet.created_at.isoformat()
+                if timesheet
+                else None,
+                "entry_created_at": entry.created_at.isoformat(),
+            }
+        )
+
+    return {
+        "rows": rows,
+        "total": pagination.total,
+        "page": page,
+        "per_page": per_page,
+        "pages": pagination.pages,
+    }
+
+
 def _can_access_timesheet(timesheet):
     """
     Check if current user can access a specific timesheet.

@@ -85,6 +85,11 @@ function navigateToView(view) {
         if (typeof loadAdminStats === 'function') {
             loadAdminStats();
         }
+    } else if (view === 'report') {
+        showView('report');
+        if (typeof loadAdminReport === 'function') {
+            loadAdminReport();
+        }
     } else if (view === 'settings') {
         showSettingsView();
     }

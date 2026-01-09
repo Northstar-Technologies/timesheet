@@ -239,6 +239,15 @@ const API = {
     },
 
     /**
+     * Get raw timesheet data report (admin)
+     */
+    async getTimesheetReport(params = {}) {
+        const queryString = new URLSearchParams(params).toString();
+        const url = `/api/admin/reports/timesheet-data${queryString ? '?' + queryString : ''}`;
+        return this.fetch(url);
+    },
+
+    /**
      * Get pay period confirmation status (admin)
      */
     async getPayPeriodStatus(startDate, endDate) {
