@@ -9,7 +9,15 @@ from datetime import datetime
 from io import BytesIO, StringIO
 import csv
 from flask import Blueprint, request, session, send_file, current_app, Response
-from ..models import Timesheet, User, Note, TimesheetStatus, UserRole, PayPeriod
+from ..models import (
+    Timesheet,
+    TimesheetEntry,
+    User,
+    Note,
+    TimesheetStatus,
+    UserRole,
+    PayPeriod,
+)
 from ..extensions import db
 from ..utils.decorators import login_required, admin_required, can_approve
 from ..utils.pay_periods import get_confirmed_pay_period
@@ -455,6 +463,454 @@ def confirm_pay_period():
     db.session.commit()
 
     return pay_period.to_dict(), 201
+
+
+def _apply_role_scope(query):
+    current_role = session.get("user", {}).get("role", "staff")
+    is_support_only = current_role == "support"
+
+    query = query.join(User, Timesheet.user_id == User.id)
+
+    if is_support_only:
+        query = query.filter(User.role == UserRole.TRAINEE)
+
+    return query
+
+
+def _build_export_query():
+    query = Timesheet.query.filter(Timesheet.status != TimesheetStatus.NEW)
+    query = _apply_role_scope(query)
+
+    status = request.args.get("status")
+    if status and status in [
+        TimesheetStatus.SUBMITTED,
+        TimesheetStatus.APPROVED,
+        TimesheetStatus.NEEDS_APPROVAL,
+    ]:
+        query = query.filter_by(status=status)
+
+    user_id = request.args.get("user_id")
+    if user_id:
+        query = query.filter(Timesheet.user_id == user_id)
+
+    week_start = request.args.get("week_start")
+    if week_start:
+        query = query.filter(
+            Timesheet.week_start == datetime.fromisoformat(week_start).date()
+        )
+
+    pay_period_start = request.args.get("pay_period_start")
+    pay_period_end = request.args.get("pay_period_end")
+    if pay_period_start and pay_period_end:
+        start_date = datetime.fromisoformat(pay_period_start).date()
+        end_date = datetime.fromisoformat(pay_period_end).date()
+        query = query.filter(Timesheet.week_start >= start_date).filter(
+            Timesheet.week_start <= end_date
+        )
+
+    hour_type = request.args.get("hour_type")
+    if hour_type:
+        from ..models import TimesheetEntry
+
+        if hour_type == "has_field":
+            query = query.filter(
+                Timesheet.id.in_(
+                    db.session.query(TimesheetEntry.timesheet_id)
+                    .filter(TimesheetEntry.hour_type == "Field")
+                    .distinct()
+                )
+            )
+        else:
+            query = query.filter(
+                Timesheet.id.in_(
+                    db.session.query(TimesheetEntry.timesheet_id)
+                    .filter(TimesheetEntry.hour_type == hour_type)
+                    .distinct()
+                )
+            )
+
+    return query.order_by(Timesheet.week_start.desc())
+
+
+def _parse_export_format():
+    export_format = (request.args.get("format") or "csv").lower()
+    if export_format not in ("csv", "xlsx", "pdf"):
+        return None
+    return export_format
+
+
+def _summary_headers():
+    return [
+        "Employee",
+        "Email",
+        "Week Start",
+        "Status",
+        "Total Hours",
+        "Payable Hours",
+        "Billable Hours",
+        "Unpaid Hours",
+        "Traveled",
+        "Expenses",
+        "Reimbursement",
+        "Attachments",
+        "Created At",
+    ]
+
+
+def _summary_row(timesheet):
+    totals = timesheet.calculate_totals()
+    reimbursement = "No"
+    if timesheet.reimbursement_needed:
+        amount = float(timesheet.reimbursement_amount or 0)
+        label = timesheet.reimbursement_type or "Reimbursement"
+        reimbursement = f"{label}: ${amount:.2f}"
+
+    attachments_count = timesheet.attachments.count()
+
+    return [
+        timesheet.user.display_name if timesheet.user else "Unknown",
+        timesheet.user.email if timesheet.user else "",
+        timesheet.week_start.isoformat(),
+        timesheet.status,
+        float(totals["total"]),
+        float(totals["payable"]),
+        float(totals["billable"]),
+        float(totals["unpaid"]),
+        "Yes" if timesheet.traveled else "No",
+        "Yes" if timesheet.has_expenses else "No",
+        reimbursement,
+        attachments_count,
+        timesheet.created_at.date().isoformat(),
+    ]
+
+
+def _totals_row(timesheets):
+    total_hours = 0.0
+    payable_hours = 0.0
+    billable_hours = 0.0
+    unpaid_hours = 0.0
+    attachments_total = 0
+
+    for ts in timesheets:
+        totals = ts.calculate_totals()
+        total_hours += float(totals["total"])
+        payable_hours += float(totals["payable"])
+        billable_hours += float(totals["billable"])
+        unpaid_hours += float(totals["unpaid"])
+        attachments_total += ts.attachments.count()
+
+    return [
+        "TOTALS",
+        "",
+        "",
+        "",
+        total_hours,
+        payable_hours,
+        billable_hours,
+        unpaid_hours,
+        "",
+        "",
+        "",
+        attachments_total,
+        "",
+    ]
+
+
+def _send_csv(headers, rows, filename, totals_row=None, title=None):
+    output = StringIO()
+    writer = csv.writer(output)
+    if title:
+        writer.writerow([title])
+        writer.writerow([])
+    writer.writerow(headers)
+    writer.writerows(rows)
+    if totals_row:
+        writer.writerow([])
+        writer.writerow(totals_row)
+
+    response = Response(output.getvalue(), mimetype="text/csv")
+    response.headers["Content-Disposition"] = f"attachment; filename={filename}"
+    return response
+
+
+def _send_excel(headers, rows, filename, totals_row=None, title=None):
+    try:
+        from openpyxl import Workbook
+        from openpyxl.styles import Font
+    except ImportError:
+        return {"error": "Excel export requires openpyxl"}, 500
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Timesheets"
+
+    if title:
+        ws.append([title])
+        ws.append([])
+
+    ws.append(headers)
+    for cell in ws[ws.max_row]:
+        cell.font = Font(bold=True)
+
+    for row in rows:
+        ws.append(row)
+
+    if totals_row:
+        ws.append([])
+        ws.append(totals_row)
+        for cell in ws[ws.max_row]:
+            cell.font = Font(bold=True)
+
+    buffer = BytesIO()
+    wb.save(buffer)
+    buffer.seek(0)
+    return send_file(
+        buffer,
+        as_attachment=True,
+        download_name=filename,
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
+
+
+def _send_pdf(headers, rows, filename, title, totals_row=None, extra_tables=None):
+    try:
+        from reportlab.lib.pagesizes import letter, landscape
+        from reportlab.lib import colors
+        from reportlab.lib.styles import getSampleStyleSheet
+        from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+    except ImportError:
+        return {"error": "PDF export requires reportlab"}, 500
+
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=landscape(letter))
+    styles = getSampleStyleSheet()
+    elements = [Paragraph(title, styles["Title"]), Spacer(1, 12)]
+
+    table_data = [headers] + rows
+    if totals_row:
+        table_data.append(totals_row)
+
+    table = Table(table_data, repeatRows=1)
+    table.setStyle(
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#1f2937")),
+                ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+                ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#d1d5db")),
+                ("BACKGROUND", (0, 1), (-1, -1), colors.whitesmoke),
+            ]
+        )
+    )
+    elements.append(table)
+
+    if extra_tables:
+        elements.append(Spacer(1, 18))
+        for extra in extra_tables:
+            elements.append(Paragraph(extra["title"], styles["Heading3"]))
+            elements.append(Spacer(1, 6))
+            extra_table = Table(extra["data"], repeatRows=1)
+            extra_table.setStyle(
+                TableStyle(
+                    [
+                        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#111827")),
+                        ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+                        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                        ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#e5e7eb")),
+                        ("BACKGROUND", (0, 1), (-1, -1), colors.white),
+                    ]
+                )
+            )
+            elements.append(extra_table)
+            elements.append(Spacer(1, 12))
+
+    doc.build(elements)
+    buffer.seek(0)
+    return send_file(
+        buffer,
+        as_attachment=True,
+        download_name=filename,
+        mimetype="application/pdf",
+    )
+
+
+@admin_bp.route("/exports/timesheets", methods=["GET"])
+@login_required
+@can_approve
+def export_timesheets():
+    """
+    Export filtered timesheets in CSV/XLSX/PDF format (REQ-019).
+    """
+    export_format = _parse_export_format()
+    if not export_format:
+        return {"error": "Invalid export format"}, 400
+
+    try:
+        query = _build_export_query()
+    except ValueError:
+        return {"error": "Invalid date format"}, 400
+
+    timesheets = query.all()
+    rows = [_summary_row(ts) for ts in timesheets]
+    totals_row = _totals_row(timesheets) if timesheets else None
+
+    today = datetime.utcnow().date().isoformat()
+    filename = f"timesheets_export_{today}.{export_format}"
+    title = "Timesheet Export"
+
+    if export_format == "csv":
+        return _send_csv(_summary_headers(), rows, filename, totals_row, title=title)
+    if export_format == "xlsx":
+        return _send_excel(_summary_headers(), rows, filename, totals_row, title=title)
+    return _send_pdf(_summary_headers(), rows, filename, title, totals_row)
+
+
+@admin_bp.route("/exports/timesheets/<timesheet_id>", methods=["GET"])
+@login_required
+@can_approve
+def export_timesheet_detail(timesheet_id):
+    """
+    Export a single timesheet detail (REQ-019).
+    """
+    export_format = _parse_export_format()
+    if not export_format:
+        return {"error": "Invalid export format"}, 400
+
+    timesheet = Timesheet.query.filter_by(id=timesheet_id).first()
+    if not timesheet or timesheet.status == TimesheetStatus.NEW:
+        return {"error": "Timesheet not found"}, 404
+
+    can_access, error = _can_access_timesheet(timesheet)
+    if not can_access:
+        return error
+
+    summary_rows = [
+        ["Employee", timesheet.user.display_name if timesheet.user else "Unknown"],
+        ["Email", timesheet.user.email if timesheet.user else ""],
+        ["Week Start", timesheet.week_start.isoformat()],
+        ["Status", timesheet.status],
+        ["Total Hours", float(timesheet.calculate_totals()["total"])],
+        ["Payable Hours", float(timesheet.calculate_totals()["payable"])],
+        ["Billable Hours", float(timesheet.calculate_totals()["billable"])],
+        ["Unpaid Hours", float(timesheet.calculate_totals()["unpaid"])],
+        ["Traveled", "Yes" if timesheet.traveled else "No"],
+        ["Has Expenses", "Yes" if timesheet.has_expenses else "No"],
+        [
+            "Reimbursement",
+            f"{timesheet.reimbursement_type or ''} ${float(timesheet.reimbursement_amount or 0):.2f}"
+            if timesheet.reimbursement_needed
+            else "No",
+        ],
+        ["Attachments", timesheet.attachments.count()],
+    ]
+
+    entry_rows = [
+        [entry.entry_date.isoformat(), entry.hour_type, float(entry.hours)]
+        for entry in timesheet.entries.order_by(TimesheetEntry.entry_date).all()
+    ]
+
+    filename = f"timesheet_{timesheet.week_start.isoformat()}_{timesheet_id}.{export_format}"
+    title = f"Timesheet Detail - {timesheet.week_start.isoformat()}"
+
+    if export_format == "csv":
+        output = StringIO()
+        writer = csv.writer(output)
+        writer.writerow([title])
+        writer.writerow([])
+        writer.writerow(["Field", "Value"])
+        writer.writerows(summary_rows)
+        writer.writerow([])
+        writer.writerow(["Entries"])
+        writer.writerow(["Date", "Hour Type", "Hours"])
+        writer.writerows(entry_rows)
+        response = Response(output.getvalue(), mimetype="text/csv")
+        response.headers["Content-Disposition"] = f"attachment; filename={filename}"
+        return response
+
+    if export_format == "xlsx":
+        try:
+            from openpyxl import Workbook
+            from openpyxl.styles import Font
+        except ImportError:
+            return {"error": "Excel export requires openpyxl"}, 500
+
+        wb = Workbook()
+        summary_sheet = wb.active
+        summary_sheet.title = "Summary"
+        summary_sheet.append([title])
+        summary_sheet.append([])
+        summary_sheet.append(["Field", "Value"])
+        for cell in summary_sheet[summary_sheet.max_row]:
+            cell.font = Font(bold=True)
+        for row in summary_rows:
+            summary_sheet.append(row)
+
+        entries_sheet = wb.create_sheet(title="Entries")
+        entries_sheet.append(["Date", "Hour Type", "Hours"])
+        for cell in entries_sheet[1]:
+            cell.font = Font(bold=True)
+        for row in entry_rows:
+            entries_sheet.append(row)
+
+        buffer = BytesIO()
+        wb.save(buffer)
+        buffer.seek(0)
+        return send_file(
+            buffer,
+            as_attachment=True,
+            download_name=filename,
+            mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        )
+
+    extra_tables = [
+        {
+            "title": "Entries",
+            "data": [["Date", "Hour Type", "Hours"]] + entry_rows,
+        }
+    ]
+    return _send_pdf(["Field", "Value"], summary_rows, filename, title, extra_tables=extra_tables)
+
+
+@admin_bp.route("/exports/pay-period", methods=["GET"])
+@login_required
+@admin_required
+def export_pay_period():
+    """
+    Export a pay period summary (REQ-019).
+    """
+    export_format = _parse_export_format()
+    if not export_format:
+        return {"error": "Invalid export format"}, 400
+
+    start_date = request.args.get("start_date")
+    end_date = request.args.get("end_date")
+    if not start_date or not end_date:
+        return {"error": "start_date and end_date are required"}, 400
+
+    try:
+        start = datetime.fromisoformat(start_date).date()
+        end = datetime.fromisoformat(end_date).date()
+    except ValueError:
+        return {"error": "Invalid date format"}, 400
+
+    query = Timesheet.query.filter(Timesheet.status != TimesheetStatus.NEW)
+    query = _apply_role_scope(query)
+    query = query.filter(Timesheet.week_start >= start).filter(
+        Timesheet.week_start <= end
+    )
+
+    timesheets = query.order_by(Timesheet.week_start).all()
+    rows = [_summary_row(ts) for ts in timesheets]
+    totals_row = _totals_row(timesheets) if timesheets else None
+
+    title = f"Pay Period Summary: {start.isoformat()} to {end.isoformat()}"
+    filename = f"pay_period_{start.isoformat()}_{end.isoformat()}.{export_format}"
+
+    if export_format == "csv":
+        return _send_csv(_summary_headers(), rows, filename, totals_row, title=title)
+    if export_format == "xlsx":
+        return _send_excel(_summary_headers(), rows, filename, totals_row, title=title)
+    return _send_pdf(_summary_headers(), rows, filename, title, totals_row)
 
 
 @admin_bp.route(
