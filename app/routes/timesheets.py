@@ -17,6 +17,7 @@ from ..models import (
 )
 from ..extensions import db
 from ..utils.decorators import login_required
+from ..utils.pay_periods import get_confirmed_pay_period
 
 timesheets_bp = Blueprint("timesheets", __name__)
 
@@ -35,6 +36,12 @@ def _get_week_start(date):
     # We want to get to Sunday (start of week)
     days_since_sunday = (date.weekday() + 1) % 7
     return date - timedelta(days=days_since_sunday)
+
+
+def _reject_if_locked(timesheet):
+    if get_confirmed_pay_period(timesheet.week_start):
+        return {"error": "Pay period has been confirmed and is locked"}, 400
+    return None
 
 
 @timesheets_bp.route("", methods=["GET"])
@@ -102,6 +109,9 @@ def create_timesheet():
     # Ensure week_start is a Sunday
     week_start = _get_week_start(week_start)
 
+    if get_confirmed_pay_period(week_start):
+        return {"error": "Pay period has been confirmed and is locked"}, 400
+
     # Check for existing timesheet for this week
     existing = Timesheet.query.filter_by(user_id=user_id, week_start=week_start).first()
 
@@ -152,7 +162,13 @@ def get_timesheet(timesheet_id):
     if not timesheet:
         return {"error": "Timesheet not found"}, 404
 
-    return timesheet.to_dict()
+    data = timesheet.to_dict()
+    period = get_confirmed_pay_period(timesheet.week_start)
+    data["pay_period_confirmed"] = period is not None
+    data["pay_period_confirmed_at"] = (
+        period.confirmed_at.isoformat() if period else None
+    )
+    return data
 
 
 @timesheets_bp.route("/<timesheet_id>", methods=["PUT"])
@@ -180,6 +196,10 @@ def update_timesheet(timesheet_id):
 
     if not timesheet:
         return {"error": "Timesheet not found"}, 404
+
+    locked = _reject_if_locked(timesheet)
+    if locked:
+        return locked
 
     # REQ-023/BUG-001: Allow editing of NEW and NEEDS_APPROVAL timesheets
     if timesheet.status not in (TimesheetStatus.NEW, TimesheetStatus.NEEDS_APPROVAL):
@@ -285,6 +305,10 @@ def delete_timesheet(timesheet_id):
     if not timesheet:
         return {"error": "Timesheet not found"}, 404
 
+    locked = _reject_if_locked(timesheet)
+    if locked:
+        return locked
+
     if timesheet.status != TimesheetStatus.NEW:
         return {"error": "Only draft timesheets can be deleted"}, 400
 
@@ -312,6 +336,10 @@ def submit_timesheet(timesheet_id):
 
     if not timesheet:
         return {"error": "Timesheet not found"}, 404
+
+    locked = _reject_if_locked(timesheet)
+    if locked:
+        return locked
 
     # REQ-023/BUG-001: Allow submitting NEW or NEEDS_APPROVAL timesheets
     if timesheet.status not in (TimesheetStatus.NEW, TimesheetStatus.NEEDS_APPROVAL):
@@ -347,6 +375,10 @@ def update_entries(timesheet_id):
 
     if not timesheet:
         return {"error": "Timesheet not found"}, 404
+
+    locked = _reject_if_locked(timesheet)
+    if locked:
+        return locked
 
     # REQ-023/BUG-001: Allow editing entries for NEW and NEEDS_APPROVAL timesheets
     if timesheet.status not in (TimesheetStatus.NEW, TimesheetStatus.NEEDS_APPROVAL):
@@ -395,6 +427,10 @@ def upload_attachment(timesheet_id):
 
     if not timesheet:
         return {"error": "Timesheet not found"}, 404
+
+    locked = _reject_if_locked(timesheet)
+    if locked:
+        return locked
 
     if "file" not in request.files:
         return {"error": "No file provided"}, 400
@@ -484,6 +520,10 @@ def delete_attachment(timesheet_id, attachment_id):
     if not timesheet:
         return {"error": "Timesheet not found"}, 404
 
+    locked = _reject_if_locked(timesheet)
+    if locked:
+        return locked
+
     if timesheet.status != TimesheetStatus.NEW:
         return {"error": "Only draft timesheet attachments can be deleted"}, 400
 
@@ -523,6 +563,10 @@ def add_note(timesheet_id):
 
     if not timesheet:
         return {"error": "Timesheet not found"}, 404
+
+    locked = _reject_if_locked(timesheet)
+    if locked:
+        return locked
 
     data = request.get_json() or {}
     content = data.get("content", "").strip()

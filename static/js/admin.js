@@ -6,6 +6,7 @@
 
 // Store for loaded users
 let adminUsers = [];
+let payPeriodStatus = null;
 
 // REQ-025: Expense type icons
 const EXPENSE_TYPE_ICONS = {
@@ -51,11 +52,16 @@ function getCurrentPayPeriod() {
     // End is 13 days later (inclusive), or 14 days for exclusive end
     const periodEnd = new Date(periodStart.getTime() + (13 * msPerDay));
     
+    const startISO = periodStart.toISOString().split('T')[0];
+    const endISO = periodEnd.toISOString().split('T')[0];
+
     return {
         start: periodStart,
         end: periodEnd,
+        startISO,
+        endISO,
         // Week starts (Sundays) in this period
-        week1: periodStart.toISOString().split('T')[0],
+        week1: startISO,
         week2: new Date(periodStart.getTime() + msPerWeek).toISOString().split('T')[0]
     };
 }
@@ -68,6 +74,96 @@ function formatPayPeriod(period) {
     const startStr = period.start.toLocaleDateString('en-US', options);
     const endStr = period.end.toLocaleDateString('en-US', options);
     return `${startStr} - ${endStr}`;
+}
+
+async function refreshPayPeriodStatus(period) {
+    const confirmBtn = document.getElementById('admin-confirm-pay-period-btn');
+    const confirmedBadge = document.getElementById('pay-period-confirmed');
+    const exportPayPeriodBtn = document.getElementById('admin-export-pay-period-btn');
+
+    if (!period || !confirmBtn || !confirmedBadge || !exportPayPeriodBtn) {
+        return;
+    }
+
+    confirmBtn.disabled = true;
+    confirmBtn.textContent = '⏳ Checking...';
+
+    try {
+        const data = await API.getPayPeriodStatus(period.startISO, period.endISO);
+        payPeriodStatus = data;
+
+        if (data.confirmed && data.pay_period) {
+            confirmBtn.disabled = true;
+            confirmBtn.textContent = '✅ Pay Period Confirmed';
+            confirmedBadge.textContent = 'Confirmed';
+            confirmedBadge.title = data.pay_period.confirmed_at
+                ? `Confirmed ${new Date(data.pay_period.confirmed_at).toLocaleString()}`
+                : 'Confirmed';
+            confirmedBadge.classList.remove('hidden');
+            exportPayPeriodBtn.classList.remove('hidden');
+        } else {
+            confirmBtn.disabled = false;
+            confirmBtn.textContent = '✅ Confirm Pay Period';
+            confirmedBadge.classList.add('hidden');
+            exportPayPeriodBtn.classList.add('hidden');
+        }
+    } catch (error) {
+        payPeriodStatus = null;
+        confirmBtn.disabled = true;
+        confirmBtn.textContent = '⚠️ Confirm Pay Period';
+        confirmedBadge.classList.add('hidden');
+        exportPayPeriodBtn.classList.add('hidden');
+        showToast('Failed to load pay period status', 'error');
+    }
+}
+
+function resetPayPeriodConfirmationUI() {
+    const confirmBtn = document.getElementById('admin-confirm-pay-period-btn');
+    const confirmedBadge = document.getElementById('pay-period-confirmed');
+    const exportPayPeriodBtn = document.getElementById('admin-export-pay-period-btn');
+
+    payPeriodStatus = null;
+
+    if (confirmBtn) {
+        confirmBtn.disabled = true;
+        confirmBtn.textContent = '✅ Confirm Pay Period';
+    }
+    if (confirmedBadge) {
+        confirmedBadge.classList.add('hidden');
+    }
+    if (exportPayPeriodBtn) {
+        exportPayPeriodBtn.classList.add('hidden');
+    }
+}
+
+async function confirmPayPeriod() {
+    if (!window.payPeriodFilter) {
+        showToast('Select a pay period first', 'warning');
+        return;
+    }
+
+    if (payPeriodStatus && payPeriodStatus.confirmed) {
+        showToast('Pay period is already confirmed', 'info');
+        return;
+    }
+
+    const message = `Confirm pay period ${formatPayPeriod(window.payPeriodFilter)}?\n\n` +
+        'This will lock all timesheets in the period and prevent edits.';
+    if (!confirm(message)) {
+        return;
+    }
+
+    try {
+        await API.confirmPayPeriod(
+            window.payPeriodFilter.startISO,
+            window.payPeriodFilter.endISO
+        );
+        showToast('Pay period confirmed', 'success');
+        await refreshPayPeriodStatus(window.payPeriodFilter);
+        loadAdminTimesheets();
+    } catch (error) {
+        showToast(error.message, 'error');
+    }
 }
 
 // ==========================================
@@ -260,6 +356,7 @@ async function openAdminTimesheet(id) {
 
 function showAdminTimesheetDetail(timesheet) {
     const container = document.getElementById('admin-timesheets-list');
+    const isLocked = Boolean(timesheet.pay_period_confirmed);
     
     container.innerHTML = `
         <div class="timesheet-detail">
@@ -271,6 +368,14 @@ function showAdminTimesheetDetail(timesheet) {
                     <span class="timesheet-card-status status-${timesheet.status}">${TimesheetModule.formatStatus(timesheet.status)}</span>
                 </h3>
             </div>
+
+            ${isLocked ? `
+            <div class="detail-section">
+                <div class="readonly-notice">
+                    This pay period has been confirmed and is locked.
+                </div>
+            </div>
+            ` : ''}
             
             <div class="detail-section">
                 <h4>Employee</h4>
@@ -377,6 +482,7 @@ function showAdminTimesheetDetail(timesheet) {
                 <button class="btn btn-secondary btn-sm" onclick="addAdminNote('${timesheet.id}')">Add Note</button>
             </div>
             
+            ${!isLocked ? `
             <div class="form-actions">
                 ${timesheet.status === 'SUBMITTED' || timesheet.status === 'NEEDS_APPROVAL' ? `
                     <button class="btn btn-primary" onclick="approveTimesheetAdmin('${timesheet.id}')">Approve Timesheet</button>
@@ -388,6 +494,7 @@ function showAdminTimesheetDetail(timesheet) {
                     <button class="btn btn-secondary" onclick="unapproveTimesheetAdmin('${timesheet.id}')">Un-approve</button>
                 ` : ''}
             </div>
+            ` : ''}
         </div>
     `;
     
@@ -569,6 +676,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (payPeriodBtn) payPeriodBtn.classList.remove('active');
             const payPeriodDisplay = document.getElementById('pay-period-display');
             if (payPeriodDisplay) payPeriodDisplay.style.display = 'none';
+            resetPayPeriodConfirmationUI();
             
             // Remove active state from stat cards and filter buttons
             document.querySelectorAll('.stat-card').forEach(card => {
@@ -591,6 +699,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (payPeriodBtn) payPeriodBtn.classList.remove('active');
             const payPeriodDisplay = document.getElementById('pay-period-display');
             if (payPeriodDisplay) payPeriodDisplay.style.display = 'none';
+            resetPayPeriodConfirmationUI();
             
             // Calculate current week's Sunday (week start)
             const today = new Date();
@@ -610,8 +719,10 @@ document.addEventListener('DOMContentLoaded', () => {
             // Clear other filters for focused view
             const statusEl = document.getElementById('admin-filter-status');
             const userEl = document.getElementById('admin-filter-user');
+            const hourTypeEl = document.getElementById('admin-filter-hourtype');
             if (statusEl) statusEl.value = '';
             if (userEl) userEl.value = '';
+            if (hourTypeEl) hourTypeEl.value = '';
             
             // Remove active state from stat cards
             document.querySelectorAll('.stat-card').forEach(card => {
@@ -664,6 +775,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             loadAdminTimesheets();
+            refreshPayPeriodStatus(period);
             showToast(`Showing pay period: ${formatPayPeriod(period)}`, 'info');
         });
     }
@@ -672,6 +784,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const exportBtn = document.getElementById('admin-export-btn');
     if (exportBtn) {
         exportBtn.addEventListener('click', exportTimesheetsToCSV);
+    }
+
+    const confirmPayPeriodBtn = document.getElementById('admin-confirm-pay-period-btn');
+    if (confirmPayPeriodBtn) {
+        confirmPayPeriodBtn.addEventListener('click', confirmPayPeriod);
+    }
+
+    const exportPayPeriodBtn = document.getElementById('admin-export-pay-period-btn');
+    if (exportPayPeriodBtn) {
+        exportPayPeriodBtn.addEventListener('click', exportPayPeriodToCSV);
     }
     
     // Stat card click handlers (quick filters)
@@ -707,79 +829,148 @@ document.addEventListener('DOMContentLoaded', () => {
 // Export Functionality
 // ==========================================
 
+async function fetchTimesheetsForExport(usePayPeriod = false) {
+    const statusEl = document.getElementById('admin-filter-status');
+    const userEl = document.getElementById('admin-filter-user');
+    const weekEl = document.getElementById('admin-filter-week');
+    const hourTypeEl = document.getElementById('admin-filter-hourtype');
+
+    const status = statusEl ? statusEl.value : '';
+    const userId = userEl ? userEl.value : '';
+    const weekStart = weekEl ? weekEl.value : '';
+    const hourType = hourTypeEl ? hourTypeEl.value : '';
+
+    let allTimesheets = [];
+
+    if (usePayPeriod && window.payPeriodFilter) {
+        const params1 = { week_start: window.payPeriodFilter.week1 };
+        const params2 = { week_start: window.payPeriodFilter.week2 };
+        if (status) { params1.status = status; params2.status = status; }
+        if (userId) { params1.user_id = userId; params2.user_id = userId; }
+        if (hourType) { params1.hour_type = hourType; params2.hour_type = hourType; }
+
+        const [data1, data2] = await Promise.all([
+            API.getAdminTimesheets(params1),
+            API.getAdminTimesheets(params2)
+        ]);
+
+        const seen = new Set();
+        [...data1.timesheets, ...data2.timesheets].forEach(ts => {
+            if (!seen.has(ts.id)) {
+                seen.add(ts.id);
+                allTimesheets.push(ts);
+            }
+        });
+    } else {
+        const params = {};
+        if (status) params.status = status;
+        if (userId) params.user_id = userId;
+        if (weekStart) params.week_start = weekStart;
+        if (hourType) params.hour_type = hourType;
+
+        const data = await API.getAdminTimesheets(params);
+        allTimesheets = data.timesheets || [];
+    }
+
+    return allTimesheets;
+}
+
+function buildTimesheetCSV(timesheets) {
+    const headers = [
+        'Employee',
+        'Email',
+        'Week Start',
+        'Status',
+        'Total Hours',
+        'Payable Hours',
+        'Billable Hours',
+        'Unpaid Hours',
+        'Traveled',
+        'Expenses',
+        'Reimbursement',
+        'Attachments',
+        'Created At'
+    ];
+
+    const rows = timesheets.map(ts => [
+        ts.user?.display_name || 'Unknown',
+        ts.user?.email || '',
+        ts.week_start,
+        ts.status,
+        ts.totals.total,
+        ts.totals.payable,
+        ts.totals.billable,
+        ts.totals.unpaid,
+        ts.traveled ? 'Yes' : 'No',
+        ts.has_expenses ? 'Yes' : 'No',
+        ts.reimbursement_needed ? `${formatExpenseType(ts.reimbursement_type)}: $${ts.reimbursement_amount.toFixed(2)}` : 'No',
+        ts.attachments?.length || 0,
+        new Date(ts.created_at).toLocaleDateString()
+    ]);
+
+    return [
+        headers.join(','),
+        ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+    ].join('\n');
+}
+
+function downloadCSV(csvContent, filename) {
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    link.click();
+    URL.revokeObjectURL(url);
+}
+
 async function exportTimesheetsToCSV() {
     try {
         showToast('Generating export...', 'info');
-        
-        // Get current filters
-        const statusEl = document.getElementById('admin-filter-status');
-        const userEl = document.getElementById('admin-filter-user');
-        const weekEl = document.getElementById('admin-filter-week');
-        
-        const params = {};
-        if (statusEl && statusEl.value) params.status = statusEl.value;
-        if (userEl && userEl.value) params.user_id = userEl.value;
-        if (weekEl && weekEl.value) params.week_start = weekEl.value;
-        
-        // Fetch all timesheets matching filters
-        const data = await API.getAdminTimesheets(params);
-        
-        if (data.timesheets.length === 0) {
+
+        const timesheets = await fetchTimesheetsForExport(Boolean(window.payPeriodFilter));
+
+        if (timesheets.length === 0) {
             showToast('No timesheets to export', 'warning');
             return;
         }
-        
-        // Build CSV
-        const headers = [
-            'Employee',
-            'Email',
-            'Week Start',
-            'Status',
-            'Total Hours',
-            'Payable Hours',
-            'Billable Hours',
-            'Unpaid Hours',
-            'Traveled',
-            'Expenses',
-            'Reimbursement',
-            'Attachments',
-            'Created At'
-        ];
-        
-        const rows = data.timesheets.map(ts => [
-            ts.user?.display_name || 'Unknown',
-            ts.user?.email || '',
-            ts.week_start,
-            ts.status,
-            ts.totals.total,
-            ts.totals.payable,
-            ts.totals.billable,
-            ts.totals.unpaid,
-            ts.traveled ? 'Yes' : 'No',
-            ts.has_expenses ? 'Yes' : 'No',
-            ts.reimbursement_needed ? `${formatExpenseType(ts.reimbursement_type)}: $${ts.reimbursement_amount.toFixed(2)}` : 'No',
-            ts.attachments?.length || 0,
-            new Date(ts.created_at).toLocaleDateString()
-        ]);
-        
-        // Convert to CSV string
-        const csvContent = [
-            headers.join(','),
-            ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
-        ].join('\n');
-        
-        // Create download
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `timesheets_export_${new Date().toISOString().split('T')[0]}.csv`;
-        link.click();
-        URL.revokeObjectURL(url);
-        
-        showToast(`Exported ${data.timesheets.length} timesheets`, 'success');
-        
+
+        const csvContent = buildTimesheetCSV(timesheets);
+        const filename = `timesheets_export_${new Date().toISOString().split('T')[0]}.csv`;
+        downloadCSV(csvContent, filename);
+
+        showToast(`Exported ${timesheets.length} timesheets`, 'success');
     } catch (error) {
         showToast('Export failed: ' + error.message, 'error');
+    }
+}
+
+async function exportPayPeriodToCSV() {
+    if (!window.payPeriodFilter) {
+        showToast('Select a pay period first', 'warning');
+        return;
+    }
+
+    if (!payPeriodStatus || !payPeriodStatus.confirmed) {
+        showToast('Confirm the pay period before exporting payroll', 'warning');
+        return;
+    }
+
+    try {
+        showToast('Generating payroll export...', 'info');
+
+        const timesheets = await fetchTimesheetsForExport(true);
+        if (timesheets.length === 0) {
+            showToast('No timesheets to export', 'warning');
+            return;
+        }
+
+        const csvContent = buildTimesheetCSV(timesheets);
+        const filename = `pay_period_${window.payPeriodFilter.startISO}_${window.payPeriodFilter.endISO}.csv`;
+        downloadCSV(csvContent, filename);
+
+        showToast(`Exported ${timesheets.length} timesheets`, 'success');
+    } catch (error) {
+        showToast('Payroll export failed: ' + error.message, 'error');
     }
 }

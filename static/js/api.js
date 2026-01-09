@@ -235,6 +235,30 @@ const API = {
         return this.fetch('/api/admin/users');
     },
 
+    /**
+     * Get pay period confirmation status (admin)
+     */
+    async getPayPeriodStatus(startDate, endDate) {
+        const params = new URLSearchParams({
+            start_date: startDate,
+            end_date: endDate,
+        });
+        return this.fetch(`/api/admin/pay-periods/status?${params.toString()}`);
+    },
+
+    /**
+     * Confirm pay period (admin)
+     */
+    async confirmPayPeriod(startDate, endDate) {
+        return this.fetch('/api/admin/pay-periods/confirm', {
+            method: 'POST',
+            body: JSON.stringify({
+                start_date: startDate,
+                end_date: endDate,
+            }),
+        });
+    },
+
     // ==========================================
     // User Settings
     // ==========================================

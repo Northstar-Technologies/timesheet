@@ -792,6 +792,17 @@ endblock %} {% block extra_css %}
               💵 Pay Period
             </button>
             <span id="pay-period-display" class="pay-period-display" style="display: none;"></span>
+            {% if user.is_admin %}
+            <button
+              class="btn btn-ghost btn-sm"
+              id="admin-confirm-pay-period-btn"
+              title="Confirm and lock this pay period"
+              disabled
+            >
+              ✅ Confirm Pay Period
+            </button>
+            <span id="pay-period-confirmed" class="pay-period-confirmed hidden">Confirmed</span>
+            {% endif %}
           </div>
           <div class="filter-group">
             <button
@@ -808,6 +819,15 @@ endblock %} {% block extra_css %}
             >
               📊 Export
             </button>
+            {% if user.is_admin %}
+            <button
+              class="btn btn-ghost btn-sm hidden"
+              id="admin-export-pay-period-btn"
+              title="Export confirmed pay period"
+            >
+              📤 Export Payroll
+            </button>
+            {% endif %}
           </div>
         </div>
 

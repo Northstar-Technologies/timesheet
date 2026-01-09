@@ -76,7 +76,10 @@ const TimesheetModule = {
      * @param {string} status - Timesheet status
      * @returns {boolean} - True if editable
      */
-    isTimesheetEditable(status) {
+    isTimesheetEditable(status, payPeriodConfirmed = false) {
+        if (payPeriodConfirmed) {
+            return false;
+        }
         return status === 'NEW' || status === 'NEEDS_APPROVAL';
     },
     
@@ -618,12 +621,15 @@ const TimesheetModule = {
         this.updateFieldHoursWarning();
         
         // REQ-023: Determine if timesheet is editable based on status
-        const isEditable = this.isTimesheetEditable(timesheet.status);
+        const isEditable = this.isTimesheetEditable(
+            timesheet.status,
+            Boolean(timesheet.pay_period_confirmed)
+        );
         
         // Show/hide delete button based on status (only drafts can be deleted)
         const deleteBtn = document.getElementById('delete-btn');
         if (deleteBtn) {
-            deleteBtn.style.display = timesheet.status === 'NEW' ? 'block' : 'none';
+            deleteBtn.style.display = timesheet.status === 'NEW' && isEditable ? 'block' : 'none';
         }
         
         // REQ-023: Show read-only notice for non-editable timesheets
@@ -633,9 +639,14 @@ const TimesheetModule = {
                 // Customize message based on status
                 const statusMessages = {
                     'SUBMITTED': 'This timesheet has been submitted and is pending review. It cannot be edited.',
-                    'APPROVED': 'This timesheet has been approved. It cannot be edited.'
+                    'APPROVED': 'This timesheet has been approved. It cannot be edited.',
+                    'PAY_PERIOD_CONFIRMED': 'This pay period has been confirmed and is locked.'
                 };
-                readonlyNotice.textContent = statusMessages[timesheet.status] || 'This timesheet cannot be edited.';
+                if (timesheet.pay_period_confirmed) {
+                    readonlyNotice.textContent = statusMessages.PAY_PERIOD_CONFIRMED;
+                } else {
+                    readonlyNotice.textContent = statusMessages[timesheet.status] || 'This timesheet cannot be edited.';
+                }
                 readonlyNotice.classList.remove('hidden');
             } else {
                 readonlyNotice.classList.add('hidden');

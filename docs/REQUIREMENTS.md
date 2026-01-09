@@ -229,6 +229,15 @@ Add confirmation step at end of pay period.
 - May need new status or flag for "pay period confirmed"
 - Prevents further edits after confirmation
 
+**Status: ✅ IMPLEMENTED (January 10, 2026)**
+
+**Implementation:**
+
+- ✅ Pay period confirmation endpoint with approval checks
+- ✅ Confirmed pay periods stored in `pay_periods` table
+- ✅ Timesheets in confirmed periods are locked from edits/approval changes
+- ✅ Admin UI includes Confirm Pay Period and payroll export button
+
 ---
 
 ### REQ-041: Support Dashboard for Trainee Approvals (P1) ✅
@@ -1323,7 +1332,7 @@ Add end-to-end browser tests for critical user flows.
 | REQ-003     | ✅ Complete | User notification preferences + settings page   |
 | REQ-004     | ✅ Complete | Pay period filter button + display              |
 | REQ-005     | ✅ Complete | "This Week" quick filter button                 |
-| REQ-006     | 📋 Planned  | New workflow                                    |
+| REQ-006     | ✅ Complete | Pay period confirmation + payroll export        |
 | REQ-007     | ✅ Complete | Column totals added to admin grid               |
 | REQ-008     | ✅ Complete | Row totals added to all grid views              |
 | REQ-009     | ✅ Complete | Auto-fill 8h works for any hour type            |

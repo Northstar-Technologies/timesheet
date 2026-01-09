@@ -7,9 +7,10 @@ Support users have limited access to approve trainee timesheets only (REQ-041).
 
 from datetime import datetime
 from flask import Blueprint, request, session, send_file, current_app
-from ..models import Timesheet, User, Note, TimesheetStatus, UserRole
+from ..models import Timesheet, User, Note, TimesheetStatus, UserRole, PayPeriod
 from ..extensions import db
 from ..utils.decorators import login_required, admin_required, can_approve
+from ..utils.pay_periods import get_confirmed_pay_period
 
 admin_bp = Blueprint("admin", __name__)
 
@@ -172,6 +173,11 @@ def get_timesheet(timesheet_id):
         return error
 
     data = timesheet.to_dict()
+    period = get_confirmed_pay_period(timesheet.week_start)
+    data["pay_period_confirmed"] = period is not None
+    data["pay_period_confirmed_at"] = (
+        period.confirmed_at.isoformat() if period else None
+    )
     data["user"] = timesheet.user.to_dict() if timesheet.user else None
     data["notes"] = [n.to_dict() for n in timesheet.notes]
 
@@ -207,6 +213,9 @@ def approve_timesheet(timesheet_id):
         TimesheetStatus.NEEDS_APPROVAL,
     ]:
         return {"error": "Timesheet cannot be approved from current status"}, 400
+
+    if get_confirmed_pay_period(timesheet.week_start):
+        return {"error": "Pay period has been confirmed and is locked"}, 400
 
     timesheet.status = TimesheetStatus.APPROVED
     timesheet.approved_at = datetime.utcnow()
@@ -248,6 +257,9 @@ def reject_timesheet(timesheet_id):
 
     if timesheet.status != TimesheetStatus.SUBMITTED:
         return {"error": "Only submitted timesheets can be rejected"}, 400
+
+    if get_confirmed_pay_period(timesheet.week_start):
+        return {"error": "Pay period has been confirmed and is locked"}, 400
 
     timesheet.status = TimesheetStatus.NEEDS_APPROVAL
 
@@ -337,12 +349,110 @@ def unapprove_timesheet(timesheet_id):
     if timesheet.status != TimesheetStatus.APPROVED:
         return {"error": "Only approved timesheets can be unapproved"}, 400
 
+    if get_confirmed_pay_period(timesheet.week_start):
+        return {"error": "Pay period has been confirmed and is locked"}, 400
+
     timesheet.status = TimesheetStatus.SUBMITTED
     timesheet.approved_at = None
     timesheet.approved_by = None
     db.session.commit()
 
     return timesheet.to_dict()
+
+
+@admin_bp.route("/pay-periods/status", methods=["GET"])
+@login_required
+@admin_required
+def get_pay_period_status():
+    """
+    Get confirmation status for a pay period.
+
+    Query params:
+        start_date: Pay period start (YYYY-MM-DD)
+        end_date: Pay period end (YYYY-MM-DD)
+    """
+    start_date = request.args.get("start_date")
+    end_date = request.args.get("end_date")
+
+    if not start_date or not end_date:
+        return {"error": "start_date and end_date are required"}, 400
+
+    try:
+        start = datetime.fromisoformat(start_date).date()
+        end = datetime.fromisoformat(end_date).date()
+    except ValueError:
+        return {"error": "Invalid date format"}, 400
+
+    period = PayPeriod.query.filter_by(start_date=start).first()
+    if period and period.end_date != end:
+        return {"error": "Pay period dates do not match existing record"}, 400
+
+    return {
+        "start_date": start.isoformat(),
+        "end_date": end.isoformat(),
+        "confirmed": period is not None,
+        "pay_period": period.to_dict() if period else None,
+    }
+
+
+@admin_bp.route("/pay-periods/confirm", methods=["POST"])
+@login_required
+@admin_required
+def confirm_pay_period():
+    """
+    Confirm and lock a pay period (REQ-006).
+
+    Request body:
+        start_date: Pay period start (YYYY-MM-DD)
+        end_date: Pay period end (YYYY-MM-DD)
+    """
+    data = request.get_json() or {}
+    start_date = data.get("start_date")
+    end_date = data.get("end_date")
+
+    if not start_date or not end_date:
+        return {"error": "start_date and end_date are required"}, 400
+
+    try:
+        start = datetime.fromisoformat(start_date).date()
+        end = datetime.fromisoformat(end_date).date()
+    except ValueError:
+        return {"error": "Invalid date format"}, 400
+
+    if start.weekday() != 6 or (end - start).days != 13:
+        return {"error": "Pay period must start on Sunday and span 14 days"}, 400
+
+    existing = PayPeriod.query.filter_by(start_date=start).first()
+    if existing:
+        return {"error": "Pay period already confirmed"}, 400
+
+    timesheets = Timesheet.query.filter(
+        Timesheet.week_start >= start,
+        Timesheet.week_start <= end,
+    ).all()
+
+    not_approved = [ts for ts in timesheets if ts.status != TimesheetStatus.APPROVED]
+    if not_approved:
+        status_counts = {}
+        for ts in not_approved:
+            status_counts[ts.status] = status_counts.get(ts.status, 0) + 1
+        return {
+            "error": "All timesheets must be approved before confirmation",
+            "details": {
+                "pending_count": len(not_approved),
+                "status_counts": status_counts,
+            },
+        }, 400
+
+    pay_period = PayPeriod(
+        start_date=start,
+        end_date=end,
+        confirmed_by=session["user"]["id"],
+    )
+    db.session.add(pay_period)
+    db.session.commit()
+
+    return pay_period.to_dict(), 201
 
 
 @admin_bp.route(
