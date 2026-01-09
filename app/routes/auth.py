@@ -71,6 +71,7 @@ def login():
                     email="dev@localhost",
                     display_name="Development User",
                     is_admin=True,  # Give dev user admin access
+                    notification_emails=["dev@localhost"],
                 )
                 db.session.add(test_user)
                 db.session.commit()
@@ -144,6 +145,7 @@ def callback():
             azure_id=azure_id,
             email=email,
             display_name=display_name,
+            notification_emails=[email],
         )
         db.session.add(user)
         db.session.commit()
@@ -152,6 +154,10 @@ def callback():
         # Update user info if changed
         user.email = email
         user.display_name = display_name
+        if user.notification_emails is None:
+            user.notification_emails = [email]
+        elif email not in user.notification_emails:
+            user.notification_emails = [email] + user.notification_emails
         db.session.commit()
 
     # Store user in session
@@ -241,6 +247,7 @@ def dev_login():
             display_name=account["display_name"],
             role=account["role"],
             is_admin=(account["role"] == UserRole.ADMIN),  # Legacy field
+            notification_emails=[email],
         )
         db.session.add(user)
         db.session.commit()
@@ -250,6 +257,10 @@ def dev_login():
         user.role = account["role"]
         user.is_admin = (account["role"] == UserRole.ADMIN)
         user.display_name = account["display_name"]
+        if user.notification_emails is None:
+            user.notification_emails = [email]
+        elif email not in user.notification_emails:
+            user.notification_emails = [email] + user.notification_emails
         db.session.commit()
     
     # Store user in session
@@ -274,4 +285,3 @@ def me():
         return {"error": "Not authenticated"}, 401
 
     return session["user"]
-

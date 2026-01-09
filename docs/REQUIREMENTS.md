@@ -1019,15 +1019,28 @@ Standardize request validation and error responses.
 
 ---
 
-### REQ-036: Observability & Metrics (P1)
+### REQ-036: Observability & Metrics (P1) ✅
 
 Add structured logging and basic operational metrics.
+
+**Status: ✅ IMPLEMENTED (January 9, 2026)**
 
 **Required Behavior:**
 
 - Structured JSON logs with request_id, user_id, route, latency
 - Generate `X-Request-ID` if missing and propagate
 - Metrics for request duration, error rate, queue depth, DB/Redis errors
+
+**Implementation:**
+
+- ✅ Created `app/utils/observability.py` with:
+  - `JSONFormatter` - Structured JSON log output
+  - `RequestMetrics` - Request duration, error rate, top routes
+  - X-Request-ID generation and propagation
+  - X-Response-Time header with request duration
+  - Automatic slow request detection (>1s)
+- ✅ Added `/metrics` endpoint (admin-only) for monitoring
+- ✅ Registered middleware in Flask app factory
 
 ---
 
@@ -1285,7 +1298,7 @@ Add end-to-end browser tests for critical user flows.
 | REQ-033     | 📋 Planned  | Attachment storage strategy                     |
 | REQ-034     | 📋 Planned  | Background jobs & scheduled notifications       |
 | REQ-035     | ✅ Complete | API validation & error handling modules         |
-| REQ-036     | 📋 Planned  | Observability & metrics                         |
+| REQ-036     | ✅ Complete | Observability, JSON logging, /metrics endpoint  |
 | REQ-037     | ✅ Complete | Testing coverage (4 new test files added)       |
 | REQ-038     | 📋 Planned  | UX & accessibility backlog                      |
 | REQ-039     | 📋 Planned  | PowerApps data report view                      |

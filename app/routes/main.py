@@ -103,3 +103,25 @@ def health():
     
     return status, 200
 
+
+@main_bp.route("/metrics")
+def metrics():
+    """
+    Metrics endpoint for monitoring (REQ-036).
+    
+    Returns application metrics including:
+    - Total requests
+    - Error rate
+    - Average response time
+    - Top routes by request count
+    
+    Requires admin authentication.
+    """
+    if "user" not in session:
+        return {"error": "Authentication required"}, 401
+    
+    if not session["user"].get("is_admin"):
+        return {"error": "Admin access required"}, 403
+    
+    from ..utils.observability import get_metrics
+    return get_metrics(), 200

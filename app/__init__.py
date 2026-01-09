@@ -43,16 +43,22 @@ def create_app(config_class=Config):
     from .routes.admin import admin_bp
     from .routes.events import events_bp
     from .routes.main import main_bp
+    from .routes.users import users_bp
 
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp, url_prefix="/auth")
     app.register_blueprint(timesheets_bp, url_prefix="/api/timesheets")
     app.register_blueprint(admin_bp, url_prefix="/api/admin")
     app.register_blueprint(events_bp, url_prefix="/api")
+    app.register_blueprint(users_bp, url_prefix="/api/users")
 
     # REQ-035: Register global error handlers for standardized API responses
     from .utils.errors import register_error_handlers
     register_error_handlers(app)
+
+    # REQ-036: Register observability middleware for structured logging and metrics
+    from .utils.observability import register_observability
+    register_observability(app)
 
     # REQ-029: Database schema is managed exclusively by Flask-Migrate.
     # Run 'flask db upgrade' before starting the application.
@@ -88,4 +94,3 @@ def create_app(config_class=Config):
         return "Too many requests. Please try again later.", 429
 
     return app
-

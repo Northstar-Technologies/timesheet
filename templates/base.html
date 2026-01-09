@@ -42,20 +42,36 @@
         </div>
         {% if user %}
         <nav class="nav">
-          <span class="user-name">{{ user.display_name }}</span>
           {% if user.is_admin %}
           <a href="#admin" class="nav-link" data-view="admin">Admin</a>
           {% endif %}
-          <form
-            action="{{ url_for('auth.logout') }}"
-            method="post"
-            class="logout-form"
-          >
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-            <button type="submit" class="btn btn-secondary btn-sm">
-              Logout
+          <div class="user-menu">
+            <button
+              type="button"
+              class="user-menu-trigger"
+              id="user-menu-trigger"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              <span class="user-menu-name">{{ user.display_name }}</span>
+              <span class="user-menu-caret">▾</span>
             </button>
-          </form>
+            <div class="user-menu-dropdown hidden" id="user-menu-dropdown">
+              <a href="#settings" class="user-menu-item" data-view="settings">
+                ⚙️ Settings
+              </a>
+              <form
+                action="{{ url_for('auth.logout') }}"
+                method="post"
+                class="user-menu-item logout-form"
+              >
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                <button type="submit" class="btn btn-secondary btn-sm">
+                  Logout
+                </button>
+              </form>
+            </div>
+          </div>
         </nav>
 
         <!-- Mobile Navigation Menu -->
@@ -71,6 +87,9 @@
             👥 Admin Dashboard
           </a>
           {% endif %}
+          <a href="#settings" class="mobile-nav-link" data-view="settings">
+            ⚙️ Settings
+          </a>
         </nav>
         {% endif %}
       </div>

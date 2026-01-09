@@ -234,4 +234,25 @@ const API = {
     async getUsers() {
         return this.fetch('/api/admin/users');
     },
+
+    // ==========================================
+    // User Settings
+    // ==========================================
+
+    /**
+     * Get current user's notification settings
+     */
+    async getUserSettings() {
+        return this.fetch('/api/users/me/settings');
+    },
+
+    /**
+     * Update current user's notification settings
+     */
+    async updateUserSettings(data) {
+        return this.fetch('/api/users/me/settings', {
+            method: 'PUT',
+            body: JSON.stringify(data),
+        });
+    },
 };
