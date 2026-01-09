@@ -42,7 +42,7 @@ test.describe('Authentication', () => {
       await expect(page).toHaveURL(/\/app/);
       
       // Dashboard should load - look for main app container or welcome message
-      await expect(page.locator('.app-container, #app, main')).toBeVisible();
+      await expect(page.locator('.app-container').first()).toBeVisible();
     });
     
     test('admin login provides admin access', async ({ page }) => {
@@ -56,7 +56,7 @@ test.describe('Authentication', () => {
       await expect(page).toHaveURL(/\/app/);
       
       // Admin tab or admin navigation should be visible
-      await expect(page.locator('[data-tab="admin"], .nav-admin, a:has-text("Admin"), button:has-text("Admin")')).toBeVisible({ timeout: 15000 });
+      await expect(page.locator('[data-tab="admin"], .nav-admin, a:has-text("Admin"), button:has-text("Admin")').first()).toBeVisible({ timeout: 15000 });
     });
     
     test('trainee login has limited access', async ({ page }) => {
@@ -70,7 +70,7 @@ test.describe('Authentication', () => {
       await expect(page).toHaveURL(/\/app/);
       
       // Dashboard should load
-      await expect(page.locator('.app-container, #app, main')).toBeVisible();
+      await expect(page.locator('.app-container').first()).toBeVisible();
     });
     
     test('support login can access support dashboard', async ({ page }) => {
@@ -84,7 +84,7 @@ test.describe('Authentication', () => {
       await expect(page).toHaveURL(/\/app/);
       
       // Dashboard should load
-      await expect(page.locator('.app-container, #app, main')).toBeVisible();
+      await expect(page.locator('.app-container').first()).toBeVisible();
     });
     
   });
