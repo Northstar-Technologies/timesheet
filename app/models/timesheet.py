@@ -131,6 +131,13 @@ class Timesheet(db.Model):
     notes = db.relationship(
         "Note", back_populates="timesheet", lazy="dynamic", cascade="all, delete-orphan"
     )
+    # REQ-028: Multiple reimbursement line items
+    reimbursement_items = db.relationship(
+        "ReimbursementItem",
+        back_populates="timesheet",
+        lazy="dynamic",
+        cascade="all, delete-orphan",
+    )
 
     # Constraints
     __table_args__ = (
@@ -218,6 +225,8 @@ class Timesheet(db.Model):
         if include_entries:
             data["entries"] = [e.to_dict() for e in self.entries]
             data["attachments"] = [a.to_dict() for a in self.attachments]
+            # REQ-028: Include reimbursement line items
+            data["reimbursement_items"] = [r.to_dict() for r in self.reimbursement_items]
 
         return data
 

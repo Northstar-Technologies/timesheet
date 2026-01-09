@@ -720,14 +720,16 @@ When "Has expenses" is checked in Additional Information, display an **Expense D
 
 ---
 
-### REQ-028: Multiple Reimbursement Line Items (P1)
+### REQ-028: Multiple Reimbursement Line Items (P1) ✅
 
 Allow users to add multiple reimbursement entries, one for each expense requiring reimbursement.
 
-**Current State:**
+**Status: ✅ IMPLEMENTED (January 8, 2026)**
 
-- Only ONE reimbursement entry is possible (single Type/Amount/Date row)
-- Cannot track multiple expenses (e.g., gas + hotel + meals)
+**Previous State:**
+
+- Only ONE reimbursement entry was possible (single Type/Amount/Date row)
+- Could not track multiple expenses (e.g., gas + hotel + meals)
 
 **Required UI:**
 
@@ -774,10 +776,13 @@ Reimbursement Details
 
 **Implementation Notes:**
 
-- Create ReimbursementItem model (one-to-many with Timesheet)
-- Frontend: Dynamic form with add/remove buttons
-- Backend: Accept array of reimbursement items in API
-- Calculate and store total on timesheet for quick queries
+- ✅ Created `ReimbursementItem` model in `app/models/reimbursement.py`
+- ✅ Added relationship to `Timesheet` model
+- ✅ Updated `update_timesheet` route to handle `reimbursement_items` array
+- ✅ Frontend: Dynamic form with add/remove buttons in `timesheet.js`
+- ✅ CSS styling for line items in `components.css`
+- ✅ Database migration: `004_add_reimbursement_items.py`
+- ✅ Backward compatibility: Legacy `reimbursement_amount` field updated with total
 
 ---
 
@@ -979,7 +984,7 @@ Optional AI tooling integration using MCP servers.
 | REQ-025     | ✅ Complete | Expanded expense type dropdown            |
 | REQ-026     | ✅ Complete | Expense amount validation ($null fix)     |
 | REQ-027     | ✅ Complete | "Has expenses" expense details section    |
-| REQ-028     | 📋 Planned  | Multiple reimbursement line items         |
+| REQ-028     | ✅ Complete | Multiple reimbursement line items         |
 | REQ-029     | 📋 Planned  | Production DB lifecycle (migrations only) |
 | REQ-030     | ✅ Partial  | Auth/session hardening                    |
 | REQ-031     | 📋 Planned  | CSRF protection for mutating endpoints    |

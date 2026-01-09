@@ -517,6 +517,13 @@ const TimesheetModule = {
             reimbursement_amount: reimbursementAmount ? (parseFloat(reimbursementAmount.value) || 0) : 0,
             stipend_date: stipendDate ? (stipendDate.value || null) : null,
             user_notes: userNotes ? userNotes.value : '',
+            // REQ-028: Include reimbursement line items
+            reimbursement_items: this.reimbursementItems.map(item => ({
+                type: item.type,
+                amount: item.amount,
+                date: item.date,
+                notes: item.notes
+            })),
         };
     },
     
@@ -554,6 +561,23 @@ const TimesheetModule = {
         
         // Show/hide reimbursement section
         this.toggleReimbursementSection();
+        
+        // REQ-028: Load reimbursement line items from server
+        this.clearReimbursementItems();
+        if (timesheet.reimbursement_items && timesheet.reimbursement_items.length > 0) {
+            timesheet.reimbursement_items.forEach(item => {
+                const newItem = {
+                    id: this.nextReimbursementId++,
+                    type: item.expense_type || item.type || '',
+                    amount: item.amount || 0,
+                    date: item.expense_date || item.date || '',
+                    notes: item.notes || ''
+                };
+                this.reimbursementItems.push(newItem);
+            });
+            this.renderReimbursementItems();
+            this.updateReimbursementTotal();
+        }
         
         // Initialize entries for this week
         this.initForWeek(timesheet.week_start);
@@ -1173,6 +1197,14 @@ document.addEventListener('DOMContentLoaded', () => {
         expensePaidBy.addEventListener('change', () => {
             TimesheetModule.updateExpenseNotice();
             TimesheetModule.markAsChanged();
+        });
+    }
+    
+    // REQ-028: Add Expense Item button handler
+    const addReimbursementBtn = document.getElementById('add-reimbursement-btn');
+    if (addReimbursementBtn) {
+        addReimbursementBtn.addEventListener('click', () => {
+            TimesheetModule.addReimbursementItem();
         });
     }
     

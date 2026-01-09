@@ -13,6 +13,7 @@ from ..models import (
     Note,
     TimesheetStatus,
     HourType,
+    ReimbursementItem,
 )
 from ..extensions import db
 from ..utils.decorators import login_required
@@ -213,6 +214,52 @@ def update_timesheet(timesheet_id):
         # Limit to 255 characters per PowerApps spec
         notes = data["user_notes"] or ""
         timesheet.user_notes = notes[:255] if notes else None
+    
+    # REQ-028: Handle multiple reimbursement line items
+    if "reimbursement_items" in data:
+        # Delete existing reimbursement items
+        ReimbursementItem.query.filter_by(timesheet_id=timesheet_id).delete()
+        
+        # Create new items
+        for item_data in data["reimbursement_items"]:
+            if not item_data.get("type") or item_data.get("type") == "":
+                continue  # Skip items without a type selected
+            
+            # Parse and validate amount
+            amount = item_data.get("amount", 0)
+            if amount is None or amount == "" or amount == "null":
+                amount = 0.0
+            else:
+                try:
+                    amount = float(amount)
+                except (ValueError, TypeError):
+                    amount = 0.0
+            amount = max(0.0, min(amount, 10000.0))
+            
+            # Parse expense date if provided
+            expense_date = None
+            if item_data.get("date"):
+                try:
+                    expense_date = datetime.fromisoformat(item_data["date"]).date()
+                except ValueError:
+                    pass
+            
+            item = ReimbursementItem(
+                timesheet_id=timesheet_id,
+                expense_type=item_data["type"],
+                amount=amount,
+                expense_date=expense_date,
+                notes=(item_data.get("notes") or "")[:200],  # Limit notes to 200 chars
+            )
+            db.session.add(item)
+        
+        # Update the legacy reimbursement_amount field with total
+        total_amount = sum(
+            max(0.0, min(float(item.get("amount", 0) or 0), 10000.0))
+            for item in data["reimbursement_items"]
+            if item.get("type")
+        )
+        timesheet.reimbursement_amount = total_amount
 
     db.session.commit()
 

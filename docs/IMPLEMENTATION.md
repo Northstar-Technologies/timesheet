@@ -101,6 +101,7 @@ erDiagram
     Timesheet ||--|{ TimesheetEntry : contains
     Timesheet ||--o{ Attachment : has
     Timesheet ||--o{ Note : has
+    Timesheet ||--o{ ReimbursementItem : has
 
     User {
         uuid id PK
@@ -156,6 +157,16 @@ erDiagram
         uuid timesheet_id FK
         uuid author_id FK
         text content
+        datetime created_at
+    }
+
+    ReimbursementItem {
+        uuid id PK
+        uuid timesheet_id FK
+        string expense_type "Car|Gas|Hotel|Flight|Food|Parking|Toll|Other"
+        decimal amount
+        date expense_date
+        string notes
         datetime created_at
     }
 
@@ -235,7 +246,8 @@ timesheet/
 │   │   ├── timesheet.py         # Timesheet + Entry models
 │   │   ├── attachment.py        # Attachment model
 │   │   ├── note.py              # Note model
-│   │   └── notification.py      # Notification model
+│   │   ├── notification.py      # Notification model
+│   │   └── reimbursement.py     # ReimbursementItem model (REQ-028)
 │   │
 │   ├── routes/
 │   │   ├── __init__.py
@@ -697,9 +709,9 @@ All feature documentation, planning guides, and reference materials are stored i
 | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
 | [DESIGN.md](DESIGN.md)             | **Stakeholder decisions.** Captured decisions on architecture, user roles, notifications, workflow rules, and business logic. Reference for all "why" questions.                              | Design decisions         |
 | [REQUIREMENTS.md](REQUIREMENTS.md) | **Feature requirements.** Prioritized list of new features identified from stakeholder decisions. Includes user roles, notification channels, grid enhancements.                              | Feature planning         |
-| [BUGS.md](BUGS.md)                 | **Known issues and bug tracker.** Active bugs with reproduction steps and fixes.                                                                                                             | Bug tracking             |
+| [BUGS.md](BUGS.md)                 | **Known issues and bug tracker.** Active bugs with reproduction steps and fixes.                                                                                                              | Bug tracking             |
 | [roadmap.md](roadmap.md)           | **Production hardening recommendations.** Security, scalability, deployment patterns, and architectural decisions for going to production. Forward-looking technical debt and best practices. | Before production deploy |
-| [MCP.md](MCP.md)                   | **MCP setup and security guidance.** AI tooling integration and server configuration notes.                                                                                                  | AI tooling               |
+| [MCP.md](MCP.md)                   | **MCP setup and security guidance.** AI tooling integration and server configuration notes.                                                                                                   | AI tooling               |
 
 ### File Purpose Comparison
 
@@ -978,6 +990,7 @@ python -m compileall app
   - [ ] **Security baseline audit** (REQ-032): Dependency scanning, rate limits, admin audit logs.
 
 - [ ] **Deployment Prep**
+
   - [ ] **Docker Optimization**: Multi-stage builds for production.
   - [ ] **Backup Strategy**: Automated database backups.
   - [ ] **HTTPS**: SSL certificate configuration.

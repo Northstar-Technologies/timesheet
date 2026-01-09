@@ -15,6 +15,7 @@ from .timesheet import (
 from .attachment import Attachment
 from .note import Note
 from .notification import Notification, NotificationType
+from .reimbursement import ReimbursementItem
 
 __all__ = [
     "User",
@@ -28,4 +29,5 @@ __all__ = [
     "Note",
     "Notification",
     "NotificationType",
+    "ReimbursementItem",
 ]
