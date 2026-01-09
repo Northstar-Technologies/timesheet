@@ -157,6 +157,16 @@ Add a User Settings section where users can configure:
 - Teams: allow connecting a Microsoft account for Teams notifications
 - Allow multiple emails and phone numbers per user
 
+**Status: ✅ IMPLEMENTED (January 10, 2026)**
+
+**Implementation:**
+
+- ✅ User settings view with Email/SMS/Teams tiles and toggles
+- ✅ Username dropdown in header with Settings entry
+- ✅ User model fields for notification preferences + contact lists
+- ✅ Settings API (`GET/PUT /api/users/me/settings`) for saving preferences
+- ✅ Multiple email/phone inputs with Teams account storage
+
 ---
 
 ## 📊 Admin Dashboard
@@ -1203,9 +1213,11 @@ static/js/
 
 ---
 
-### REQ-045: Backup/Restore Documentation (P1)
+### REQ-045: Backup/Restore Documentation (P1) ✅
 
 Document database backup and restore procedures.
+
+**Status: ✅ IMPLEMENTED (January 9, 2026)**
 
 **Required Behavior:**
 
@@ -1214,11 +1226,16 @@ Document database backup and restore procedures.
 - Include attachment backup strategy
 - Provide cron job example for automated backups
 
-**Implementation Notes:**
+**Implementation:**
 
-- Add to README.md or create BACKUP.md
-- Include Docker exec commands for containerized database
-- Consider Azure Backup or AWS RDS snapshots for production
+- ✅ Created [docs/BACKUP.md](BACKUP.md) with:
+  - Database backup commands (Docker and direct)
+  - Restore procedures with examples
+  - Attachment backup/restore
+  - Automated backup scripts and cron jobs
+  - AWS S3 cloud backup instructions
+  - Complete disaster recovery procedure
+  - Backup verification checklist
 
 ---
 
@@ -1265,7 +1282,7 @@ Add end-to-end browser tests for critical user flows.
 | ----------- | ----------- | ----------------------------------------------- |
 | REQ-001     | ✅ Complete | Four-tier role system implemented               |
 | REQ-002     | ✅ Complete | All 4 test accounts available                   |
-| REQ-003     | 📋 Planned  | New feature                                     |
+| REQ-003     | ✅ Complete | User notification preferences + settings page   |
 | REQ-004     | ✅ Complete | Pay period filter button + display              |
 | REQ-005     | ✅ Complete | "This Week" quick filter button                 |
 | REQ-006     | 📋 Planned  | New workflow                                    |
@@ -1307,7 +1324,7 @@ Add end-to-end browser tests for critical user flows.
 | REQ-042     | ✅ Complete | Rate limiting on auth endpoints (Flask-Limiter) |
 | REQ-043     | ✅ Complete | Health check endpoint                           |
 | REQ-044     | 📋 Planned  | Frontend modularization (split JS)              |
-| REQ-045     | 📋 Planned  | Backup/restore documentation                    |
+| REQ-045     | ✅ Complete | Backup/restore docs (BACKUP.md)                 |
 | REQ-046     | ✅ Complete | E2E tests with Playwright (4 test files)        |
 
 ---

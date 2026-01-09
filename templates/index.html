@@ -575,6 +575,124 @@ endblock %} {% block extra_css %}
       </form>
     </section>
 
+    <!-- User Settings View (REQ-003) -->
+    <section id="view-settings" class="view">
+      <div class="view-header">
+        <h2>User Settings</h2>
+        <button class="btn btn-ghost" id="settings-back-btn">← Back</button>
+      </div>
+
+      <div class="settings-grid">
+        <div class="settings-card" id="settings-email-section">
+          <div class="settings-card-header">
+            <div class="settings-card-title">
+              <span class="settings-icon">📧</span>
+              <div>
+                <h3>Email Notifications</h3>
+                <p class="settings-card-subtitle">
+                  Add one or more email addresses for alerts.
+                </p>
+              </div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="settings-email-toggle" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="settings-card-body" id="settings-email-body">
+            <div class="settings-list" id="settings-email-list"></div>
+            <div class="settings-add">
+              <input
+                type="email"
+                id="settings-email-input"
+                class="form-input"
+                placeholder="name@northstar.com"
+              />
+              <button
+                type="button"
+                class="btn btn-ghost btn-sm"
+                id="settings-email-add"
+              >
+                Add
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-card" id="settings-sms-section">
+          <div class="settings-card-header">
+            <div class="settings-card-title">
+              <span class="settings-icon">📱</span>
+              <div>
+                <h3>SMS Notifications</h3>
+                <p class="settings-card-subtitle">
+                  Add phone numbers for SMS reminders.
+                </p>
+              </div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="settings-sms-toggle" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="settings-card-body" id="settings-sms-body">
+            <div class="settings-list" id="settings-phone-list"></div>
+            <div class="settings-add">
+              <input
+                type="tel"
+                id="settings-phone-input"
+                class="form-input"
+                placeholder="+1 (555) 123-4567"
+              />
+              <button
+                type="button"
+                class="btn btn-ghost btn-sm"
+                id="settings-phone-add"
+              >
+                Add
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-card" id="settings-teams-section">
+          <div class="settings-card-header">
+            <div class="settings-card-title">
+              <span class="settings-icon">💬</span>
+              <div>
+                <h3>Teams Notifications</h3>
+                <p class="settings-card-subtitle">
+                  Connect a Microsoft account for Teams alerts.
+                </p>
+              </div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="settings-teams-toggle" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="settings-card-body" id="settings-teams-body">
+            <div class="settings-add">
+              <input
+                type="email"
+                id="settings-teams-account"
+                class="form-input"
+                placeholder="teams@northstar.com"
+              />
+              <div class="settings-hint">Save to connect Teams.</div>
+            </div>
+            <div class="settings-status" id="settings-teams-status"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-actions">
+        <button type="button" class="btn btn-primary" id="settings-save-btn">
+          Save Settings
+        </button>
+      </div>
+    </section>
+
     <!-- Admin Dashboard View (REQ-041: Also visible for Support role) -->
     {% if user.is_admin or user.role == 'support' %}
     <!-- prettier-ignore -->
@@ -715,6 +833,7 @@ endblock %} {% block extra_css %}
 <script src="{{ url_for('static', filename='js/api.js') }}?v=20260108p1"></script>
 <script src="{{ url_for('static', filename='js/timesheet.js') }}?v=20260108p8"></script>
 <script src="{{ url_for('static', filename='js/admin.js') }}?v=20260108p6"></script>
+<script src="{{ url_for('static', filename='js/settings.js') }}?v=20260110p1"></script>
 <script src="{{ url_for('static', filename='js/sse.js') }}?v=20260106p1"></script>
 <script src="{{ url_for('static', filename='js/app.js') }}?v=20260107p1"></script>
 {% endblock %}

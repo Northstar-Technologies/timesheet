@@ -65,13 +65,13 @@ const SettingsModule = (() => {
         if (smsToggle) smsToggle.checked = state.smsOptIn;
         if (teamsToggle) teamsToggle.checked = state.teamsOptIn;
 
-        const emailSection = document.getElementById('settings-email-section');
-        const smsSection = document.getElementById('settings-sms-section');
-        const teamsSection = document.getElementById('settings-teams-section');
+        const emailBody = document.getElementById('settings-email-body');
+        const smsBody = document.getElementById('settings-sms-body');
+        const teamsBody = document.getElementById('settings-teams-body');
 
-        if (emailSection) emailSection.classList.toggle('settings-disabled', !state.emailOptIn);
-        if (smsSection) smsSection.classList.toggle('settings-disabled', !state.smsOptIn);
-        if (teamsSection) teamsSection.classList.toggle('settings-disabled', !state.teamsOptIn);
+        if (emailBody) emailBody.classList.toggle('settings-disabled', !state.emailOptIn);
+        if (smsBody) smsBody.classList.toggle('settings-disabled', !state.smsOptIn);
+        if (teamsBody) teamsBody.classList.toggle('settings-disabled', !state.teamsOptIn);
     }
 
     function renderTeamsStatus() {

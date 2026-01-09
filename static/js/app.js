@@ -65,6 +65,31 @@ function showEditTimesheetView(timesheet) {
     showView('editor', 'timesheets');
 }
 
+function showSettingsView() {
+    showView('settings');
+    if (typeof SettingsModule !== 'undefined') {
+        SettingsModule.load();
+    }
+}
+
+function navigateToView(view) {
+    if (view === 'timesheets') {
+        showTimesheetsView();
+    } else if (view === 'editor' || view === 'new') {
+        showNewTimesheetView();
+    } else if (view === 'admin') {
+        showView('admin');
+        if (typeof loadAdminTimesheets === 'function') {
+            loadAdminTimesheets();
+        }
+        if (typeof loadAdminStats === 'function') {
+            loadAdminStats();
+        }
+    } else if (view === 'settings') {
+        showSettingsView();
+    }
+}
+
 // ==========================================
 // Data Loading
 // ==========================================
@@ -344,6 +369,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (typeof loadAdminStats === 'function') {
             loadAdminStats();
         }
+    } else if (hash === 'settings') {
+        showSettingsView();
     } else {
         showTimesheetsView();
     }
@@ -358,20 +385,19 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.sidebar-link').forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
-            const view = link.dataset.view;
-            
-            if (view === 'timesheets') {
-                showTimesheetsView();
-            } else if (view === 'editor') {
-                showNewTimesheetView();
-            } else if (view === 'admin') {
-                showView('admin');
-                if (typeof loadAdminTimesheets === 'function') {
-                    loadAdminTimesheets();
-                }
-                if (typeof loadAdminStats === 'function') {
-                    loadAdminStats();
-                }
+            navigateToView(link.dataset.view);
+        });
+    });
+
+    document.querySelectorAll('.user-menu-item[data-view]').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            navigateToView(link.dataset.view);
+            const dropdown = document.getElementById('user-menu-dropdown');
+            const trigger = document.getElementById('user-menu-trigger');
+            if (dropdown && trigger) {
+                dropdown.classList.add('hidden');
+                trigger.setAttribute('aria-expanded', 'false');
             }
         });
     });
@@ -385,6 +411,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const backBtn = document.getElementById('back-to-list-btn');
     if (backBtn) {
         backBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            showTimesheetsView();
+        });
+    }
+
+    const settingsBackBtn = document.getElementById('settings-back-btn');
+    if (settingsBackBtn) {
+        settingsBackBtn.addEventListener('click', (e) => {
             e.preventDefault();
             showTimesheetsView();
         });
@@ -460,7 +494,9 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Close menu when a nav link is clicked
         mobileNav.querySelectorAll('.mobile-nav-link').forEach(link => {
-            link.addEventListener('click', () => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                navigateToView(link.dataset.view);
                 hamburgerBtn.classList.remove('active');
                 mobileNav.classList.add('hidden');
             });
@@ -473,5 +509,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 mobileNav.classList.add('hidden');
             }
         });
+    }
+
+    // ==========================================
+    // User Menu (Settings/Logout)
+    // ==========================================
+    const userMenuTrigger = document.getElementById('user-menu-trigger');
+    const userMenuDropdown = document.getElementById('user-menu-dropdown');
+    if (userMenuTrigger && userMenuDropdown) {
+        userMenuTrigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isOpen = !userMenuDropdown.classList.contains('hidden');
+            userMenuDropdown.classList.toggle('hidden', isOpen);
+            userMenuTrigger.setAttribute('aria-expanded', String(!isOpen));
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!userMenuDropdown.contains(e.target) && !userMenuTrigger.contains(e.target)) {
+                userMenuDropdown.classList.add('hidden');
+                userMenuTrigger.setAttribute('aria-expanded', 'false');
+            }
+        });
+    }
+
+    if (typeof SettingsModule !== 'undefined') {
+        SettingsModule.init();
     }
 });
