@@ -58,6 +58,14 @@ class Config:
     # MSAL automatically adds openid, profile, offline_access - only specify additional scopes
     AZURE_SCOPES = ["User.Read"]
 
+    # SharePoint Sync (REQ-010)
+    SHAREPOINT_SYNC_ENABLED = (
+        os.environ.get("SHAREPOINT_SYNC_ENABLED", "false").lower() == "true"
+    )
+    SP_SITE_ID = os.environ.get("SP_SITE_ID", "")
+    SP_DRIVE_ID = os.environ.get("SP_DRIVE_ID", "")
+    SP_BASE_FOLDER = os.environ.get("SP_BASE_FOLDER", "Timesheets")
+
     # Twilio
     TWILIO_ACCOUNT_SID = os.environ.get("TWILIO_ACCOUNT_SID")
     TWILIO_AUTH_TOKEN = os.environ.get("TWILIO_AUTH_TOKEN")

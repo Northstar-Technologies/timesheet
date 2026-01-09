@@ -314,7 +314,7 @@ Extend auto-populate feature to work with any hour type selection.
 
 Sync uploaded attachments to SharePoint for permanent storage.
 
-**Status: 📋 Planned (Not implemented)**
+**Status: ✅ IMPLEMENTED (January 2026)**
 
 **Features:**
 
@@ -332,7 +332,7 @@ Sync uploaded attachments to SharePoint for permanent storage.
 **Implementation Detail:**
 
 - Data model additions:
-  - `Attachment` fields: `sharepoint_item_id`, `sharepoint_site_id`, `sharepoint_drive_id`, `sharepoint_web_url`, `sharepoint_sync_status` (`PENDING|SYNCED|FAILED`), `sharepoint_synced_at`, `sharepoint_last_error`
+  - `Attachment` fields: `sharepoint_item_id`, `sharepoint_site_id`, `sharepoint_drive_id`, `sharepoint_web_url`, `sharepoint_sync_status` (`PENDING|SYNCED|FAILED`), `sharepoint_synced_at`, `sharepoint_last_attempt_at`, `sharepoint_last_error`, `sharepoint_retry_count`
   - Index `sharepoint_sync_status` for background job scans
 - Storage flow:
   - Keep local file in `uploads/` for immediate access
@@ -1451,7 +1451,7 @@ Add end-to-end browser tests for critical user flows.
 | REQ-007     | ✅ Complete | Column totals added to admin grid               |
 | REQ-008     | ✅ Complete | Row totals added to all grid views              |
 | REQ-009     | ✅ Complete | Auto-fill 8h works for any hour type            |
-| REQ-010     | 📋 Planned  | SharePoint integration                          |
+| REQ-010     | ✅ Complete | SharePoint integration                          |
 | REQ-011     | ✅ Complete | Email service                                   |
 | REQ-012     | 📋 Planned  | Teams bot                                       |
 | REQ-013     | ✅ Complete | Dropdown filters by user role                   |

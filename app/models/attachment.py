@@ -29,6 +29,11 @@ class Attachment(db.Model):
 
     __tablename__ = "attachments"
 
+    class SharePointSyncStatus:
+        PENDING = "PENDING"
+        SYNCED = "SYNCED"
+        FAILED = "FAILED"
+
     id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     timesheet_id = db.Column(
         db.String(36), db.ForeignKey("timesheets.id"), nullable=False, index=True
@@ -38,6 +43,15 @@ class Attachment(db.Model):
     mime_type = db.Column(db.String(100), nullable=False)
     file_size = db.Column(db.Integer, nullable=False)
     reimbursement_type = db.Column(db.String(20), nullable=True)
+    sharepoint_item_id = db.Column(db.String(120), nullable=True)
+    sharepoint_site_id = db.Column(db.String(120), nullable=True)
+    sharepoint_drive_id = db.Column(db.String(120), nullable=True)
+    sharepoint_web_url = db.Column(db.String(500), nullable=True)
+    sharepoint_sync_status = db.Column(db.String(20), nullable=True, index=True)
+    sharepoint_synced_at = db.Column(db.DateTime, nullable=True)
+    sharepoint_last_attempt_at = db.Column(db.DateTime, nullable=True)
+    sharepoint_last_error = db.Column(db.Text, nullable=True)
+    sharepoint_retry_count = db.Column(db.Integer, default=0, nullable=False)
     uploaded_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
     # Relationships
@@ -55,4 +69,18 @@ class Attachment(db.Model):
             "file_size": self.file_size,
             "reimbursement_type": self.reimbursement_type,
             "uploaded_at": self.uploaded_at.isoformat(),
+            "sharepoint_sync_status": self.sharepoint_sync_status,
+            "sharepoint_web_url": self.sharepoint_web_url,
+            "sharepoint_last_error": self.sharepoint_last_error,
+            "sharepoint_synced_at": (
+                self.sharepoint_synced_at.isoformat()
+                if self.sharepoint_synced_at
+                else None
+            ),
+            "sharepoint_last_attempt_at": (
+                self.sharepoint_last_attempt_at.isoformat()
+                if self.sharepoint_last_attempt_at
+                else None
+            ),
+            "sharepoint_retry_count": self.sharepoint_retry_count,
         }

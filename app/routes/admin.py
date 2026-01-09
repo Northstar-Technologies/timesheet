@@ -12,6 +12,7 @@ from flask import Blueprint, request, session, send_file, current_app, Response
 from ..models import (
     Timesheet,
     TimesheetEntry,
+    Attachment,
     User,
     Note,
     TimesheetStatus,
@@ -1072,6 +1073,30 @@ def download_attachment(timesheet_id, attachment_id):
         as_attachment=True,
         download_name=attachment.original_filename,
     )
+
+
+@admin_bp.route("/attachments/<attachment_id>/sharepoint/retry", methods=["POST"])
+@login_required
+@admin_required
+def retry_sharepoint_sync(attachment_id):
+    """
+    Retry SharePoint sync for a specific attachment (REQ-010).
+    """
+    from ..jobs import enqueue_sharepoint_sync
+
+    attachment = Attachment.query.filter_by(id=attachment_id).first()
+    if not attachment:
+        return {"error": "Attachment not found"}, 404
+
+    if not current_app.config.get("SHAREPOINT_SYNC_ENABLED", False):
+        return {"error": "SharePoint sync is disabled"}, 400
+
+    attachment.sharepoint_sync_status = Attachment.SharePointSyncStatus.PENDING
+    attachment.sharepoint_last_error = None
+    db.session.commit()
+
+    enqueue_sharepoint_sync(attachment.id)
+    return {"status": "queued"}
 
 
 @admin_bp.route("/timesheets/<timesheet_id>/notes", methods=["POST"])

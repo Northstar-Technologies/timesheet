@@ -17,6 +17,7 @@ from ..models import (
     ReimbursementType,
 )
 from ..extensions import db
+from ..jobs import enqueue_sharepoint_sync
 from ..services.notification import NotificationService
 from ..utils.decorators import login_required
 from ..utils.pay_periods import get_confirmed_pay_period
@@ -495,6 +496,11 @@ def upload_attachment(timesheet_id):
     # Get file size
     file_size = os.path.getsize(filepath)
 
+    sharepoint_enabled = current_app.config.get("SHAREPOINT_SYNC_ENABLED", False)
+    sharepoint_status = (
+        Attachment.SharePointSyncStatus.PENDING if sharepoint_enabled else None
+    )
+
     # Create attachment record
     attachment = Attachment(
         timesheet_id=timesheet_id,
@@ -503,6 +509,7 @@ def upload_attachment(timesheet_id):
         mime_type=file.content_type,
         file_size=file_size,
         reimbursement_type=reimbursement_type,
+        sharepoint_sync_status=sharepoint_status,
     )
     db.session.add(attachment)
 
@@ -511,6 +518,9 @@ def upload_attachment(timesheet_id):
         timesheet.status = TimesheetStatus.SUBMITTED
 
     db.session.commit()
+
+    if sharepoint_enabled:
+        enqueue_sharepoint_sync(attachment.id)
 
     return attachment.to_dict(), 201
 

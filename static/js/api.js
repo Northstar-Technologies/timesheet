@@ -239,6 +239,15 @@ const API = {
     },
 
     /**
+     * Retry SharePoint sync for an attachment (admin)
+     */
+    async retrySharepointSync(attachmentId) {
+        return this.fetch(`/api/admin/attachments/${attachmentId}/sharepoint/retry`, {
+            method: 'POST',
+        });
+    },
+
+    /**
      * Get raw timesheet data report (admin)
      */
     async getTimesheetReport(params = {}) {

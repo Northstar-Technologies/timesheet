@@ -27,6 +27,16 @@ function formatExpenseType(type) {
     return `${icon} ${type}`;
 }
 
+function escapeHtml(value) {
+    return String(value || '').replace(/[&<>"']/g, (char) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;',
+    }[char]));
+}
+
 function populateUserSelect(select, users) {
     if (!select) return;
     select.innerHTML = '<option value=\"\">All Users</option>';
@@ -358,6 +368,18 @@ async function openAdminTimesheet(id) {
     }
 }
 
+async function retrySharepointSync(attachmentId, timesheetId) {
+    try {
+        await API.retrySharepointSync(attachmentId);
+        showToast('SharePoint sync queued', 'info');
+        if (timesheetId) {
+            openAdminTimesheet(timesheetId);
+        }
+    } catch (error) {
+        showToast(error.message, 'error');
+    }
+}
+
 // ==========================================
 // Data Report View (REQ-039)
 // ==========================================
@@ -561,12 +583,43 @@ function showAdminTimesheetDetail(timesheet) {
             <div class="detail-section">
                 <h4>Attachments</h4>
                 <div class="attachments-list">
-                    ${timesheet.attachments.map(att => `
-                        <a href="/api/admin/timesheets/${timesheet.id}/attachments/${att.id}" 
-                           class="attachment-item" target="_blank">
-                            📎 ${att.filename}${att.reimbursement_type ? ` (${att.reimbursement_type})` : ''}
-                        </a>
-                    `).join('')}
+                    ${timesheet.attachments.map(att => {
+                        const status = att.sharepoint_sync_status || '';
+                        const statusLabel = status === 'PENDING'
+                            ? 'Pending'
+                            : status === 'SYNCED'
+                                ? 'Synced'
+                                : status === 'FAILED'
+                                    ? 'Failed'
+                                    : '';
+                        const statusBadge = statusLabel
+                            ? `<span class="sync-badge sync-${status.toLowerCase()}">${statusLabel}</span>`
+                            : '';
+                        const sharepointLink = att.sharepoint_web_url
+                            ? `<a href="${att.sharepoint_web_url}" target="_blank" rel="noopener">SharePoint</a>`
+                            : '';
+                        const errorBadge = att.sharepoint_last_error
+                            ? `<span class="sync-error" title="${escapeHtml(att.sharepoint_last_error)}">Error</span>`
+                            : '';
+                        const retryButton = status === 'FAILED'
+                            ? `<button class="btn btn-ghost btn-sm" type="button" onclick="retrySharepointSync('${att.id}', '${timesheet.id}')">Retry</button>`
+                            : '';
+
+                        return `
+                            <div class="attachment-item attachment-admin">
+                                <a href="/api/admin/timesheets/${timesheet.id}/attachments/${att.id}" 
+                                   target="_blank" rel="noopener">
+                                    ${escapeHtml(att.filename)}${att.reimbursement_type ? ` (${escapeHtml(att.reimbursement_type)})` : ''}
+                                </a>
+                                <div class="attachment-sync">
+                                    ${statusBadge}
+                                    ${sharepointLink}
+                                    ${retryButton}
+                                    ${errorBadge}
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
                 </div>
             </div>
             ` : ''}

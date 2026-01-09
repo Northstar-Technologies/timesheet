@@ -128,6 +128,147 @@ def enqueue_notification(notification_type: str, timesheet_id: str, reason: str 
 
 
 # ============================================================================
+# SharePoint Sync Jobs (REQ-010)
+# ============================================================================
+
+@with_app_context
+def sync_attachment_sharepoint_job(attachment_id: str):
+    """
+    Background job to sync an attachment to SharePoint.
+    """
+    from app.models import Attachment
+    from app.extensions import db
+    from app.utils.sharepoint import (
+        upload_attachment_to_sharepoint,
+        SharePointSyncError,
+        is_sharepoint_configured,
+    )
+
+    attachment = Attachment.query.get(attachment_id)
+    if not attachment:
+        logger.error(f"Attachment {attachment_id} not found for SharePoint sync")
+        return {"success": False, "error": "Attachment not found"}
+
+    if not is_sharepoint_configured():
+        attachment.sharepoint_sync_status = Attachment.SharePointSyncStatus.FAILED
+        attachment.sharepoint_last_error = "SharePoint sync is not configured"
+        attachment.sharepoint_retry_count = (attachment.sharepoint_retry_count or 0) + 1
+        attachment.sharepoint_last_attempt_at = datetime.utcnow()
+        db.session.commit()
+        return {"success": False, "error": "SharePoint not configured"}
+
+    attachment.sharepoint_sync_status = Attachment.SharePointSyncStatus.PENDING
+    attachment.sharepoint_last_attempt_at = datetime.utcnow()
+    db.session.commit()
+
+    try:
+        result = upload_attachment_to_sharepoint(attachment)
+    except SharePointSyncError as exc:
+        attachment.sharepoint_sync_status = Attachment.SharePointSyncStatus.FAILED
+        attachment.sharepoint_last_error = str(exc)
+        attachment.sharepoint_retry_count = (attachment.sharepoint_retry_count or 0) + 1
+        attachment.sharepoint_last_attempt_at = datetime.utcnow()
+        db.session.commit()
+        logger.error(f"SharePoint sync failed for attachment {attachment_id}: {exc}")
+        raise
+    except Exception as exc:
+        attachment.sharepoint_sync_status = Attachment.SharePointSyncStatus.FAILED
+        attachment.sharepoint_last_error = str(exc)
+        attachment.sharepoint_retry_count = (attachment.sharepoint_retry_count or 0) + 1
+        attachment.sharepoint_last_attempt_at = datetime.utcnow()
+        db.session.commit()
+        logger.error(f"SharePoint sync error for attachment {attachment_id}: {exc}")
+        raise
+
+    attachment.sharepoint_item_id = result.get("item_id")
+    attachment.sharepoint_site_id = result.get("site_id")
+    attachment.sharepoint_drive_id = result.get("drive_id")
+    attachment.sharepoint_web_url = result.get("web_url")
+    attachment.sharepoint_sync_status = Attachment.SharePointSyncStatus.SYNCED
+    attachment.sharepoint_synced_at = datetime.utcnow()
+    attachment.sharepoint_last_attempt_at = datetime.utcnow()
+    attachment.sharepoint_last_error = None
+    db.session.commit()
+
+    logger.info(f"SharePoint sync completed for attachment {attachment_id}")
+    return {"success": True, "item_id": result.get("item_id")}
+
+
+def enqueue_sharepoint_sync(attachment_id: str):
+    """
+    Enqueue SharePoint sync job for an attachment.
+    """
+    queue = get_queue()
+
+    if queue:
+        job = queue.enqueue(
+            sync_attachment_sharepoint_job,
+            str(attachment_id),
+            retry=3,
+            job_timeout=300,
+        )
+        logger.info(f"Enqueued SharePoint sync job: {job.id}")
+        return job.id
+
+    logger.info("Running SharePoint sync synchronously (RQ not available)")
+    try:
+        return sync_attachment_sharepoint_job(str(attachment_id))
+    except Exception as exc:
+        logger.error(f"SharePoint sync failed: {exc}")
+        return None
+
+
+def _next_sharepoint_retry_delay(retry_count: int) -> int:
+    retry_count = max(int(retry_count or 0), 0)
+    return min(3600, 60 * (2 ** retry_count))
+
+
+@with_app_context
+def sync_pending_sharepoint_attachments_job(limit: int = 100):
+    """
+    Scan for pending/failed SharePoint syncs and enqueue retries.
+    """
+    from app.models import Attachment
+    from flask import current_app
+
+    if not current_app.config.get("SHAREPOINT_SYNC_ENABLED", False):
+        logger.info("SharePoint sync scan skipped: disabled")
+        return {"skipped": True, "reason": "disabled"}
+
+    now = datetime.utcnow()
+    pending_statuses = [
+        Attachment.SharePointSyncStatus.PENDING,
+        Attachment.SharePointSyncStatus.FAILED,
+    ]
+
+    attachments = (
+        Attachment.query.filter(Attachment.sharepoint_sync_status.in_(pending_statuses))
+        .order_by(Attachment.uploaded_at.asc())
+        .limit(limit)
+        .all()
+    )
+
+    queued = 0
+    skipped = 0
+    for attachment in attachments:
+        delay_seconds = _next_sharepoint_retry_delay(attachment.sharepoint_retry_count)
+        last_attempt = attachment.sharepoint_last_attempt_at
+        if last_attempt and (now - last_attempt).total_seconds() < delay_seconds:
+            skipped += 1
+            continue
+        enqueue_sharepoint_sync(attachment.id)
+        queued += 1
+
+    result = {
+        "checked": len(attachments),
+        "queued": queued,
+        "skipped": skipped,
+    }
+    logger.info(f"SharePoint sync scan complete: {result}")
+    return result
+
+
+# ============================================================================
 # Scheduled Reminder Jobs
 # ============================================================================
 
@@ -267,6 +408,13 @@ def setup_scheduler(app):
             func=send_weekly_reminders_job,
             meta={"origin": "timesheet"},
         )
+
+        # Schedule SharePoint sync scan hourly at :15
+        scheduler.cron(
+            "15 * * * *",
+            func=sync_pending_sharepoint_attachments_job,
+            meta={"origin": "timesheet"},
+        )
         
         logger.info("Scheduled jobs configured successfully")
         return scheduler
@@ -302,6 +450,13 @@ def register_job_commands(app):
     def weekly_reminders():
         """Send weekly timesheet reminders."""
         result = send_weekly_reminders_job()
+        click.echo(f"Result: {result}")
+
+    @jobs.command()
+    @click.option("--limit", default=100, help="Max attachments to scan")
+    def sharepoint_sync(limit):
+        """Scan and enqueue SharePoint sync retries."""
+        result = sync_pending_sharepoint_attachments_job(limit=limit)
         click.echo(f"Result: {result}")
     
     @jobs.command()
