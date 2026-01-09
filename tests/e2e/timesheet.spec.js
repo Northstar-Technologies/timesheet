@@ -59,12 +59,41 @@ test.describe('Timesheet Management', () => {
       await page.locator('#create-timesheet-btn').click();
       await expect(page.locator('#view-editor')).toBeVisible();
       
-      // Select hour type and add row
-      await page.locator('#hour-type-selector').selectOption({ index: 1 }); // Select first available type
+      // Set week start date (required for adding hour type rows)
+      // Get current week's Sunday
+      const today = new Date();
+      const dayOfWeek = today.getDay();
+      const sunday = new Date(today);
+      sunday.setDate(today.getDate() - dayOfWeek);
+      const weekStart = sunday.toISOString().split('T')[0];
+      
+      await page.locator('#week-start').fill(weekStart);
+      await page.locator('#week-start').dispatchEvent('change');
+      
+      // Wait for hour type dropdown options to be populated by JavaScript
+      await page.waitForFunction(() => {
+        const select = document.querySelector('#hour-type-selector');
+        return select && select.options.length > 1;
+      }, { timeout: 10000 });
+      
+      // Wait for add row controls to be visible
+      await expect(page.locator('.add-hour-type-row')).toBeVisible();
+      
+      // Select hour type
+      const selector = page.locator('#hour-type-selector');
+      await selector.selectOption({ index: 1 }); // Select first available type
+      
+      // Dispatch change event to enable the button
+      await selector.dispatchEvent('change');
+      
+      // Wait for button to be enabled
+      await expect(page.locator('#add-hour-type-btn')).toBeEnabled({ timeout: 2000 });
+      
+      // Click add button
       await page.locator('#add-hour-type-btn').click();
       
       // Wait for row to appear
-      await expect(page.locator('#hour-type-rows .hour-type-row').first()).toBeVisible();
+      await expect(page.locator('#hour-type-rows .hour-type-row').first()).toBeVisible({ timeout: 5000 });
       
       // Click Save Draft
       await page.locator('#save-draft-btn').click();
@@ -88,12 +117,40 @@ test.describe('Timesheet Management', () => {
       await page.locator('#create-timesheet-btn').click();
       await expect(page.locator('#view-editor')).toBeVisible();
       
-      // Select hour type and add row (use index 1 for first real option, 0 is placeholder)
-      await page.locator('#hour-type-selector').selectOption({ index: 1 });
+      // Set week start date (required for adding hour type rows)
+      const today = new Date();
+      const dayOfWeek = today.getDay();
+      const sunday = new Date(today);
+      sunday.setDate(today.getDate() - dayOfWeek);
+      const weekStart = sunday.toISOString().split('T')[0];
+      
+      await page.locator('#week-start').fill(weekStart);
+      await page.locator('#week-start').dispatchEvent('change');
+      
+      // Wait for hour type dropdown options to be populated by JavaScript
+      await page.waitForFunction(() => {
+        const select = document.querySelector('#hour-type-selector');
+        return select && select.options.length > 1;
+      }, { timeout: 10000 });
+      
+      // Wait for add row controls to be visible
+      await expect(page.locator('.add-hour-type-row')).toBeVisible();
+      
+      // Select hour type
+      const selector = page.locator('#hour-type-selector');
+      await selector.selectOption({ index: 1 }); // Select first available type
+      
+      // Dispatch change event to enable the button
+      await selector.dispatchEvent('change');
+      
+      // Wait for button to be enabled
+      await expect(page.locator('#add-hour-type-btn')).toBeEnabled({ timeout: 2000 });
+      
+      // Click add button
       await page.locator('#add-hour-type-btn').click();
       
       // Wait for row to appear
-      await expect(page.locator('#hour-type-rows .hour-type-row').first()).toBeVisible();
+      await expect(page.locator('#hour-type-rows .hour-type-row').first()).toBeVisible({ timeout: 5000 });
       
       // Fill in some hours (Monday = day 1)
       const row = page.locator('#hour-type-rows .hour-type-row').first();
