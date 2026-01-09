@@ -59,5 +59,47 @@ def app():
 
 @main_bp.route("/health")
 def health():
-    """Health check endpoint for Docker/load balancers."""
-    return {"status": "healthy"}, 200
+    """
+    Health check endpoint for load balancers and monitoring.
+    
+    REQ-043: Returns 200 OK when app is healthy, 503 if any dependency is down.
+    Does not require authentication.
+    """
+    from ..extensions import db
+    import redis
+    from flask import current_app
+    
+    status = {
+        "status": "healthy",
+        "version": "1.0.0",
+        "checks": {}
+    }
+    all_healthy = True
+    
+    # Check database connectivity
+    try:
+        db.session.execute(db.text("SELECT 1"))
+        status["checks"]["database"] = "ok"
+    except Exception as e:
+        status["checks"]["database"] = f"error: {str(e)[:100]}"
+        all_healthy = False
+    
+    # Check Redis connectivity (if configured)
+    try:
+        redis_url = current_app.config.get("REDIS_URL")
+        if redis_url:
+            r = redis.from_url(redis_url)
+            r.ping()
+            status["checks"]["redis"] = "ok"
+        else:
+            status["checks"]["redis"] = "not configured"
+    except Exception as e:
+        status["checks"]["redis"] = f"error: {str(e)[:100]}"
+        # Redis is optional, don't fail health check
+    
+    if not all_healthy:
+        status["status"] = "unhealthy"
+        return status, 503
+    
+    return status, 200
+
