@@ -41,6 +41,11 @@ class Config:
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+    # Session security (REQ-031: CSRF requires sessions for token validation)
+    SESSION_COOKIE_HTTPONLY = True  # Prevent XSS access to session cookie
+    SESSION_COOKIE_SAMESITE = "Lax"  # CSRF protection for same-site requests
+    # Note: SESSION_COOKIE_SECURE should only be True in production with HTTPS
+
     # Azure AD / MSAL
     AZURE_CLIENT_ID = os.environ.get("AZURE_CLIENT_ID")
     AZURE_CLIENT_SECRET = os.environ.get("AZURE_CLIENT_SECRET")

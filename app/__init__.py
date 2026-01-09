@@ -8,7 +8,7 @@ Replaces PowerApps solution with modern web stack.
 import os
 from flask import Flask
 from .config import Config
-from .extensions import db, migrate
+from .extensions import db, migrate, csrf
 
 
 def create_app(config_class=Config):
@@ -34,6 +34,7 @@ def create_app(config_class=Config):
     # Initialize extensions
     db.init_app(app)
     migrate.init_app(app, db)
+    csrf.init_app(app)  # REQ-031: CSRF protection for mutating endpoints
 
     # Register blueprints
     from .routes.auth import auth_bp

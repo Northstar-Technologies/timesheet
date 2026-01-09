@@ -821,14 +821,20 @@ Ensure the OIDC flow and session handling meet production security expectations.
 
 ---
 
-### REQ-031: CSRF Protection for Mutating Endpoints (P0)
+### REQ-031: CSRF Protection for Mutating Endpoints (P0) ✅
 
 All authenticated `POST`/`PUT`/`DELETE` routes must require a CSRF token.
 
-**Implementation Notes:**
+**Status: ✅ IMPLEMENTED (January 8, 2026)**
 
-- Use Flask-WTF tokens for forms, or a double-submit cookie for AJAX
-- Apply to timesheets, admin actions, attachments, and settings
+**Implementation:**
+
+- ✅ Added Flask-WTF CSRFProtect extension (`flask-wtf>=1.2.0`)
+- ✅ CSRF extension initialized in app factory (`app/__init__.py`)
+- ✅ CSRF token exposed via `<meta name="csrf-token">` tag in base template
+- ✅ JavaScript API client reads token from meta tag for AJAX requests
+- ✅ All POST/PUT/DELETE/PATCH requests include `X-CSRFToken` header
+- ✅ Form submissions include `csrf_token` hidden input (e.g., logout form)
 
 ---
 
@@ -991,7 +997,7 @@ Optional AI tooling integration using MCP servers.
 | REQ-028     | ✅ Complete | Multiple reimbursement line items         |
 | REQ-029     | 📋 Planned  | Production DB lifecycle (migrations only) |
 | REQ-030     | ✅ Partial  | Auth/session hardening                    |
-| REQ-031     | 📋 Planned  | CSRF protection for mutating endpoints    |
+| REQ-031     | ✅ Complete | CSRF protection for mutating endpoints    |
 | REQ-032     | 📋 Planned  | Security baseline & audit checklist       |
 | REQ-033     | 📋 Planned  | Attachment storage strategy               |
 | REQ-034     | 📋 Planned  | Background jobs & scheduled notifications |

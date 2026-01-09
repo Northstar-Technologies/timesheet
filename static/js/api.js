@@ -6,7 +6,17 @@
 
 const API = {
     /**
+     * Get the CSRF token from the meta tag (REQ-031)
+     * @returns {string|null} CSRF token or null if not found
+     */
+    getCSRFToken() {
+        const metaTag = document.querySelector('meta[name="csrf-token"]');
+        return metaTag ? metaTag.getAttribute('content') : null;
+    },
+    
+    /**
      * Base fetch wrapper with error handling
+     * Automatically includes CSRF token for mutating requests (POST/PUT/DELETE)
      */
     async fetch(url, options = {}) {
         const defaultOptions = {
@@ -23,6 +33,15 @@ const API = {
                 ...options.headers,
             },
         };
+        
+        // REQ-031: Add CSRF token header for mutating requests
+        const method = (options.method || 'GET').toUpperCase();
+        if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(method)) {
+            const csrfToken = this.getCSRFToken();
+            if (csrfToken) {
+                mergedOptions.headers['X-CSRFToken'] = csrfToken;
+            }
+        }
         
         // Don't set Content-Type for FormData (file uploads)
         if (options.body instanceof FormData) {
