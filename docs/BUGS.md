@@ -68,13 +68,20 @@ When a user views a timesheet they've submitted, the form should be read-only.
 
 ### BUG-003: Draft Timesheets Missing Save/Submit Buttons
 
-**Status:** 🟡 To Verify  
+**Status:** ✅ Resolved  
 **Severity:** Medium (P1)  
 **Reported:** January 8, 2026  
+**Resolved:** January 9, 2026  
 **Related:** REQ-023
 
 **Description:**
-When viewing an existing draft timesheet (`NEW` status), the Save Draft and Submit buttons should be visible, just like when creating a new timesheet. If these buttons are not appearing, the `setFormReadOnly()` function may not be correctly restoring visibility.
+When viewing an existing draft timesheet (`NEW` status), the Save Draft and Submit buttons were not visible.
+
+**Root Cause:**
+Missing closing `</div>` tag for `.form-row` in the travel section (line 359 of index.html). This caused all subsequent HTML elements (expense section, attachments, notes, and action buttons) to be incorrectly nested inside `#travel-section`, making them invisible when "Traveled this week" checkbox was unchecked.
+
+**Fix Applied:**
+Added missing `</div>` to properly close the form-row, restoring correct HTML nesting.
 
 **Expected Behavior:**
 
