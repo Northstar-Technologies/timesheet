@@ -1,7 +1,7 @@
 """Add reimbursement_items table for REQ-028
 
 Revision ID: 004_add_reimbursement_items
-Revises: 13fe1c13ccd1_add_user_notes_and_admin_notes_to_
+Revises: 002_add_user_role
 Create Date: 2026-01-08 21:45:00.000000
 
 """
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = '004_add_reimbursement_items'
-down_revision = '13fe1c13ccd1_add_user_notes_and_admin_notes_to_'
+down_revision = '002_add_user_role'
 branch_labels = None
 depends_on = None
 
