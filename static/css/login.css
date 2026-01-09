@@ -1,0 +1,297 @@
+/* Microsoft-style login page (REQ-038) */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+  min-height: 100vh;
+  background: linear-gradient(
+    135deg,
+    #f3e7e9 0%,
+    #e3eeff 25%,
+    #d4e4ed 50%,
+    #e8f4ea 75%,
+    #f3e7e9 100%
+  );
+  color: #1b1b1b;
+}
+
+.login-background {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+}
+
+.login-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 440px;
+}
+
+.login-card,
+.signin-options-card,
+.dev-card {
+  background: #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  border-radius: 0;
+}
+
+.login-card {
+  padding: 44px;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+
+.ms-logo {
+  width: 24px;
+  height: 24px;
+}
+
+.ms-logo-text {
+  font-size: 15px;
+  font-weight: 600;
+  color: #5e5e5e;
+}
+
+.sign-in-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1b1b1b;
+  margin-bottom: 24px;
+}
+
+.login-error {
+  border-left: 3px solid #d13438;
+  background: #fde7e9;
+  color: #a4262c;
+  font-size: 13px;
+  padding: 10px 12px;
+  margin-bottom: 16px;
+}
+
+.input-container {
+  margin-bottom: 24px;
+}
+
+.input-container input {
+  width: 100%;
+  height: 36px;
+  border: none;
+  border-bottom: 1px solid #8a8886;
+  font-size: 15px;
+  padding: 6px 0;
+  outline: none;
+}
+
+.input-container input:focus {
+  border-bottom: 2px solid #0078d4;
+  margin-bottom: -1px;
+}
+
+.input-container input::placeholder {
+  color: #605e5c;
+}
+
+.help-links {
+  margin-bottom: 24px;
+}
+
+.help-links p {
+  font-size: 13px;
+  color: #1b1b1b;
+  margin-bottom: 8px;
+}
+
+.help-links a {
+  color: #0067b8;
+  text-decoration: none;
+}
+
+.help-links a:hover {
+  text-decoration: underline;
+}
+
+.link-disabled {
+  color: #a19f9d;
+}
+
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-next {
+  min-width: 108px;
+  height: 32px;
+  background: #0078d4;
+  color: #ffffff;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0 20px;
+}
+
+.btn-next:hover {
+  background: #106ebe;
+}
+
+.signin-options-card {
+  padding: 16px 44px;
+}
+
+.btn-signin-options {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  font-size: 13px;
+  color: #1b1b1b;
+  cursor: pointer;
+  padding: 0;
+}
+
+.btn-signin-options:hover {
+  text-decoration: underline;
+}
+
+.dev-card {
+  padding: 28px 32px;
+}
+
+.dev-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.dev-subtitle {
+  font-size: 13px;
+  color: #605e5c;
+  margin-bottom: 16px;
+}
+
+.dev-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.dev-login-button {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #edebe9;
+  background: #ffffff;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.dev-login-button:hover {
+  background: #f3f2f1;
+  border-color: #c8c6c4;
+}
+
+.dev-login-button .role {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.dev-login-button .desc {
+  color: #605e5c;
+  font-size: 12px;
+}
+
+.manual-login-section {
+  margin-top: 16px;
+  font-size: 13px;
+}
+
+.manual-login-section summary {
+  cursor: pointer;
+  color: #0067b8;
+  margin-bottom: 12px;
+}
+
+.manual-login-form {
+  margin-top: 12px;
+}
+
+.manual-login-form label {
+  font-size: 12px;
+  color: #605e5c;
+}
+
+.manual-login-form input {
+  width: 100%;
+  height: 36px;
+  border: 1px solid #8a8886;
+  margin: 6px 0 12px 0;
+  padding: 6px 8px;
+  font-size: 14px;
+}
+
+.manual-login-submit {
+  width: 100%;
+  height: 32px;
+  background: #0078d4;
+  color: #ffffff;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.manual-login-submit:hover {
+  background: #106ebe;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+@media (max-width: 480px) {
+  .login-card,
+  .signin-options-card,
+  .dev-card {
+    width: 100%;
+  }
+
+  .login-card {
+    padding: 32px 24px;
+  }
+
+  .signin-options-card,
+  .dev-card {
+    padding: 20px 24px;
+  }
+}
+
+@media (max-height: 520px) and (orientation: landscape) {
+  .login-background {
+    align-items: flex-start;
+    padding-top: 16px;
+  }
+}

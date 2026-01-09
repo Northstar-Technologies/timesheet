@@ -1,271 +1,171 @@
-{% extends "base.html" %} {% block title %}Login - Northstar Timesheet App{%
-endblock %} {% block content %}
-<div class="login-container">
-  <div class="login-card">
-    <div class="login-logo">
-      <img
-        src="{{ url_for('static', filename='img/logo.png') }}"
-        alt="Northstar"
-      />
-    </div>
-    <h2>Northstar Timesheet App</h2>
-    <p class="login-subtitle">Sign in to access your timesheets</p>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign in to your account</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/login.css') }}?v=1"
+    />
+  </head>
+  <body>
+    <div class="login-background">
+      <div class="login-container">
+        <div class="login-card">
+          <div class="logo-container">
+            <img
+              src="{{ url_for('static', filename='img/ms-logo.svg') }}"
+              alt="Microsoft"
+              class="ms-logo"
+            />
+            <span class="ms-logo-text">Microsoft</span>
+          </div>
 
-    {% if error %}
-    <div class="alert alert-error">{{ error }}</div>
-    {% endif %}
+          <h1 class="sign-in-title">Sign in</h1>
 
-    <!-- Quick Login Buttons (Dev Mode) - REQ-017 -->
-    <div class="dev-login-buttons">
-      <p class="dev-login-title">🔧 Development Mode - Quick Login</p>
+          {% if error %}
+          <div class="login-error" role="alert">{{ error }}</div>
+          {% endif %}
 
-      <form
-        method="POST"
-        action="{{ url_for('auth.dev_login') }}"
-        class="dev-login-grid"
-      >
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-        <button
-          type="submit"
-          name="username"
-          value="trainee"
-          class="btn btn-dev btn-trainee"
-        >
-          <input type="hidden" name="password" value="trainee" />
-          <span class="btn-icon">🎓</span>
-          <span class="btn-label">Trainee</span>
-          <span class="btn-desc">Training hours only</span>
-        </button>
-      </form>
+          <form
+            action="{{ url_for('auth.login') }}"
+            method="get"
+            class="login-form"
+            id="login-form"
+          >
+            <label class="sr-only" for="login-hint">Email, phone, or Skype</label>
+            <div class="input-container">
+              <input
+                type="text"
+                id="login-hint"
+                name="login_hint"
+                placeholder="Email, phone, or Skype"
+                autocomplete="username"
+                required
+              />
+            </div>
 
-      <form
-        method="POST"
-        action="{{ url_for('auth.dev_login') }}"
-        class="dev-login-grid"
-      >
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-        <button
-          type="submit"
-          name="username"
-          value="staff"
-          class="btn btn-dev btn-staff"
-        >
-          <input type="hidden" name="password" value="staff" />
-          <span class="btn-icon">👤</span>
-          <span class="btn-label">Staff</span>
-          <span class="btn-desc">All hours, no approval</span>
-        </button>
-      </form>
+            <div class="help-links">
+              <p>No account? <span class="link-disabled">Create one!</span></p>
+              <p>
+                <a
+                  href="https://support.microsoft.com/account-billing"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  Can't access your account?
+                </a>
+              </p>
+            </div>
 
-      <form
-        method="POST"
-        action="{{ url_for('auth.dev_login') }}"
-        class="dev-login-grid"
-      >
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-        <button
-          type="submit"
-          name="username"
-          value="support"
-          class="btn btn-dev btn-support"
-        >
-          <input type="hidden" name="password" value="support" />
-          <span class="btn-icon">🛠️</span>
-          <span class="btn-label">Support</span>
-          <span class="btn-desc">Approve trainees</span>
-        </button>
-      </form>
-
-      <form
-        method="POST"
-        action="{{ url_for('auth.dev_login') }}"
-        class="dev-login-grid"
-      >
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-        <button
-          type="submit"
-          name="username"
-          value="admin"
-          class="btn btn-dev btn-admin"
-        >
-          <input type="hidden" name="password" value="password" />
-          <span class="btn-icon">👑</span>
-          <span class="btn-label">Admin</span>
-          <span class="btn-desc">Full access</span>
-        </button>
-      </form>
-    </div>
-
-    <div class="login-divider">
-      <span>or sign in manually</span>
-    </div>
-
-    <details class="manual-login-section">
-      <summary>Manual Login</summary>
-      <form
-        method="POST"
-        action="{{ url_for('auth.dev_login') }}"
-        class="login-form"
-      >
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-        <div class="form-group">
-          <label for="username">Username</label>
-          <input
-            type="text"
-            id="username"
-            name="username"
-            class="form-input"
-            required
-            placeholder="Enter username"
-            autocomplete="username"
-          />
+            <div class="button-container">
+              <button type="submit" class="btn-next">Next</button>
+            </div>
+          </form>
         </div>
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            class="form-input"
-            required
-            placeholder="Enter password"
-            autocomplete="current-password"
-          />
+
+        <div class="signin-options-card">
+          <button class="btn-signin-options" type="button">
+            Sign-in options
+          </button>
         </div>
-        <button type="submit" class="btn btn-primary btn-lg btn-block">
-          Sign In
-        </button>
-      </form>
-    </details>
 
-    <div class="login-divider">
-      <span>or</span>
+        {% if dev_mode %}
+        <div class="dev-card">
+          <h2 class="dev-title">Development sign-in</h2>
+          <p class="dev-subtitle">
+            Azure AD is not configured. Use test accounts below.
+          </p>
+
+          <div class="dev-grid">
+            <form method="POST" action="{{ url_for('auth.dev_login') }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+              <button
+                type="submit"
+                name="username"
+                value="trainee"
+                class="dev-login-button"
+              >
+                <input type="hidden" name="password" value="trainee" />
+                <span class="role">Trainee</span>
+                <span class="desc">Training hours only</span>
+              </button>
+            </form>
+
+            <form method="POST" action="{{ url_for('auth.dev_login') }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+              <button
+                type="submit"
+                name="username"
+                value="staff"
+                class="dev-login-button"
+              >
+                <input type="hidden" name="password" value="staff" />
+                <span class="role">Staff</span>
+                <span class="desc">All hours, no approval</span>
+              </button>
+            </form>
+
+            <form method="POST" action="{{ url_for('auth.dev_login') }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+              <button
+                type="submit"
+                name="username"
+                value="support"
+                class="dev-login-button"
+              >
+                <input type="hidden" name="password" value="support" />
+                <span class="role">Support</span>
+                <span class="desc">Approve trainee submissions</span>
+              </button>
+            </form>
+
+            <form method="POST" action="{{ url_for('auth.dev_login') }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+              <button
+                type="submit"
+                name="username"
+                value="admin"
+                class="dev-login-button"
+              >
+                <input type="hidden" name="password" value="password" />
+                <span class="role">Admin</span>
+                <span class="desc">Full access</span>
+              </button>
+            </form>
+          </div>
+
+          <details class="manual-login-section">
+            <summary>Manual login</summary>
+            <form
+              method="POST"
+              action="{{ url_for('auth.dev_login') }}"
+              class="manual-login-form"
+            >
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+              <label for="username">Username</label>
+              <input
+                type="text"
+                id="username"
+                name="username"
+                autocomplete="username"
+                required
+              />
+              <label for="password">Password</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                autocomplete="current-password"
+                required
+              />
+              <button type="submit" class="manual-login-submit">Sign in</button>
+            </form>
+          </details>
+        </div>
+        {% endif %}
+      </div>
     </div>
-
-    <a
-      href="{{ url_for('auth.login') }}"
-      class="btn btn-secondary btn-lg btn-block"
-    >
-      <svg
-        class="microsoft-icon"
-        viewBox="0 0 21 21"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <rect x="1" y="1" width="9" height="9" fill="#f25022" />
-        <rect x="11" y="1" width="9" height="9" fill="#7fba00" />
-        <rect x="1" y="11" width="9" height="9" fill="#00a4ef" />
-        <rect x="11" y="11" width="9" height="9" fill="#ffb900" />
-      </svg>
-      Sign in with Microsoft 365
-    </a>
-  </div>
-</div>
-
-<style>
-  /* Dev Login Button Grid */
-  .dev-login-buttons {
-    margin: 1.5rem 0;
-  }
-
-  .dev-login-title {
-    text-align: center;
-    color: var(--color-text-secondary);
-    font-size: 0.875rem;
-    margin-bottom: 1rem;
-  }
-
-  .dev-login-grid {
-    display: contents;
-  }
-
-  .dev-login-buttons form {
-    margin-bottom: 0.75rem;
-  }
-
-  .btn-dev {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    padding: 0.875rem 1rem;
-    border: 1px solid var(--color-border-default);
-    border-radius: 8px;
-    background: var(--color-bg-elevated);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    text-align: left;
-  }
-
-  .btn-dev:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  }
-
-  .btn-icon {
-    font-size: 1.5rem;
-    margin-right: 0.75rem;
-    flex-shrink: 0;
-  }
-
-  .btn-label {
-    font-weight: 600;
-    color: var(--color-text-primary);
-    margin-right: 0.5rem;
-  }
-
-  .btn-desc {
-    font-size: 0.75rem;
-    color: var(--color-text-secondary);
-    margin-left: auto;
-  }
-
-  /* Role-specific colors */
-  .btn-trainee {
-    border-left: 4px solid #9c27b0;
-  }
-  .btn-trainee:hover {
-    background: rgba(156, 39, 176, 0.1);
-  }
-
-  .btn-staff {
-    border-left: 4px solid #2196f3;
-  }
-  .btn-staff:hover {
-    background: rgba(33, 150, 243, 0.1);
-  }
-
-  .btn-support {
-    border-left: 4px solid #ff9800;
-  }
-  .btn-support:hover {
-    background: rgba(255, 152, 0, 0.1);
-  }
-
-  .btn-admin {
-    border-left: 4px solid #4caf50;
-  }
-  .btn-admin:hover {
-    background: rgba(76, 175, 80, 0.1);
-  }
-
-  /* Manual login collapsible */
-  .manual-login-section {
-    margin: 1rem 0;
-  }
-
-  .manual-login-section summary {
-    cursor: pointer;
-    color: var(--color-text-secondary);
-    font-size: 0.875rem;
-    text-align: center;
-    padding: 0.5rem;
-  }
-
-  .manual-login-section summary:hover {
-    color: var(--color-text-primary);
-  }
-
-  .manual-login-section .login-form {
-    margin-top: 1rem;
-  }
-</style>
-{% endblock %}
+  </body>
+</html>

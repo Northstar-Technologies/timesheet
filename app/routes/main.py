@@ -4,7 +4,7 @@ Main Routes
 Landing page and static content routes.
 """
 
-from flask import Blueprint, render_template, session, redirect, url_for
+from flask import Blueprint, render_template, session, redirect, url_for, current_app
 
 main_bp = Blueprint("main", __name__)
 
@@ -28,7 +28,15 @@ def login_page():
     if "user" in session:
         return redirect(url_for("main.app"))  # REQ-016: Go directly to app
     
-    return render_template("login.html")
+    client_id = current_app.config.get("AZURE_CLIENT_ID")
+    client_secret = current_app.config.get("AZURE_CLIENT_SECRET")
+    dev_mode = (
+        not client_id
+        or not client_secret
+        or "your-azure" in str(client_id).lower()
+        or "your-azure" in str(client_secret).lower()
+    )
+    return render_template("login.html", dev_mode=dev_mode)
 
 
 @main_bp.route("/dashboard")

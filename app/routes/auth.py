@@ -36,13 +36,14 @@ def _get_msal_app():
     )
 
 
-def _get_auth_url():
+def _get_auth_url(login_hint=None):
     """Build Microsoft 365 authorization URL."""
     msal_app = _get_msal_app()
 
     return msal_app.get_authorization_request_url(
         scopes=current_app.config["AZURE_SCOPES"],
         redirect_uri=current_app.config["AZURE_REDIRECT_URI"],
+        login_hint=login_hint,
     )
 
 
@@ -81,7 +82,8 @@ def login():
             return redirect(url_for("main.app"))  # REQ-016: Auto-redirect to app
 
         # Production: redirect to Azure AD
-        auth_url = _get_auth_url()
+        login_hint = request.args.get("login_hint") or None
+        auth_url = _get_auth_url(login_hint=login_hint)
         return redirect(auth_url)
     except Exception as e:
         # If Azure configuration fails, redirect to generic Microsoft login
@@ -227,10 +229,18 @@ def dev_login():
     
     # Validate credentials
     if username not in TEST_ACCOUNTS:
-        return render_template("login.html", error="Invalid username or password")
+        return render_template(
+            "login.html",
+            error="Invalid username or password",
+            dev_mode=_is_dev_mode(),
+        )
     
     if TEST_ACCOUNTS[username]["password"] != password:
-        return render_template("login.html", error="Invalid username or password")
+        return render_template(
+            "login.html",
+            error="Invalid username or password",
+            dev_mode=_is_dev_mode(),
+        )
     
     account = TEST_ACCOUNTS[username]
     

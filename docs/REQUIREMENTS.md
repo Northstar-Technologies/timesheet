@@ -1153,6 +1153,8 @@ Close the top coverage gaps and raise overall coverage to 90%+.
 
 Complete the remaining UI/UX items from supporting docs.
 
+**Status: ✅ IMPLEMENTED (January 2026)**
+
 **Scope:**
 
 - Microsoft-style login page parity (LOGIN.md)
@@ -1161,6 +1163,13 @@ Complete the remaining UI/UX items from supporting docs.
 - Accessibility audit: keyboard navigation, focus visibility, contrast
 - UI refactor patterns reference (UI.md)
 - Use [WALKTHROUGH.md](WALKTHROUGH.md) for end-user flow validation
+
+**Implementation Notes:**
+
+- Microsoft-style login template + stylesheet with dev-mode panel
+- Added swipe gestures for mobile navigation and landscape tweaks
+- Added print styles and light-mode tokens via `prefers-color-scheme`
+- Improved focus-visible states and logo swapping for light mode
 
 ---
 
@@ -1395,7 +1404,7 @@ Add end-to-end browser tests for critical user flows.
 | REQ-035     | ✅ Complete | API validation & error handling modules         |
 | REQ-036     | ✅ Complete | Observability, JSON logging, /metrics endpoint  |
 | REQ-037     | ✅ Complete | Testing coverage (4 new test files added)       |
-| REQ-038     | 📋 Planned  | UX & accessibility backlog                      |
+| REQ-038     | ✅ Complete | UX & accessibility backlog                      |
 | REQ-039     | 📋 Planned  | PowerApps data report view                      |
 | REQ-040     | � Deferred  | MCP tooling integration (not used)              |
 | REQ-041     | ✅ Complete | Support dashboard for trainee approvals         |
