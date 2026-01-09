@@ -196,7 +196,7 @@ Add ability to filter timesheets by current pay period (biweekly).
 
 ### REQ-005: Current Week Filter (P1) ✅
 
-Add quick filter for current week's timesheets.
+Add quick filter for current week's timesheets or current pay period (biweekly).
 
 **Status: ✅ IMPLEMENTED (January 2026)**
 
@@ -1446,7 +1446,7 @@ Add end-to-end browser tests for critical user flows.
 | ----------- | ----------- | ----------------------------------------------- |
 | REQ-001     | ✅ Complete | Four-tier role system implemented               |
 | REQ-002     | ✅ Complete | All 4 test accounts available                   |
-| REQ-003     | ✅ Complete | User notification preferences + settings page   |
+| REQ-003     | 📋 Planned  | User notification preferences + settings page   |
 | REQ-004     | ✅ Complete | Pay period filter button + display              |
 | REQ-005     | ✅ Complete | "This Week" quick filter button                 |
 | REQ-006     | ✅ Complete | Pay period confirmation + payroll export        |
