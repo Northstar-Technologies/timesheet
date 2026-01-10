@@ -71,6 +71,28 @@
 
 ---
 
+### 🚀 January 10, 2026 - Start Here
+
+**Carryover from January 9:**
+
+1. **REQ-033: Attachment Storage Strategy** (High Impact)
+
+   - Decide S3/R2 vs SharePoint for production storage
+   - Unblocks horizontal scaling
+   - REQ-010 implemented SharePoint sync; confirm if additional object storage needed
+
+2. **REQ-015: Azure AD Integration** (P0 - Production Validation)
+
+   - Verify Microsoft login works with real Azure credentials
+   - Test user provisioning flow in staging environment
+
+**Completed Today:**
+
+| Requirement | Description                 | Status      |
+| ----------- | --------------------------- | ----------- |
+| —           | Fix 26 failing tests        | ✅ Complete |
+| —           | Email service documentation | ✅ Complete |
+
 ## 🎯 Priority Legend
 
 - **P0** - Must have for launch
