@@ -2,7 +2,7 @@
 
 > **Purpose:** Track known bugs and issues requiring fixes.
 >
-> **Last Updated:** January 8, 2026
+> **Last Updated:** January 10, 2026
 
 ---
 
@@ -288,6 +288,14 @@ Browser testing confirmed:
 
 Resolved January 8, 2026. See [BUG-001](#bug-001-submitted-timesheets-allow-editing-) above for details.
 
+### BUG-002: Reimbursement Amounts Display "$null"
+
+Resolved January 10, 2026. See [BUG-002](#bug-002-reimbursement-amounts-display-null) above for details.
+
+### BUG-003: Dev Login Causes Duplicate Key Error
+
+Resolved January 10, 2026 (verified - fix was already in place). See [BUG-003](#bug-003-dev-login-causes-duplicate-key-error) above for details.
+
 ---
 
 ## 📝 Status Reference
@@ -301,4 +309,5 @@ Resolved January 8, 2026. See [BUG-001](#bug-001-submitted-timesheets-allow-edit
 
 ---
 
-_Document created: January 8, 2026_
+_Document created: January 8, 2026_  
+_Last updated: January 10, 2026_

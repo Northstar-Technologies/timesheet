@@ -268,9 +268,17 @@ timesheet/
 │   ├── js/
 │   │   ├── app.js               # Main application
 │   │   ├── api.js               # API client wrapper
-│   │   ├── timesheet.js         # Timesheet form logic
+│   │   ├── timesheet.js         # Timesheet form logic (legacy, being modularized)
 │   │   ├── admin.js             # Admin dashboard logic
-│   │   └── sse.js               # Server-sent events handler
+│   │   ├── sse.js               # Server-sent events handler
+│   │   │
+│   │   └── timesheet/           # Modular timesheet components (REQ-044)
+│   │       ├── index.js         # Module exports and initialization
+│   │       ├── state.js         # State management
+│   │       ├── dates.js         # Date utilities
+│   │       ├── entries.js       # Time entry row handling
+│   │       └── attachments.js   # Attachment management
+│   │
 │   │
 │   └── img/
 │       └── logo.svg             # Northstar logo

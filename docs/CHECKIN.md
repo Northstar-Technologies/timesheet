@@ -2,7 +2,7 @@
 
 > **Purpose:** Candid assessment of project risks, technical debt, and improvement priorities.
 >
-> **Last Updated:** January 9, 2026
+> **Last Updated:** January 10, 2026
 
 ---
 
@@ -10,13 +10,13 @@
 
 ### High Risk Areas:
 
-| Area                           | Risk Level | Reasoning                                                                                                                         |
-| ------------------------------ | ---------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| **`static/js/timesheet.js`**   | 🔴 High    | 1,400+ lines, handles all form state, validation, and UI logic. No tests. Changes here ripple through the entire user experience. |
-| **`app/routes/timesheets.py`** | 🔴 High    | Core business logic for CRUD, status transitions, and validation. Manual testing only.                                            |
-| **Attachment handling**        | 🟠 Medium  | Files stored on container filesystem. No backup, single-instance only. File size/type validation exists but no malware scanning.  |
-| **MSAL authentication flow**   | 🟠 Medium  | Complex OAuth state management. Errors hard to debug. Dev bypass logic interleaved with production flow.                          |
-| **CSS specificity**            | 🟡 Low-Med | Dark mode override required `!important` in places. Layered stylesheets can conflict.                                             |
+| Area                             | Risk Level    | Reasoning                                                                                                                        |
+| -------------------------------- | ------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| ~~**`static/js/timesheet.js`**~~ | ~~🔴 High~~   | ✅ **Refactored** - Split into 5 modules (REQ-044). Now easier to maintain and test.                                             |
+| **`app/routes/timesheets.py`**   | 🔴 High       | Core business logic for CRUD, status transitions, and validation. Manual testing only.                                           |
+| **Attachment handling**          | 🟠 Medium     | Files stored on container filesystem. No backup, single-instance only. File size/type validation exists but no malware scanning. |
+| ~~**MSAL authentication flow**~~ | ~~🟠 Medium~~ | ✅ **Complete** - REQ-015 Azure AD implemented with proper get-or-create pattern. Dev bypass gated correctly.                    |
+| **CSS specificity**              | 🟡 Low-Med    | Dark mode override required `!important` in places. Layered stylesheets can conflict.                                            |
 
 ### Why These Are Risky:
 
@@ -181,7 +181,7 @@
 | Improvement                                      | Effort       | Impact        | Notes                                         |
 | ------------------------------------------------ | ------------ | ------------- | --------------------------------------------- |
 | ~~**Add Playwright E2E tests for happy paths**~~ | ~~2-3 days~~ | ~~🟢 High~~   | ✅ Done (REQ-046) - 29 tests passing          |
-| **Split `timesheet.js` into modules**            | 1-2 days     | 🟢 High       | Easier debugging, parallel development        |
+| ~~**Split `timesheet.js` into modules**~~        | ~~1-2 days~~ | ~~🟢 High~~   | ✅ Done (REQ-044) - 5 modules created         |
 | ~~**Add API response standardization**~~         | ~~1 day~~    | ~~🟢 High~~   | ✅ Done (REQ-035) - errors.py + validation.py |
 | **Containerize test database**                   | 0.5 day      | 🟡 Medium     | Faster CI, isolated test runs                 |
 | ~~**Add health check endpoint**~~                | ~~0.5 day~~  | ~~🟡 Medium~~ | ✅ Done (REQ-043) - /health endpoint          |
@@ -206,7 +206,7 @@
 | ~~**No structured logging**~~                      | ~~🟡 Medium~~   | ✅ **Complete (REQ-036)** | JSON logging + request IDs               |
 | ~~**No rate limiting**~~                           | ~~🟡 Medium~~   | ✅ **Complete (REQ-042)** | Flask-Limiter on auth endpoints          |
 | ~~**No backup/restore procedure**~~                | ~~🟠 High~~     | ✅ **Complete (REQ-045)** | BACKUP.md with full procedures           |
-| **Azure AD not fully validated**                   | 🟡 Medium       | Partial                   | Complete REQ-015, REQ-030                |
+| ~~**Azure AD not fully validated**~~               | ~~🟡 Medium~~   | ✅ **Complete**           | REQ-015 code complete, validated         |
 
 ### Production Readiness Checklist:
 
@@ -231,4 +231,4 @@
 
 ---
 
-_Document created January 8, 2026, updated January 9, 2026_
+_Document created January 8, 2026, updated January 10, 2026_
