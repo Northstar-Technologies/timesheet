@@ -1490,7 +1490,7 @@ Add end-to-end browser tests for critical user flows.
 | REQ-037     | ✅ Complete | Testing coverage (4 new test files added)       |
 | REQ-038     | ✅ Complete | UX & accessibility backlog                      |
 | REQ-039     | ✅ Complete | PowerApps data report view                      |
-| REQ-040     | � Deferred  | MCP tooling integration (not used)              |
+| REQ-040     | 📋 Deferred | MCP tooling integration (not used)              |
 | REQ-041     | ✅ Complete | Support dashboard for trainee approvals         |
 | REQ-042     | ✅ Complete | Rate limiting on auth endpoints (Flask-Limiter) |
 | REQ-043     | ✅ Complete | Health check endpoint                           |
@@ -1500,4 +1500,129 @@ Add end-to-end browser tests for critical user flows.
 
 ---
 
-_Document updated January 9, 2026_
+## 🚀 Future Work (Compiled from All Documentation)
+
+The following items were identified by scanning all `.md` files for pending work, TODOs, and future enhancements.
+
+### Open Bugs (from BUGS.md)
+
+| Bug ID  | Severity | Description                           | Status  |
+| ------- | -------- | ------------------------------------- | ------- |
+| BUG-002 | P1       | Reimbursement amounts display "$null" | 🔴 Open |
+| BUG-003 | P0       | Dev login causes duplicate key error  | 🔴 Open |
+
+**BUG-002 Fix Plan:**
+
+- Add `required` attribute to reimbursement amount input
+- Add client-side validation: amount must be ≥ 0
+- Database migration: set DEFAULT 0.00 on reimbursement_amount
+- Display fix: show "$0.00" instead of "$null"
+
+**BUG-003 Fix Plan:**
+
+- Investigate if `get_or_create` pattern is missing in certain paths
+- May already be fixed in auth.py - verify and update BUGS.md
+
+---
+
+### Security Hardening (from SECURITY.md)
+
+| Item                                    | Priority | Status     |
+| --------------------------------------- | -------- | ---------- |
+| Generate strong production `SECRET_KEY` | P0       | ⏳ Pending |
+| Rotate Azure credentials for production | P0       | ⏳ Pending |
+| Configure HTTPS/SSL for production      | P0       | ⏳ Pending |
+| Change database password from default   | P0       | ⏳ Pending |
+| Enable error monitoring (Sentry)        | P1       | 📋 Planned |
+| Automated security scanning (Bandit)    | P2       | 📋 Planned |
+
+---
+
+### Testing Gaps (from TESTING.md)
+
+| Area                         | Current Coverage | Target | Priority |
+| ---------------------------- | ---------------- | ------ | -------- |
+| Unit/API Tests               | 85               | 120+   | P1       |
+| Code Coverage                | 74%              | 90%+   | P1       |
+| `app/routes/events.py` (SSE) | 0%               | 80%    | P2       |
+| `app/routes/auth.py`         | ~50%             | 85%    | P1       |
+| Attachment upload tests      | 0%               | 100%   | P1       |
+
+**Test Files Needed:**
+
+- `test_attachments.py` - File upload/download tests
+- `test_events.py` - SSE endpoint tests
+
+---
+
+### Platform Improvements (from roadmap.md)
+
+| Area                    | Recommendation                             | Status     |
+| ----------------------- | ------------------------------------------ | ---------- |
+| Session storage         | Consider Redis-backed server-side sessions | 📋 Planned |
+| API versioning          | Add versioning for future breaking changes | 📋 Planned |
+| Audit logging           | Add audit log table for status changes     | 📋 Planned |
+| Hour type configuration | Make hour types database-driven            | 📋 Future  |
+| Error monitoring        | Integrate Sentry                           | 📋 Planned |
+| Uptime monitoring       | Set up external monitoring                 | 📋 Planned |
+
+---
+
+### UX & Feature Enhancements (from IMPLEMENTATION.md)
+
+| Feature                                            | REQ     | Status      |
+| -------------------------------------------------- | ------- | ----------- |
+| Holiday awareness & warning                        | REQ-022 | 📋 Planned  |
+| Travel mileage tracking                            | REQ-024 | 📋 Planned  |
+| Expanded expense types (Gas, Hotel, Parking, Toll) | REQ-025 | 📋 Planned  |
+| Per-option reimbursement attachments               | REQ-021 | ✅ Complete |
+| Biweekly pay period confirmation                   | REQ-006 | ✅ Complete |
+
+---
+
+### Open Questions (from IMPLEMENTATION.md)
+
+1. **Hosting Platform**: Managed platform vs ECS/K8s decision
+2. **Domain/TLS**: Production URL and certificate approach
+3. **Environment Strategy**: dev/staging/prod separation
+4. **Data Retention Policy**: How long to keep timesheets and attachments
+5. **Mobile Experience**: Target scope for mobile UX and offline support
+6. **Audit/Compliance**: Audit logging level and GDPR/privacy requirements
+
+---
+
+### CI/CD Improvements (from TESTING.md)
+
+| Item                              | Status     |
+| --------------------------------- | ---------- |
+| GitHub Actions workflow for tests | 📋 Planned |
+| Pre-commit hook for tests         | 📋 Planned |
+| Codecov integration               | 📋 Planned |
+| Container vulnerability scanning  | 📋 Planned |
+
+---
+
+### Recommended Next Steps
+
+**Immediate (This Week):**
+
+1. Fix BUG-002 (Reimbursement $null display)
+2. Verify BUG-003 is resolved, update BUGS.md
+3. Generate production `SECRET_KEY`
+
+**Short-Term (Next 2 Weeks):**
+
+1. Add `test_attachments.py` for file upload tests
+2. REQ-022: Holiday awareness & warning
+3. REQ-024: Travel mileage tracking
+
+**Medium-Term (Next Month):**
+
+1. Increase test coverage to 85%
+2. REQ-025: Expanded expense types
+3. Set up error monitoring (Sentry)
+4. Production deployment with HTTPS
+
+---
+
+_Document updated January 10, 2026_
