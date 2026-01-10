@@ -87,6 +87,57 @@ REQ-015 (Azure AD) code is fully implemented. Production validation requires rea
 | —           | Fix 26 failing tests                                | ✅ Complete |
 | —           | Email service documentation                         | ✅ Complete |
 
+**🐛 Bugs To Fix Today:**
+
+| Bug ID  | Severity | Description                           | Status     |
+| ------- | -------- | ------------------------------------- | ---------- |
+| BUG-002 | P1       | Reimbursement amounts display "$null" | 🔧 Fix Now |
+| BUG-003 | P0       | Dev login causes duplicate key error  | 🔍 Verify  |
+
+**🔒 Security Tasks Today:**
+
+| Task                                    | Priority | Status    |
+| --------------------------------------- | -------- | --------- |
+| Generate strong production `SECRET_KEY` | P0       | 🔧 Do Now |
+
+---
+
+### 📅 January 11, 2026 - Tomorrow's Work
+
+**Testing Improvements:**
+
+| Task                                | Priority | Status     |
+| ----------------------------------- | -------- | ---------- |
+| Add `test_attachments.py`           | P1       | 📋 Planned |
+| Add `test_events.py` (SSE tests)    | P2       | 📋 Planned |
+| Increase test coverage to 85%       | P1       | 📋 Planned |
+| Expand auth tests in `test_auth.py` | P1       | 📋 Planned |
+
+**Feature Implementation:**
+
+| Requirement | Description                                        | Priority | Status     |
+| ----------- | -------------------------------------------------- | -------- | ---------- |
+| REQ-022     | Holiday awareness & warning                        | P1       | 📋 Planned |
+| REQ-024     | Travel mileage tracking                            | P1       | 📋 Planned |
+| REQ-025     | Expanded expense types (Gas, Hotel, Parking, Toll) | P1       | 📋 Planned |
+
+**Platform Improvements:**
+
+| Task                                    | Priority | Status     |
+| --------------------------------------- | -------- | ---------- |
+| Configure HTTPS/SSL for production      | P0       | 📋 Planned |
+| Change database password from default   | P0       | 📋 Planned |
+| Rotate Azure credentials for production | P0       | 📋 Planned |
+| Enable error monitoring (Sentry)        | P1       | 📋 Planned |
+
+**CI/CD Setup:**
+
+| Task                              | Status     |
+| --------------------------------- | ---------- |
+| GitHub Actions workflow for tests | 📋 Planned |
+| Pre-commit hook for tests         | 📋 Planned |
+| Codecov integration               | 📋 Planned |
+
 ---
 
 ## 🎯 Priority Legend
@@ -1455,7 +1506,7 @@ Add end-to-end browser tests for critical user flows.
 | REQ-002     | ✅ Complete | All 4 test accounts available                   |
 | REQ-003     | ✅ Complete | User notification preferences + settings page   |
 | REQ-004     | ✅ Complete | Pay period filter button + display              |
-| REQ-005     | 📋 Planned  | "This Week" or "Pay Period" quick filter        |
+| REQ-005     | ✅ Complete | "This Week" quick filter on admin dashboard     |
 | REQ-006     | ✅ Complete | Pay period confirmation + payroll export        |
 | REQ-007     | ✅ Complete | Column totals added to admin grid               |
 | REQ-008     | ✅ Complete | Row totals added to all grid views              |
@@ -1465,7 +1516,7 @@ Add end-to-end browser tests for critical user flows.
 | REQ-012     | ✅ Complete | Teams bot                                       |
 | REQ-013     | ✅ Complete | Dropdown filters by user role                   |
 | REQ-014     | ✅ Complete | Submit without attachment (with warning)        |
-| REQ-015     | 📋 Planned  | Azure AD integration                            |
+| REQ-015     | ✅ Complete | Azure AD integration (code complete)            |
 | REQ-016     | ✅ Complete | Auto-redirect to /app after login               |
 | REQ-017     | ✅ Complete | 4 quick-login buttons on login page             |
 | REQ-018     | ✅ Complete | Hour type filter dropdown on admin dash         |
