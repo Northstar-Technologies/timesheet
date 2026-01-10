@@ -96,9 +96,9 @@ REQ-015 (Azure AD) code is fully implemented. Production validation requires rea
 
 **🔒 Security Tasks Today:**
 
-| Task                                    | Priority | Status    |
-| --------------------------------------- | -------- | --------- |
-| Generate strong production `SECRET_KEY` | P0       | 🔧 Do Now |
+| Task                                    | Priority | Status      |
+| --------------------------------------- | -------- | ----------- |
+| Generate strong production `SECRET_KEY` | P0       | ✅ Complete |
 
 ---
 
@@ -1578,14 +1578,14 @@ The following items were identified by scanning all `.md` files for pending work
 
 ### Security Hardening (from SECURITY.md)
 
-| Item                                    | Priority | Status     |
-| --------------------------------------- | -------- | ---------- |
-| Generate strong production `SECRET_KEY` | P0       | ⏳ Pending |
-| Rotate Azure credentials for production | P0       | ⏳ Pending |
-| Configure HTTPS/SSL for production      | P0       | ⏳ Pending |
-| Change database password from default   | P0       | ⏳ Pending |
-| Enable error monitoring (Sentry)        | P1       | 📋 Planned |
-| Automated security scanning (Bandit)    | P2       | 📋 Planned |
+| Item                                    | Priority | Status      |
+| --------------------------------------- | -------- | ----------- |
+| Generate strong production `SECRET_KEY` | P0       | ✅ Complete |
+| Rotate Azure credentials for production | P0       | ⏳ Pending  |
+| Configure HTTPS/SSL for production      | P0       | ⏳ Pending  |
+| Change database password from default   | P0       | ⏳ Pending  |
+| Enable error monitoring (Sentry)        | P1       | 📋 Planned  |
+| Automated security scanning (Bandit)    | P2       | 📋 Planned  |
 
 ---
 

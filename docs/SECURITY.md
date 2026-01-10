@@ -13,10 +13,18 @@ Before deploying to production, run through this comprehensive checklist to ensu
 #### Backend Secrets
 
 - [x] **Verify `.env` is in `.gitignore`** - ✅ Confirmed in `.gitignore` lines 50-66
-- [ ] **Generate strong `SECRET_KEY`** - Use cryptographically secure random string (not the default `dev-secret-key-change-me`)
-  ```bash
-  python3 -c "import secrets; print(secrets.token_hex(32))"
-  ```
+- [x] **Generate strong `SECRET_KEY`** - ✅ Safeguard implemented in `config.py`:
+  - Auto-generates secure key if `SECRET_KEY` is missing or contains placeholder values
+  - Detection patterns: `dev-secret-key`, `your-secret-key`
+  - For production persistence, generate with:
+    ```bash
+    python3 -c "import secrets; print(secrets.token_hex(32))"
+    ```
+  - Then add to your `.env` file:
+    ```bash
+    SECRET_KEY=<paste-64-character-hex-string-here>
+    ```
+  - ⚠️ **Important:** Without a persistent SECRET_KEY, sessions will be invalidated on restart
 - [ ] **Rotate Azure credentials** - Ensure `AZURE_CLIENT_ID` and `AZURE_CLIENT_SECRET` are production values (not placeholder `your-azure-*` values)
 - [ ] **Secure Twilio credentials** - Verify `TWILIO_ACCOUNT_SID` and `TWILIO_AUTH_TOKEN` are properly configured
 - [ ] **Use secrets manager in production** - Consider AWS Secrets Manager, Azure Key Vault, or HashiCorp Vault for production deployments
