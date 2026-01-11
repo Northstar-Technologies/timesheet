@@ -4,7 +4,7 @@
 >
 > **Source:** Design decisions captured in [DESIGN.md](DESIGN.md), plus roadmap/security/testing notes in `docs/`
 >
-> **Last Updated:** January 10, 2026
+> **Last Updated:** January 11, 2026
 
 ---
 
@@ -1599,54 +1599,55 @@ Add end-to-end browser tests for critical user flows.
 
 ## ✅ Implementation Status
 
-| Requirement | Status      | Notes                                           |
-| ----------- | ----------- | ----------------------------------------------- |
-| REQ-001     | ✅ Complete | Four-tier role system implemented               |
-| REQ-002     | ✅ Complete | All 4 test accounts available                   |
-| REQ-003     | ✅ Complete | User notification preferences + settings page   |
-| REQ-004     | ✅ Complete | Pay period filter button + display              |
-| REQ-005     | ✅ Complete | "This Week" quick filter on admin dashboard     |
-| REQ-006     | ✅ Complete | Pay period confirmation + payroll export        |
-| REQ-007     | ✅ Complete | Column totals added to admin grid               |
-| REQ-008     | ✅ Complete | Row totals added to all grid views              |
-| REQ-009     | ✅ Complete | Auto-fill 8h works for any hour type            |
-| REQ-010     | ✅ Complete | SharePoint integration                          |
-| REQ-011     | ✅ Complete | Email service                                   |
-| REQ-012     | ✅ Complete | Teams bot                                       |
-| REQ-013     | ✅ Complete | Dropdown filters by user role                   |
-| REQ-014     | ✅ Complete | Submit without attachment (with warning)        |
-| REQ-015     | ✅ Complete | Azure AD integration (code complete)            |
-| REQ-016     | ✅ Complete | Auto-redirect to /app after login               |
-| REQ-017     | ✅ Complete | 4 quick-login buttons on login page             |
-| REQ-018     | ✅ Complete | Hour type filter dropdown on admin dash         |
-| REQ-019     | ✅ Complete | CSV/XLSX/PDF exports + pay period summary       |
-| REQ-020     | ✅ Complete | Travel ✈️ and expense 💰 badges on cards        |
-| REQ-021     | ✅ Complete | Reimbursement-type attachment validation        |
-| REQ-022     | ✅ Complete | Holiday indicators + entry warning              |
-| REQ-023     | ✅ Complete | Read-only submitted timesheets                  |
-| REQ-024     | ✅ Complete | Travel mileage tracking & details               |
-| REQ-025     | ✅ Complete | Expanded expense type dropdown                  |
-| REQ-026     | ✅ Complete | Expense amount validation ($null fix)           |
-| REQ-027     | ✅ Complete | "Has expenses" expense details section          |
-| REQ-028     | ✅ Complete | Multiple reimbursement line items               |
-| REQ-029     | ✅ Complete | Production DB lifecycle (migrations only)       |
-| REQ-030     | ✅ Partial  | Auth/session hardening                          |
-| REQ-031     | ✅ Complete | CSRF protection for mutating endpoints          |
-| REQ-032     | ✅ Complete | Security audit passed (SECURITY.md)             |
-| REQ-033     | ✅ Complete | Object storage abstraction (storage.py)         |
-| REQ-034     | ✅ Complete | Background jobs module (app/jobs/)              |
-| REQ-035     | ✅ Complete | API validation & error handling modules         |
-| REQ-036     | ✅ Complete | Observability, JSON logging, /metrics endpoint  |
-| REQ-037     | ✅ Complete | Testing coverage (4 new test files added)       |
-| REQ-038     | ✅ Complete | UX & accessibility backlog                      |
-| REQ-039     | ✅ Complete | PowerApps data report view                      |
-| REQ-040     | 📋 Deferred | MCP tooling integration (not used)              |
-| REQ-041     | ✅ Complete | Support dashboard for trainee approvals         |
-| REQ-042     | ✅ Complete | Rate limiting on auth endpoints (Flask-Limiter) |
-| REQ-043     | ✅ Complete | Health check endpoint                           |
-| REQ-044     | ✅ Complete | Frontend modular JS (5 modules integrated)      |
-| REQ-045     | ✅ Complete | Backup/restore docs (BACKUP.md)                 |
-| REQ-046     | ✅ Complete | E2E tests with Playwright (4 test files)        |
+| Requirement | Status      | Description                          | Key Files                                                                                                       |
+| ----------- | ----------- | ------------------------------------ | --------------------------------------------------------------------------------------------------------------- |
+| REQ-001     | ✅ Complete | Four-tier role system                | `app/models.py` (UserRole enum), `app/routes/admin.py`                                                          |
+| REQ-002     | ✅ Complete | Dev mode test accounts               | `app/routes/auth.py` (`/auth/dev-login`)                                                                        |
+| REQ-003     | ✅ Complete | User notification preferences        | `static/js/settings.js`, `templates/index.html` (#settings-view)                                                |
+| REQ-004     | ✅ Complete | Pay period filter                    | `static/js/admin.js` (`getCurrentPayPeriod()`), `static/css/components.css`                                     |
+| REQ-005     | ✅ Complete | Current week filter                  | `static/js/admin.js` (`admin-this-week-btn` handler)                                                            |
+| REQ-006     | ✅ Complete | Pay period confirmation              | `app/routes/admin.py`, `app/models.py` (PayPeriod), `migrations/versions/006_add_pay_periods.py`                |
+| REQ-007     | ✅ Complete | Column totals                        | `static/js/timesheet.js` (`updateColumnTotals()`)                                                               |
+| REQ-008     | ✅ Complete | Row totals                           | `static/js/timesheet.js` (`updateRowTotal()`)                                                                   |
+| REQ-009     | ✅ Complete | Auto-fill any hour type              | `static/js/timesheet.js` (`addHourTypeRow()`)                                                                   |
+| REQ-010     | ✅ Complete | SharePoint sync                      | `app/services/sharepoint.py`, `app/jobs/sharepoint_sync.py`                                                     |
+| REQ-011     | ✅ Complete | Email notifications                  | `app/services/email.py`, `templates/email/`, `docs/EMAIL.md`                                                    |
+| REQ-012     | ✅ Complete | Teams bot notifications              | `app/routes/bot.py`, `app/services/teams.py`, `docs/BOT.md`                                                     |
+| REQ-013     | ✅ Complete | Trainee hour type restriction        | `static/js/timesheet/entries.js`, `app/routes/timesheets.py`                                                    |
+| REQ-014     | ✅ Complete | Submit without attachment warning    | `static/js/app.js` (`checkFieldHoursAttachment()`)                                                              |
+| REQ-015     | ✅ Complete | Azure AD integration                 | `app/routes/auth.py`, `app/config.py`, `docs/AZURE.md`                                                          |
+| REQ-016     | ✅ Complete | Auto-redirect after login            | `app/routes/auth.py` (redirect to `url_for("main.app")`)                                                        |
+| REQ-017     | ✅ Complete | Dev login buttons                    | `templates/login.html`                                                                                          |
+| REQ-018     | ✅ Complete | Hour type filter                     | `static/js/admin.js`, `templates/index.html` (#admin-hour-type-filter)                                          |
+| REQ-019     | ✅ Complete | Export formats (CSV/XLSX/PDF)        | `app/routes/admin.py` (`/api/admin/export/`), `app/services/export.py`                                          |
+| REQ-020     | ✅ Complete | Travel/expense badges                | `static/js/admin.js` (card rendering), `static/css/components.css`                                              |
+| REQ-021     | ✅ Complete | Per-option reimbursement attachments | `app/models.py` (Attachment.reimbursement_type), `migrations/versions/007_add_attachment_reimbursement_type.py` |
+| REQ-022     | 📋 Planned  | Holiday awareness & warning          | —                                                                                                               |
+| REQ-023     | ✅ Complete | Read-only submitted timesheets       | `static/js/timesheet.js` (`setFormReadOnly()`), `docs/BUGS.md` (BUG-001)                                        |
+| REQ-024     | 📋 Planned  | Travel mileage tracking              | —                                                                                                               |
+| REQ-025     | 📋 Planned  | Expanded expense types               | —                                                                                                               |
+| REQ-026     | ✅ Complete | Expense amount validation            | `static/js/timesheet.js` (`validateReimbursementItems()`), `docs/BUGS.md` (BUG-002)                             |
+| REQ-027     | ✅ Complete | Has expenses section                 | `templates/index.html` (#expense-section)                                                                       |
+| REQ-028     | ✅ Complete | Multiple reimbursement items         | `app/models.py` (ReimbursementItem), `static/js/timesheet.js`                                                   |
+| REQ-029     | ✅ Complete | Production DB lifecycle              | `docker/entrypoint.sh`, `migrations/`                                                                           |
+| REQ-030     | ✅ Partial  | Auth/session hardening               | `app/routes/auth.py`, `docs/SECURITY.md`                                                                        |
+| REQ-031     | ✅ Complete | CSRF protection                      | `app/__init__.py` (Flask-WTF), `static/js/api.js`                                                               |
+| REQ-032     | ✅ Complete | Security audit                       | `docs/SECURITY.md`                                                                                              |
+| REQ-033     | ✅ Complete | Object storage abstraction           | `app/services/storage.py`                                                                                       |
+| REQ-034     | ✅ Complete | Background jobs module               | `app/jobs/`                                                                                                     |
+| REQ-035     | ✅ Complete | API validation module                | `app/validation.py`, `app/routes/timesheets.py`                                                                 |
+| REQ-036     | ✅ Complete | Observability & logging              | `app/logging_config.py`, `app/routes/health.py`                                                                 |
+| REQ-037     | ✅ Complete | Unit test coverage                   | `tests/` (validation, sms, notifications, auth)                                                                 |
+| REQ-038     | ✅ Complete | UX & accessibility                   | `static/css/components.css`, `templates/index.html`                                                             |
+| REQ-039     | ✅ Complete | Admin data report view               | `static/js/admin.js` (#admin-reports-view), `app/routes/admin.py`                                               |
+| REQ-040     | 📋 Deferred | MCP tooling integration              | —                                                                                                               |
+| REQ-041     | ✅ Complete | Support dashboard                    | `static/js/admin.js`, `app/routes/admin.py`                                                                     |
+| REQ-042     | ✅ Complete | Rate limiting                        | `app/__init__.py` (Flask-Limiter), `app/routes/auth.py`                                                         |
+| REQ-043     | ✅ Complete | Health check endpoint                | `app/routes/health.py` (`/health`)                                                                              |
+| REQ-044     | ✅ Complete | Frontend JS modularization           | `static/js/timesheet/` (state, dates, entries, attachments, index)                                              |
+| REQ-045     | ✅ Complete | Backup/restore documentation         | `docs/BACKUP.md`                                                                                                |
+| REQ-046     | ✅ Complete | E2E tests (Playwright)               | `tests/e2e/`, `playwright.config.js`, `docs/TESTING.md`                                                         |
+| REQ-047     | 📋 Planned  | User theme selection                 | `static/css/main.css`, `static/css/light-mode-backup/`                                                          |
 
 ---
 
@@ -1656,22 +1657,19 @@ The following items were identified by scanning all `.md` files for pending work
 
 ### Open Bugs (from BUGS.md)
 
-| Bug ID  | Severity | Description                           | Status  |
-| ------- | -------- | ------------------------------------- | ------- |
-| BUG-002 | P1       | Reimbursement amounts display "$null" | 🔴 Open |
-| BUG-003 | P0       | Dev login causes duplicate key error  | 🔴 Open |
+| Bug ID  | Severity | Description                               | Status      |
+| ------- | -------- | ----------------------------------------- | ----------- |
+| BUG-001 | P0       | Submitted Timesheets Allow Editing        | ✅ Resolved |
+| BUG-002 | P1       | Reimbursement amounts display "$null"     | ✅ Resolved |
+| BUG-003 | P0       | Dev login causes duplicate key error      | ✅ Resolved |
+| BUG-004 | P1       | Draft timesheets missing Save/Submit      | ✅ Resolved |
+| BUG-005 | P2       | Leading zero not removed from hour inputs | 🟡 Open     |
 
-**BUG-002 Fix Plan:**
+**BUG-005 Fix Plan:**
 
-- Add `required` attribute to reimbursement amount input
-- Add client-side validation: amount must be ≥ 0
-- Database migration: set DEFAULT 0.00 on reimbursement_amount
-- Display fix: show "$0.00" instead of "$null"
-
-**BUG-003 Fix Plan:**
-
-- Investigate if `get_or_create` pattern is missing in certain paths
-- May already be fixed in auth.py - verify and update BUGS.md
+- Add `normalizeHourInput()` function in `static/js/timesheet.js`
+- Strip leading zeros when user types into hour fields
+- Alternative: select all text on focus so typing replaces value
 
 ---
 
