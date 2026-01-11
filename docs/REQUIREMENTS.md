@@ -131,7 +131,7 @@ REQ-015 (Azure AD) code is fully implemented. Production validation requires rea
 | Task | Priority | Status | Reference |
 | ---- | -------- | ------ | --------- |
 | Add `test_attachments.py` | P1 | 📋 Planned | Create `tests/test_attachments.py`, test upload/download via `app/routes/timesheets.py` |
-| Add `test_events.py` (SSE tests) | P2 | 📋 Planned | Create `tests/test_events.py`, test `app/routes/events.py` SSE endpoints |
+| Add `test_events.py` (SSE tests) | P2 | ✅ Done | Create `tests/test_events.py`, test `app/routes/events.py` SSE endpoints |
 | Increase test coverage to 85% | P1 | 📋 Planned | Run `pytest --cov`, see `docs/TESTING.md` for coverage targets |
 | Expand auth tests in `test_auth.py` | P1 | 📋 Planned | Add Azure callback tests in `tests/test_auth.py`, mock MSAL |
 | REQ-022: Holiday awareness | P1 | 📋 Planned | See [REQ-022](#req-022-holiday-awareness--warning-p1), add to `static/js/timesheet.js` |
