@@ -138,12 +138,16 @@ class TestingConfig(Config):
 
     TESTING = True
     SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
-    
+
     # Disable CSRF in testing to simplify test requests
     WTF_CSRF_ENABLED = False
-    
+
     # Rate limiting for tests (use memory storage, not Redis)
     RATELIMIT_STORAGE_URI = "memory://"
     # Stricter limits for testing (easy to trigger)
     RATELIMIT_AUTH_LIMIT = "3 per minute"
     RATELIMIT_API_LIMIT = "5 per minute"
+
+    # Use temp directory for file uploads in tests
+    import tempfile
+    UPLOAD_FOLDER = tempfile.mkdtemp()

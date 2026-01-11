@@ -127,18 +127,20 @@ REQ-015 (Azure AD) code is fully implemented. Production validation requires rea
 - `docs/REQUIREMENTS.md` - Added REQ-047, file references, status updates
 - `tests/test_events.py` - Added SSE endpoint tests (11 tests, all passing)
 - `app/routes/events.py` - Fixed session context bug in SSE generator
+- `tests/test_attachments.py` - Added attachment tests (10 tests, all passing)
+- `app/config.py` - Added UPLOAD_FOLDER temp directory for TestingConfig
 
 **Recently Completed:**
 
 | Task | Priority | Status | Reference |
 | ---- | -------- | ------ | --------- |
 | Add `test_events.py` (SSE tests) | P2 | ✅ Done | Created `tests/test_events.py`, test `app/routes/events.py` SSE endpoints |
+| Add `test_attachments.py` | P1 | ✅ Done | Created `tests/test_attachments.py`, test upload/download/delete via `app/routes/timesheets.py` |
 
 **Still Planned:**
 
 | Task | Priority | Status | Reference |
 | ---- | -------- | ------ | --------- |
-| Add `test_attachments.py` | P1 | 📋 Planned | Create `tests/test_attachments.py`, test upload/download via `app/routes/timesheets.py` |
 | Increase test coverage to 85% | P1 | 📋 Planned | Run `pytest --cov`, see `docs/TESTING.md` for coverage targets |
 | Expand auth tests in `test_auth.py` | P1 | 📋 Planned | Add Azure callback tests in `tests/test_auth.py`, mock MSAL |
 | REQ-022: Holiday awareness | P1 | 📋 Planned | See [REQ-022](#req-022-holiday-awareness--warning-p1), add to `static/js/timesheet.js` |
