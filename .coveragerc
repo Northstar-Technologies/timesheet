@@ -1,14 +1,4 @@
-[pytest]
-testpaths = tests
-python_files = test_*.py
-python_classes = Test*
-python_functions = test_*
-addopts = -v --tb=short
-filterwarnings =
-    ignore::DeprecationWarning
-    ignore::sqlalchemy.exc.SAWarning
-
-[coverage:run]
+[run]
 source = app
 omit =
     app/__pycache__/*
@@ -20,7 +10,7 @@ omit =
     app/utils/storage.py
     app/services/scheduler.py
 
-[coverage:report]
+[report]
 exclude_lines =
     pragma: no cover
     def __repr__
