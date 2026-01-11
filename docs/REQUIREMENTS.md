@@ -114,6 +114,9 @@ REQ-015 (Azure AD) code is fully implemented. Production validation requires rea
 | Dark mode       | Force dark mode, preserve light mode CSS       | ✅ Complete    |
 | BUGS.md         | Fixed duplicate BUG-003 IDs, added bug index   | ✅ Complete    |
 | REQUIREMENTS.md | Added file references to Implementation Status | ✅ Complete    |
+| `test_main.py`  | 17 tests for main routes, health, metrics      | ✅ Complete    |
+| `.coveragerc`   | Exclude unused modules from coverage           | ✅ Complete    |
+| Test coverage   | Improved from 53% to 68% (253 tests)           | 🔄 In Progress |
 
 **Key Files Changed:**
 
@@ -125,9 +128,11 @@ REQ-015 (Azure AD) code is fully implemented. Production validation requires rea
 - `templates/index.html` - Updated CSS/JS version strings
 - `docs/BUGS.md` - Renumbered bugs, added index table
 - `docs/REQUIREMENTS.md` - Added REQ-047, file references, status updates
-- `tests/test_events.py` - Added SSE endpoint tests (11 tests, all passing)
+- `tests/test_events.py` - Added SSE endpoint tests (11 tests)
+- `tests/test_attachments.py` - Added attachment tests (10 tests)
+- `tests/test_main.py` - Added main routes tests (17 tests)
+- `.coveragerc` - Coverage exclusions for unused modules
 - `app/routes/events.py` - Fixed session context bug in SSE generator
-- `tests/test_attachments.py` - Added attachment tests (10 tests, all passing)
 - `app/config.py` - Added UPLOAD_FOLDER temp directory for TestingConfig
 
 **Recently Completed:**
