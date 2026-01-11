@@ -132,38 +132,49 @@ REQ-015 (Azure AD) code is fully implemented. Production validation requires rea
 
 **Recently Completed:**
 
-| Task | Priority | Status | Reference |
-| ---- | -------- | ------ | --------- |
-| Add `test_events.py` (SSE tests) | P2 | ✅ Done | Created `tests/test_events.py`, test `app/routes/events.py` SSE endpoints |
-| Add `test_attachments.py` | P1 | ✅ Done | Created `tests/test_attachments.py`, test upload/download/delete via `app/routes/timesheets.py` |
+| Task                             | Priority | Status  | Reference                                                                                       |
+| -------------------------------- | -------- | ------- | ----------------------------------------------------------------------------------------------- |
+| Add `test_events.py` (SSE tests) | P2       | ✅ Done | Created `tests/test_events.py`, test `app/routes/events.py` SSE endpoints                       |
+| Add `test_attachments.py`        | P1       | ✅ Done | Created `tests/test_attachments.py`, test upload/download/delete via `app/routes/timesheets.py` |
+| Add `test_main.py`               | P1       | ✅ Done | Created `tests/test_main.py` with 17 tests for main routes, health, metrics                     |
+| Configure coverage exclusions    | P2       | ✅ Done | Created `.coveragerc` to exclude unused modules (bot, jobs, sharepoint, storage, scheduler)     |
+
+**Test Coverage Progress:**
+
+| Metric                 | Before | After | Target  |
+| ---------------------- | ------ | ----- | ------- |
+| Total Coverage         | 53%    | 68%   | 85%     |
+| Tests Passing          | 236    | 253   | —       |
+| `app/routes/main.py`   | 24%    | 97%   | ✅ Done |
+| `app/routes/events.py` | 0%     | 88%   | ✅ Done |
 
 **Still Planned:**
 
-| Task | Priority | Status | Reference |
-| ---- | -------- | ------ | --------- |
-| Increase test coverage to 85% | P1 | 📋 Planned | Run `pytest --cov`, see `docs/TESTING.md` for coverage targets |
-| Expand auth tests in `test_auth.py` | P1 | 📋 Planned | Add Azure callback tests in `tests/test_auth.py`, mock MSAL |
-| REQ-022: Holiday awareness | P1 | 📋 Planned | See [REQ-022](#req-022-holiday-awareness--warning-p1), add to `static/js/timesheet.js` |
-| REQ-024: Travel mileage tracking | P1 | 📋 Planned | See [REQ-024](#req-024-travel-mileage-tracking-p1), extend `templates/index.html` |
-| REQ-025: Expanded expense types | P1 | 📋 Planned | See [REQ-025](#req-025-expanded-expense-types-p1), update dropdown in `timesheet.js` |
-| BUG-005: Leading zero in hour inputs | P2 | 📋 Planned | See `docs/BUGS.md` BUG-005, add `normalizeHourInput()` to `static/js/timesheet.js` |
+| Task                                 | Priority | Status               | Reference                                                                                          |
+| ------------------------------------ | -------- | -------------------- | -------------------------------------------------------------------------------------------------- |
+| Increase test coverage to 85%        | P1       | 🔄 In Progress (68%) | Add tests for `app/routes/admin.py` (37%), `app/routes/users.py` (16%), `app/utils/teams.py` (32%) |
+| Expand auth tests in `test_auth.py`  | P1       | 📋 Planned           | Add Azure callback tests in `tests/test_auth.py`, mock MSAL                                        |
+| REQ-022: Holiday awareness           | P1       | 📋 Planned           | See [REQ-022](#req-022-holiday-awareness--warning-p1), add to `static/js/timesheet.js`             |
+| REQ-024: Travel mileage tracking     | P1       | 📋 Planned           | See [REQ-024](#req-024-travel-mileage-tracking-p1), extend `templates/index.html`                  |
+| REQ-025: Expanded expense types      | P1       | 📋 Planned           | See [REQ-025](#req-025-expanded-expense-types-p1), update dropdown in `timesheet.js`               |
+| BUG-005: Leading zero in hour inputs | P2       | 📋 Planned           | See `docs/BUGS.md` BUG-005, add `normalizeHourInput()` to `static/js/timesheet.js`                 |
 
 **Platform Improvements (Pending):**
 
-| Task | Priority | Status | Reference |
-| ---- | -------- | ------ | --------- |
-| Configure HTTPS/SSL for production | P0 | 📋 Planned | Update `docker/nginx.conf`, add SSL certs, see `docs/SECURITY.md` |
-| Change database password from default | P0 | 📋 Planned | Update `docker/docker-compose.yml` and `.env`, see `docs/SECURITY.md` |
-| Rotate Azure credentials for production | P0 | 📋 Planned | Update `.env` with new client secret, see `docs/AZURE.md` |
-| Enable error monitoring (Sentry) | P1 | 📋 Planned | Add `sentry-sdk` to `requirements.txt`, configure in `app/__init__.py` |
+| Task                                    | Priority | Status     | Reference                                                              |
+| --------------------------------------- | -------- | ---------- | ---------------------------------------------------------------------- |
+| Configure HTTPS/SSL for production      | P0       | 📋 Planned | Update `docker/nginx.conf`, add SSL certs, see `docs/SECURITY.md`      |
+| Change database password from default   | P0       | 📋 Planned | Update `docker/docker-compose.yml` and `.env`, see `docs/SECURITY.md`  |
+| Rotate Azure credentials for production | P0       | 📋 Planned | Update `.env` with new client secret, see `docs/AZURE.md`              |
+| Enable error monitoring (Sentry)        | P1       | 📋 Planned | Add `sentry-sdk` to `requirements.txt`, configure in `app/__init__.py` |
 
 **CI/CD Setup (Pending):**
 
-| Task | Status | Reference |
-| ---- | ------ | --------- |
+| Task                              | Status     | Reference                                                    |
+| --------------------------------- | ---------- | ------------------------------------------------------------ |
 | GitHub Actions workflow for tests | 📋 Planned | Create `.github/workflows/test.yml`, run pytest + playwright |
-| Pre-commit hook for tests | 📋 Planned | Add `.pre-commit-config.yaml`, run flake8 + pytest |
-| Codecov integration | 📋 Planned | Add to GitHub Actions, upload coverage XML |
+| Pre-commit hook for tests         | 📋 Planned | Add `.pre-commit-config.yaml`, run flake8 + pytest           |
+| Codecov integration               | 📋 Planned | Add to GitHub Actions, upload coverage XML                   |
 
 ---
 
