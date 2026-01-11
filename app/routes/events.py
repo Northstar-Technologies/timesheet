@@ -25,6 +25,7 @@ def event_stream():
         Response: SSE stream
     """
     user_id = session["user"]["id"]
+    is_admin = session["user"].get("is_admin", False)
 
     def generate():
         """Generator for SSE messages."""
@@ -43,7 +44,7 @@ def event_stream():
             pubsub.subscribe(channel)
 
             # Also subscribe to broadcast channel for admin announcements
-            if session["user"].get("is_admin"):
+            if is_admin:
                 pubsub.subscribe("admin:broadcast")
 
             # Send initial connection message
