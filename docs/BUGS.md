@@ -282,6 +282,80 @@ Browser testing confirmed:
 
 ---
 
+### BUG-004: Leading Zero Not Removed from Hour Inputs
+
+**Status:** 🟡 Open  
+**Severity:** Low (P2)  
+**Reported:** January 11, 2026  
+**Related:** N/A
+
+**Description:**
+When typing hours into an hour input field that displays "0", the leading zero is not removed. For example, typing "8" results in "08" being displayed instead of just "8".
+
+**Steps to Reproduce:**
+
+1. Log in to the app
+2. Create or open a timesheet
+3. Add an hour type row (e.g., Internal Hours)
+4. Click on a day's input field (which shows "0")
+5. Type "8"
+6. **Expected:** Field shows "8"
+7. **Actual:** Field shows "08"
+
+**Root Cause:**
+HTML number inputs preserve leading zeros when users type without first clearing the field. The browser appends new digits to the existing "0" value rather than replacing it.
+
+**Proposed Fix:**
+
+Add a `normalizeHourInput()` function to strip leading zeros when the user types:
+
+**File: `static/js/timesheet.js`**
+
+1. Add new function to `TimesheetModule`:
+
+```javascript
+/**
+ * Normalize hour input to remove leading zeros
+ * @param {HTMLInputElement} input - The hour input element
+ */
+normalizeHourInput(input) {
+    // Strip leading zeros by converting to number and back to string
+    const value = parseFloat(input.value) || 0;
+    if (input.value !== '' && input.value !== value.toString()) {
+        input.value = value;
+    }
+},
+```
+
+2. Update the `oninput` handler in `addHourTypeRow()` (around line 330):
+
+```javascript
+// Change from:
+oninput = "TimesheetModule.updateRowTotal('${hourType}')";
+
+// To:
+oninput =
+  "TimesheetModule.normalizeHourInput(this); TimesheetModule.updateRowTotal('${hourType}')";
+```
+
+**Alternative Fix (select on focus):**
+
+Add an `onfocus` handler that selects all text, so typing replaces the entire value:
+
+```javascript
+onfocus = "this.select()";
+```
+
+**Acceptance Criteria:**
+
+- [ ] Typing into an hour field with "0" displays only the typed number
+- [ ] Values like "08" are normalized to "8"
+- [ ] Decimal values still work correctly (e.g., "8.5")
+- [ ] Empty field still shows "0" after blur if no value entered
+- [ ] Row totals update correctly after normalization
+
+---
+
 ## ✅ Resolved Issues
 
 ### BUG-001: Submitted Timesheets Allow Editing
@@ -310,4 +384,4 @@ Resolved January 10, 2026 (verified - fix was already in place). See [BUG-003](#
 ---
 
 _Document created: January 8, 2026_  
-_Last updated: January 10, 2026_
+_Last updated: January 11, 2026_
