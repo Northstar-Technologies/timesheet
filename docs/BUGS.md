@@ -2,7 +2,7 @@
 
 > **Purpose:** Track known bugs and issues requiring fixes.
 >
-> **Last Updated:** January 10, 2026
+> **Last Updated:** January 11, 2026
 
 ---
 
@@ -145,9 +145,9 @@ Verify the form-actions section exists and has correct structure:
 
 **Acceptance Criteria:**
 
-- [ ] Draft timesheets show Save Draft and Submit buttons
-- [ ] Buttons work correctly when clicked
-- [ ] Submitted/Approved timesheets still hide the buttons
+- [x] Draft timesheets show Save Draft and Submit buttons _(Verified Jan 11, 2026)_
+- [x] Buttons work correctly when clicked _(Verified Jan 11, 2026)_
+- [x] Submitted/Approved timesheets still hide the buttons _(Verified Jan 11, 2026)_
 
 ---
 
