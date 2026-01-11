@@ -102,26 +102,44 @@ REQ-015 (Azure AD) code is fully implemented. Production validation requires rea
 
 ---
 
-### 📅 January 11, 2026 - Tomorrow's Work
+### ✅ January 11, 2026 - Today's Work
 
-**Testing Improvements:**
+**Completed Today:**
 
-| Task                                | Priority | Status     |
-| ----------------------------------- | -------- | ---------- |
-| Add `test_attachments.py`           | P1       | 📋 Planned |
-| Add `test_events.py` (SSE tests)    | P2       | 📋 Planned |
-| Increase test coverage to 85%       | P1       | 📋 Planned |
-| Expand auth tests in `test_auth.py` | P1       | 📋 Planned |
+| Task            | Description                                    | Status         |
+| --------------- | ---------------------------------------------- | -------------- |
+| REQ-047         | User Theme Selection specification             | ✅ Documented  |
+| BUG-002         | Reimbursement validation (client-side)         | ✅ Implemented |
+| Migration fixes | Fixed 007, 008, 009 revision ID chain          | ✅ Complete    |
+| Dark mode       | Force dark mode, preserve light mode CSS       | ✅ Complete    |
+| BUGS.md         | Fixed duplicate BUG-003 IDs, added bug index   | ✅ Complete    |
+| REQUIREMENTS.md | Added file references to Implementation Status | ✅ Complete    |
 
-**Feature Implementation:**
+**Key Files Changed:**
 
-| Requirement | Description                                        | Priority | Status     |
-| ----------- | -------------------------------------------------- | -------- | ---------- |
-| REQ-022     | Holiday awareness & warning                        | P1       | 📋 Planned |
-| REQ-024     | Travel mileage tracking                            | P1       | 📋 Planned |
-| REQ-025     | Expanded expense types (Gas, Hotel, Parking, Toll) | P1       | 📋 Planned |
+- `static/js/timesheet.js` - Added `validateReimbursementItems()`, `highlightInvalidReimbursementItems()`
+- `static/js/app.js` - Added validation call before submit
+- `static/css/main.css` - Commented out light mode (forced dark mode)
+- `static/css/components.css` - Added `.validation-error`, `.input-error` styles
+- `migrations/versions/007_*.py`, `008_*.py`, `009_*.py` - Fixed revision IDs
+- `templates/index.html` - Updated CSS/JS version strings
+- `docs/BUGS.md` - Renumbered bugs, added index table
+- `docs/REQUIREMENTS.md` - Added REQ-047, file references, status updates
 
-**Platform Improvements:**
+**Still Planned:**
+
+| Task                                 | Priority | Status     |
+| ------------------------------------ | -------- | ---------- |
+| Add `test_attachments.py`            | P1       | 📋 Planned |
+| Add `test_events.py` (SSE tests)     | P2       | 📋 Planned |
+| Increase test coverage to 85%        | P1       | 📋 Planned |
+| Expand auth tests in `test_auth.py`  | P1       | 📋 Planned |
+| REQ-022: Holiday awareness           | P1       | 📋 Planned |
+| REQ-024: Travel mileage tracking     | P1       | 📋 Planned |
+| REQ-025: Expanded expense types      | P1       | 📋 Planned |
+| BUG-005: Leading zero in hour inputs | P2       | 📋 Planned |
+
+**Platform Improvements (Pending):**
 
 | Task                                    | Priority | Status     |
 | --------------------------------------- | -------- | ---------- |
@@ -130,7 +148,7 @@ REQ-015 (Azure AD) code is fully implemented. Production validation requires rea
 | Rotate Azure credentials for production | P0       | 📋 Planned |
 | Enable error monitoring (Sentry)        | P1       | 📋 Planned |
 
-**CI/CD Setup:**
+**CI/CD Setup (Pending):**
 
 | Task                              | Status     |
 | --------------------------------- | ---------- |
